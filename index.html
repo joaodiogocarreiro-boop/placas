@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B57D0">
+<title>Placas · Rua</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Placas">
+<meta name="application-name" content="Placas">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root{
+    --accent:#0B57D0; --accent-soft:#E8F0FE; --ink:#1F2937; --ink-2:#6B7280; --ink-3:#9CA3AF;
+    --ok:#188038; --ok-soft:#E6F4EA; --warn:#B45309; --warn-soft:#FEF3C7;
+    --bad:#B3261E; --bad-soft:#FDECEA; --off:#5F6368; --off-soft:#F1F3F4;
+    --line:#E5E7EB; --bg:#F6F7F9; --card:#FFFFFF; --r:14px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; font-size:16px}
+  body{max-width:540px; margin:0 auto; padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+
+  header{position:sticky; top:0; z-index:1000; background:var(--accent); color:#fff;
+    padding:calc(10px + env(safe-area-inset-top)) 16px 10px; display:flex; align-items:center; justify-content:space-between}
+  header .t{font-weight:800; letter-spacing:.3px}
+  header .t small{font-weight:500; opacity:.85}
+  #hZona{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); color:#fff;
+    padding:4px 10px; border-radius:999px; font-size:.78rem; max-width:55%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+
+  #aviso{display:none; background:var(--warn-soft); color:var(--warn); font-size:.8rem; padding:8px 14px}
+
+  main{padding:14px}
+  .tab{display:none}
+  .tab.on{display:block}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:14px; margin-bottom:12px}
+  h2{font-size:.8rem; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-2); margin:4px 2px 10px}
+  label{display:block; font-size:.78rem; color:var(--ink-2); margin:10px 2px 6px}
+  input[type=text]{width:100%; padding:12px; border:1px solid var(--line); border-radius:10px; font-size:1rem; background:#fff; color:var(--ink)}
+  input[type=text]:focus{outline:2px solid var(--accent); border-color:transparent}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px}
+  .chip{border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:999px;
+    padding:9px 13px; font-size:.86rem; cursor:pointer; user-select:none}
+  .chip.on{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
+  .chip.ok.on{background:var(--ok); border-color:var(--ok)}
+  .chip.warn.on{background:var(--warn); border-color:var(--warn)}
+  .chip.bad.on{background:var(--bad); border-color:var(--bad)}
+  .chip.off.on{background:var(--off); border-color:var(--off)}
+
+  .btn{display:block; width:100%; padding:15px; border:0; border-radius:12px; background:var(--accent);
+    color:#fff; font-size:1.05rem; font-weight:700; cursor:pointer; margin-top:14px}
+  .btn:active{transform:scale(.99)}
+  .btn.ghost{background:#fff; color:var(--accent); border:1.5px solid var(--accent); font-weight:600}
+  .btn.mini{width:auto; display:inline-block; padding:8px 14px; font-size:.82rem; margin-top:0}
+  .btn.danger{background:#fff; color:var(--bad); border:1.5px solid var(--bad)}
+
+  .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .spread{justify-content:space-between}
+
+  .today{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px}
+  .tile{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; text-align:center}
+  .tile .v{font-size:1.45rem; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums}
+  .tile .l{font-size:.68rem; color:var(--ink-2); text-transform:uppercase; letter-spacing:.5px; margin-top:2px}
+
+  .reg{display:flex; align-items:center; gap:10px; padding:10px 2px; border-top:1px solid var(--line)}
+  .reg:first-child{border-top:0}
+  .reg .h{font-size:.72rem; color:var(--ink-3); min-width:40px; font-variant-numeric:tabular-nums}
+  .reg .n{flex:1; min-width:0}
+  .reg .n b{display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:.92rem}
+  .reg .n small{color:var(--ink-2); font-size:.74rem}
+  .badge{font-size:.68rem; font-weight:700; padding:4px 8px; border-radius:999px; white-space:nowrap}
+  .badge.venda{background:var(--ok-soft); color:var(--ok)}
+  .badge.voltar{background:var(--warn-soft); color:var(--warn)}
+  .badge.nao{background:var(--bad-soft); color:var(--bad)}
+  .badge.fech{background:var(--off-soft); color:var(--off)}
+  .x{border:0; background:none; color:var(--ink-3); font-size:1rem; padding:6px; cursor:pointer}
+  .x.confirm{color:var(--bad); font-weight:700; font-size:.7rem}
+
+  /* mapa */
+  #mapCard{padding:0; overflow:hidden; position:relative}
+  #map{height:300px; width:100%; background:#E9EDF2}
+  #mapFallback{padding:22px 16px; text-align:center; color:var(--ink-2); font-size:.85rem; display:none}
+  .legenda{position:absolute; z-index:900; left:10px; bottom:10px; background:rgba(255,255,255,.94);
+    border:1px solid var(--line); border-radius:10px; padding:6px 10px; font-size:.68rem; display:flex; gap:10px}
+  .legenda i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:4px; vertical-align:-1px}
+
+  /* zonas */
+  .zcard{position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:12px 14px; margin-bottom:10px}
+  .zcard.ativa{border:2px solid var(--accent)}
+  .zcard.feita{opacity:.6; background:#FAFAFA}
+  .zcard .sem{font-size:.7rem; color:var(--ink-2); text-transform:uppercase; letter-spacing:.5px}
+  .zcard .nome{font-weight:700; margin:2px 0 4px}
+  .zcard .st{font-size:.74rem; color:var(--ink-2)}
+  .zcard .nota{font-size:.72rem; color:var(--warn); font-weight:600; margin-top:2px}
+  .estado{position:absolute; top:12px; right:12px; font-size:.66rem; font-weight:800; padding:4px 8px; border-radius:999px}
+  .estado.curso{background:var(--accent-soft); color:var(--accent)}
+  .estado.done{background:var(--ok-soft); color:var(--ok)}
+  .estado.futuro{background:var(--off-soft); color:var(--off)}
+  .zbtns{margin-top:10px; display:flex; gap:8px}
+  .ruas{margin-top:8px; border-top:1px dashed var(--line); padding-top:4px}
+  .ruas summary{list-style:none; cursor:pointer; font-size:.78rem; font-weight:700; color:var(--accent); padding:6px 0}
+  .ruas summary::-webkit-details-marker{display:none}
+  .rua{display:flex; align-items:center; gap:10px; padding:7px 2px; font-size:.85rem}
+  .rua input{width:19px; height:19px; accent-color:var(--ok); flex:none}
+  .rua.done span{text-decoration:line-through; color:var(--ink-3)}
+
+  /* guião */
+  details.g{background:var(--card); border:1px solid var(--line); border-radius:var(--r); margin-bottom:10px; overflow:hidden}
+  details.g summary{list-style:none; padding:13px 14px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:8px}
+  details.g summary::-webkit-details-marker{display:none}
+  summary .num{background:var(--accent-soft); color:var(--accent); border-radius:8px; min-width:26px; height:26px;
+    display:inline-flex; align-items:center; justify-content:center; font-size:.8rem; flex:none}
+  summary .stit{flex:1; min-width:0}
+  summary .fase{display:block; font-size:.6rem; font-weight:800; letter-spacing:.7px; color:var(--ink-3); text-transform:uppercase}
+  summary .teste-badge{font-size:.62rem; background:var(--warn-soft); color:var(--warn);
+    padding:3px 8px; border-radius:999px; font-weight:800; letter-spacing:.4px; flex:none}
+  .gbody{padding:0 14px 14px; font-size:.92rem; line-height:1.5; color:var(--ink)}
+  .gbody .fala{background:var(--accent-soft); border-left:3px solid var(--accent); padding:9px 11px; border-radius:0 10px 10px 0; margin:8px 0; font-style:italic}
+  .gbody .beat{font-size:.78rem; color:var(--ink-3); margin:-2px 0 8px 3px}
+  .gbody .obj{margin:8px 0; padding:9px 11px; background:var(--bg); border-radius:10px; font-size:.86rem}
+  .gbody .obj b{color:var(--bad); display:block; margin-bottom:3px}
+  .gbody .obj .perg{color:var(--accent); font-weight:600; display:block; margin-bottom:3px}
+  .gbody ol{margin:6px 0; padding-left:20px}
+  .gbody li{margin:5px 0}
+  .gbody .dica{font-size:.8rem; color:var(--ink-2)}
+  .gbody .stop{background:var(--warn-soft); color:var(--warn); border-radius:10px; padding:8px 11px; font-size:.82rem; font-weight:600; margin:8px 0}
+  .tbtn{border:1px solid var(--warn); color:var(--warn); background:#fff; border-radius:999px; padding:6px 12px; font-size:.74rem; font-weight:700; cursor:pointer; margin-top:10px}
+  .tbtn.on{background:var(--warn); color:#fff}
+
+  /* argumentos escolhíveis */
+  .argw{margin:12px 0 2px; border-top:1px dashed var(--line); padding-top:11px}
+  .argt{font-size:.74rem; color:var(--ink-2); font-weight:700; margin-bottom:9px}
+  .argc{border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:8px; cursor:pointer; background:#fff}
+  .argc.on{border-color:var(--accent); background:var(--accent-soft)}
+  .argh{display:flex; align-items:center; gap:8px; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-2)}
+  .argc.on .argh{color:var(--accent)}
+  .argp{margin-left:auto; font-size:.6rem; font-weight:700; background:var(--off-soft); color:var(--off);
+    padding:3px 9px; border-radius:999px; text-transform:none; letter-spacing:0; flex:none}
+  .argc.on .argp{background:var(--accent); color:#fff}
+  .argf{font-style:italic; margin-top:7px; font-size:.9rem; line-height:1.45}
+  .argq{margin-top:6px; font-size:.78rem; color:var(--ink-2)}
+  .argsrc{margin-top:6px; font-size:.66rem; color:var(--ink-3)}
+  .armas-chip{display:inline-block; background:var(--accent-soft); color:var(--accent); font-size:.76rem;
+    font-weight:700; padding:6px 11px; border-radius:999px; margin:0 6px 6px 0}
+
+  /* dados */
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  table{width:100%; border-collapse:collapse; font-size:.84rem}
+  th{color:var(--ink-2); font-size:.7rem; text-transform:uppercase; letter-spacing:.4px; text-align:left; padding:6px 4px; border-bottom:1px solid var(--line)}
+  td{padding:8px 4px; border-bottom:1px solid var(--line); font-variant-numeric:tabular-nums}
+  td:nth-child(n+2), th:nth-child(n+2){text-align:right}
+
+  .note{font-size:.78rem; color:var(--ink-2); margin:8px 2px}
+  .hide{display:none !important}
+
+  nav{position:fixed; bottom:0; left:0; right:0; z-index:1100; background:var(--card); border-top:1px solid var(--line);
+    display:flex; max-width:540px; margin:0 auto; padding-bottom:env(safe-area-inset-bottom)}
+  nav button{flex:1; border:0; background:none; padding:9px 4px 7px; font-size:.68rem; color:var(--ink-2); cursor:pointer; font-weight:600}
+  nav button .i{display:block; font-size:1.25rem; margin-bottom:2px}
+  nav button.on{color:var(--accent)}
+
+  #toast{position:fixed; bottom:calc(86px + env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:.85rem; opacity:0; pointer-events:none; transition:.25s; z-index:1200; white-space:nowrap}
+  #toast.on{opacity:1; transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="t">PLACAS <small>· rua</small></div>
+  <div id="hZona">—</div>
+</header>
+<div id="aviso">⚠️ Este browser não guarda dados entre sessões — exporta antes de fechar (Dados → Exportar).</div>
+
+<main>
+
+  <!-- ═══════════ REGISTAR ═══════════ -->
+  <section id="tab-registar" class="tab on">
+    <div class="today">
+      <div class="tile"><div class="v" id="tHoje">0</div><div class="l">Portas hoje</div></div>
+      <div class="tile"><div class="v" id="tVendas">0</div><div class="l">Vendas hoje</div></div>
+      <div class="tile"><div class="v" id="tEuros">€0</div><div class="l">Hoje</div></div>
+    </div>
+
+    <div class="card">
+      <div class="row spread">
+        <h2 style="margin:0">Registar porta</h2>
+        <select id="selZona" style="border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:.8rem; max-width:52%; color:var(--ink); background:#fff"></select>
+      </div>
+
+      <label>Negócio</label>
+      <input type="text" id="fNome" placeholder="ex.: Tasca do Zé" autocomplete="off">
+
+      <label>Tipo</label>
+      <div class="chips" id="fTipo"></div>
+
+      <label>Resultado</label>
+      <div class="chips" id="fRes"></div>
+
+      <div id="grpVenda" class="hide">
+        <label>Preço</label>
+        <div class="chips" id="fPreco"></div>
+        <label>Pagamento</label>
+        <div class="chips" id="fPag"></div>
+      </div>
+
+      <div id="grpVoltar" class="hide">
+        <label>Voltar quando?</label>
+        <input type="text" id="fQuando" placeholder="ex.: dono chega às 17h / 3.ª de manhã" autocomplete="off">
+      </div>
+
+      <label>Nota (opcional)</label>
+      <input type="text" id="fNota" placeholder="ex.: interessado no combo Instagram" autocomplete="off">
+
+      <button class="btn" id="btGuardar">Guardar porta</button>
+    </div>
+
+    <div class="card">
+      <h2>Hoje</h2>
+      <div id="listaHoje"><p class="note">Ainda sem registos hoje.</p></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ZONAS ═══════════ -->
+  <section id="tab-zonas" class="tab">
+    <div class="card" id="mapCard">
+      <div id="map"></div>
+      <div id="mapFallback">🗺️ O mapa precisa de internet.<br>As zonas continuam todas em baixo.<br><button class="btn ghost mini" style="margin-top:8px" onclick="tentarMapa()">Tentar de novo</button></div>
+      <div class="legenda"><span><i style="background:#188038"></i>Feita</span><span><i style="background:#0B57D0"></i>Em curso</span><span><i style="background:#9CA3AF"></i>Por fazer</span></div>
+    </div>
+    <p class="note"><b>Regra:</b> uma zona de cada vez, o tempo que for preciso. Varres TUDO, rua a rua. Só mudas quando estiver feita; repetes apenas os «Voltar».</p>
+    <div id="listaZonas"></div>
+  </section>
+
+  <!-- ═══════════ GUIÃO ═══════════ -->
+  <section id="tab-guiao" class="tab">
+    <div class="card" id="armasCard" style="display:none">
+      <h2 style="margin-bottom:8px">Os teus argumentos escolhidos</h2>
+      <div id="armasLista"></div>
+      <button class="btn ghost mini" id="btLimparArgs" style="margin-top:10px">Limpar</button>
+    </div>
+    <p class="note">A conversa vai por esta ordem. Em cada momento tens as falas — e onde há argumentos para escolher, <b>toca só nos que vais usar</b>.</p>
+    <div id="listaGuiao"></div>
+    <div class="card" style="border-left:3px solid var(--bad)">
+      <h2 style="color:var(--bad)">Regras fixas</h2>
+      <p class="note" style="color:var(--ink)">Pedir avaliações é permitido. <b>PROIBIDO:</b> pagar ou oferecer seja o que for por avaliações, e pedir só aos clientes contentes (review gating) — o Google exige que se peça a toda a gente da mesma maneira. Nunca prometas estrelas: prometes tirar a chatice do caminho. Fatura sempre, mesmo em dinheiro.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ DADOS ═══════════ -->
+  <section id="tab-dados" class="tab">
+    <div class="grid2" style="margin-bottom:8px">
+      <div class="tile"><div class="v" id="dPortas">0</div><div class="l">Portas totais</div></div>
+      <div class="tile"><div class="v" id="dVendas">0</div><div class="l">Vendas</div></div>
+      <div class="tile"><div class="v" id="dEuros">€0</div><div class="l">Faturado</div></div>
+      <div class="tile"><div class="v" id="dConv">—</div><div class="l">Conversão</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Retornos pendentes («Voltar»)</h2>
+      <div id="listaVoltar"><p class="note">Nenhum pendente. 👌</p></div>
+    </div>
+
+    <div class="card">
+      <h2>Por zona</h2>
+      <table>
+        <thead><tr><th>Zona</th><th>Portas</th><th>Vendas</th><th>€</th></tr></thead>
+        <tbody id="tbodyZonas"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Backup</h2>
+      <p class="note">Domingo à noite: exporta e guarda o ficheiro. É o teu seguro.</p>
+      <div class="row">
+        <button class="btn ghost mini" id="btExport">⬇ Exportar dados</button>
+        <button class="btn ghost mini" id="btImport">⬆ Importar</button>
+        <input type="file" id="fileImport" accept=".json" class="hide">
+        <button class="btn danger mini" id="btApagar">Apagar tudo</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav>
+  <button data-tab="registar" class="on"><span class="i">✍️</span>Registar</button>
+  <button data-tab="zonas"><span class="i">🗺️</span>Zonas</button>
+  <button data-tab="guiao"><span class="i">💬</span>Guião</button>
+  <button data-tab="dados"><span class="i">📊</span>Dados</button>
+</nav>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+"use strict";
+/* ───────── zonas (ids z1–z8 iguais à v1 — os teus registos antigos continuam válidos) ───────── */
+const ZONAS = [
+  {id:"z1", n:1, nome:"Arroios + Anjos + Intendente",
+    ruas:["Av. Almirante Reis — lado par (Intendente→Chile)","Av. Almirante Reis — lado ímpar","Largo do Intendente","R. dos Anjos","R. Maria da Fonte","R. do Forno do Tijolo","R. de Arroios","Praça do Chile + Mercado de Arroios"],
+    poly:[[38.7196,-9.1378],[38.7196,-9.1327],[38.7252,-9.1305],[38.7312,-9.1308],[38.7316,-9.1356],[38.7250,-9.1382]]},
+  {id:"z2", n:2, nome:"Baixa + Rossio",
+    ruas:["R. dos Fanqueiros","R. da Prata","R. dos Correeiros","R. de S. Nicolau","R. da Conceição","R. de Santa Justa","Praça da Figueira","R. das Portas de Santo Antão"],
+    poly:[[38.7076,-9.1418],[38.7078,-9.1352],[38.7148,-9.1352],[38.7180,-9.1408],[38.7148,-9.1432]]},
+  {id:"z3", n:3, nome:"Martim Moniz + Mouraria",
+    ruas:["Praça Martim Moniz","R. da Palma","R. do Benformoso","R. dos Cavaleiros","R. da Mouraria","R. Barros Queirós"],
+    poly:[[38.7150,-9.1382],[38.7150,-9.1330],[38.7186,-9.1305],[38.7208,-9.1332],[38.7186,-9.1378]]},
+  {id:"z4", n:4, nome:"Areeiro + Av. de Roma (sul)",
+    ruas:["Praça Sá Carneiro (Areeiro)","Av. Guerra Junqueiro","Av. de Roma — troço sul","Av. João XXI","Praça de Londres"],
+    poly:[[38.7352,-9.1362],[38.7356,-9.1308],[38.7432,-9.1310],[38.7430,-9.1445],[38.7392,-9.1445],[38.7378,-9.1362]]},
+  {id:"z5", n:5, nome:"Alvalade",
+    ruas:["Av. da Igreja","Av. de Roma — troço norte","Praça de Alvalade","Mercado de Alvalade + à volta"],
+    poly:[[38.7440,-9.1382],[38.7442,-9.1330],[38.7540,-9.1332],[38.7546,-9.1492],[38.7502,-9.1492],[38.7488,-9.1382]]},
+  {id:"z6", n:6, nome:"Campo de Ourique",
+    ruas:["R. Ferreira Borges","R. Coelho da Rocha","R. Tomás da Anunciação","R. 4 de Infantaria","R. Saraiva de Carvalho","Mercado de Campo de Ourique + à volta"],
+    poly:[[38.7152,-9.1692],[38.7155,-9.1598],[38.7218,-9.1598],[38.7215,-9.1692]]},
+  {id:"z7", n:7, nome:"São Bento + Estrela",
+    ruas:["R. de S. Bento (toda)","Praça das Flores","R. dos Poiais de S. Bento","Calçada da Estrela"],
+    poly:[[38.7085,-9.1562],[38.7092,-9.1492],[38.7152,-9.1505],[38.7156,-9.1562],[38.7140,-9.1652],[38.7104,-9.1650]]},
+  {id:"z8", n:8, nome:"Santos + Cais do Sodré",
+    ruas:["R. da Esperança","R. do Poço dos Negros","R. de S. Paulo","R. da Boavista","Av. D. Carlos I","Mercado da Ribeira (à volta)"],
+    poly:[[38.7040,-9.1582],[38.7046,-9.1428],[38.7086,-9.1420],[38.7092,-9.1562]]},
+  {id:"z9", n:9, nome:"Bairro Alto + Chiado", nota:"Portas abrem tarde — varrer só 17h–18h30",
+    ruas:["R. Garrett","R. do Carmo","R. da Misericórdia","R. da Atalaia","R. do Norte","R. do Diário de Notícias"],
+    poly:[[38.7096,-9.1452],[38.7100,-9.1404],[38.7126,-9.1404],[38.7150,-9.1440],[38.7146,-9.1476],[38.7110,-9.1476]]},
+  {id:"z10", n:10, nome:"Graça",
+    ruas:["R. da Graça","Largo da Graça","R. dos Sapadores"],
+    poly:[[38.7158,-9.1310],[38.7162,-9.1248],[38.7218,-9.1252],[38.7222,-9.1312]]},
+  {id:"z11", n:11, nome:"Saldanha",
+    ruas:["Av. da República (sul)","Av. Duque de Ávila","Av. Defensores de Chaves"],
+    poly:[[38.7308,-9.1482],[38.7310,-9.1418],[38.7376,-9.1420],[38.7376,-9.1482]]},
+  {id:"z12", n:12, nome:"Alcântara",
+    ruas:["Largo do Calvário","R. 1.º de Maio","R. dos Lusíadas"],
+    poly:[[38.7012,-9.1818],[38.7018,-9.1752],[38.7072,-9.1752],[38.7072,-9.1818]]},
+  {id:"z13", n:13, nome:"Benfica",
+    ruas:["Estrada de Benfica — Fonte Nova → Portas de Benfica","Estrada de Benfica — resto"],
+    poly:[[38.7418,-9.1885],[38.7440,-9.1875],[38.7518,-9.2035],[38.7495,-9.2062]]}
+];
+const TIPOS = ["🍽 Restauração","☕ Café/Pastelaria","💈 Salão/Barbearia","🛍 Loja","🔧 Serviços","📦 Outro"];
+const RES = [
+  {id:"venda", txt:"✅ Vendeu", cls:"ok"},
+  {id:"voltar", txt:"🔁 Voltar", cls:"warn"},
+  {id:"nao", txt:"❌ Não", cls:"bad"},
+  {id:"fech", txt:"🚪 Fechado/Férias", cls:"off"}
+];
+const PRECOS = [49,45,40,79];
+const PAGS = ["MB Way","Dinheiro"];
+
+/* ───────── GUIÃO v3 — falado, pela ordem da conversa ─────────
+   Argumentos integrados no momento em que se dizem (não numa lista à parte).
+   Números verificados: BrightLocal 2026, Uberall (64 mil negócios), política do Google. */
+const GUIAO = [
+
+  {id:"g1", fase:"Introdução", t:"Os primeiros 30 segundos", body:`
+    <p class="dica">Entra devagar, sorri, olha nos olhos. Não comeces a falar do produto — pede 30 segundos e faz uma pergunta.</p>
+    <div class="fala">"Boa tarde. Chamo-me João, ando aqui pela zona. Dá-me 30 segundos? Prometo que não o prendo."</div>
+    <p class="beat">↳ espera pelo sim. Se ele disser que sim, já te está a ouvir.</p>
+    <div class="fala">"Só uma pergunta: quando alguém pega no telemóvel e escreve 'restaurante aqui perto', o senhor sabe se aparece à frente ou atrás dos outros aqui da rua?"</div>
+    <p class="dica"><b>Conforme a porta, entra assim:</b></p>
+    <div class="obj"><b>Casa cheia</b>Diz o óbvio primeiro, cai bem: "Vejo que tem sempre gente, isso é bom sinal. Diga-me só uma coisa…"</div>
+    <div class="obj"><b>Casa vazia</b>"Apanhei-o num bom momento? São 30 segundos."</div>
+    <div class="obj"><b>Já está a abanar a cabeça</b>Tira-lhe o medo antes de ele o dizer: "Não venho vender nada com mensalidade, fique descansado. É uma pergunta e vou-me embora."</div>
+    <div class="stop">O dono não está? Não vendes ao empregado — nunca. Perguntas a que horas ele costuma cá estar, registas «Voltar» com a hora, e voltas à hora certa. Quem aparece à hora combinada fecha muito mais.</div>`},
+
+  {id:"g2", fase:"Desenvolvimento", t:"A pergunta que abre a conversa", body:`
+    <p class="dica">Faz a pergunta e cala-te. A seguir a uma pergunta destas, quem fala primeiro perde. Deixa-o desabafar — é aí que ele te diz onde lhe dói.</p>
+    <div class="fala">"Quantas avaliações é que lhe deixam no Google, por semana?"</div>
+    <p class="beat">↳ a resposta é quase sempre "poucas", "sei lá" ou "nenhumas".</p>
+    <div class="fala">"E clientes contentes tem todos os dias, certo?"</div>
+    <p class="beat">↳ deixa-o dizer que sim. A partir daqui é ele que está a concordar contigo.</p>
+    <div class="fala">"Pois. Então o problema não é o serviço que faz. É que a pessoa sai satisfeita, vai à vida dela e nunca mais se lembra."</div>
+    <p class="dica">É aqui, e só aqui, que entra o argumento. Escolhe em baixo.</p>`},
+
+  {id:"g3", fase:"Desenvolvimento", t:"O argumento — escolhe um", body:`
+    <p class="dica">Um argumento bem dito vale mais que cinco atirados à pressa. Toca no que fizer sentido <b>para aquela porta</b> e usa só esse. Os números são reais, mas diz-os como quem conta uma coisa, não como quem lê um relatório.</p>`,
+   args:[
+     {id:"a1", tag:"Ninguém pede — serve para quase toda a gente",
+      fala:"A maior parte das pessoas até deixa avaliação, se lhe pedirem. O problema é que ninguém pede. E estar a pedir na cara do cliente, a meio do serviço, é chato para os dois. A placa pede por si, sem incomodar ninguém.",
+      src:"BrightLocal 2026 — quando lhes pedem diretamente, 83% deixam avaliação"},
+     {id:"a2", tag:"As estrelas decidem antes de entrar",
+      fala:"Hoje as pessoas escolhem pelas estrelas antes sequer de entrar na porta. Quem está abaixo das quatro, a maioria nem considera. É duro, mas é o que é.",
+      src:"BrightLocal 2026 — 68% só consideram negócios a partir de 4 estrelas"},
+     {id:"a3", tag:"Uma décima já dá dinheiro — para quem já tem boa nota",
+      fala:"O senhor já tem boa nota, o que lhe falta é volume. Só de subir uma décima na média, houve um estudo com 64 mil negócios que viu as visitas subirem até 25%. Uma décima. Isso são duas ou três mesas por semana.",
+      src:"Uberall, 64 mil localizações"},
+     {id:"a4", tag:"As antigas não contam — para quem diz que já tem",
+      fala:"Repare no que o senhor faz quando vê um sítio: olha logo para a data da última avaliação. Há gente que só confia se for das últimas duas semanas. Ter duzentas de 2019 não o safa — o que conta é entrarem sempre.",
+      src:"BrightLocal — cerca de 1 em cada 4 só valoriza avaliações das últimas 2 semanas"},
+     {id:"a5", tag:"Agora também é a IA que lê — donos mais novos",
+      fala:"E já nem é só o Google. Muita gente pergunta ao ChatGPT onde é que se come bem aqui perto — e ele vai buscar as avaliações do Google. Quem não as tem, para ele não existe.",
+      src:"BrightLocal 2026 — 45% já usam IA para procurar negócios locais"},
+     {id:"a6", tag:"O vizinho — pica o brio, usar com jeito",
+      fala:"O café aqui em baixo não tem clientes melhores que os seus. Tem é alguém a pedir-lhes a avaliação. É só isso que vos separa.",
+      src:""}
+   ]},
+
+  {id:"g4", fase:"Desenvolvimento", t:"A demo — a placa na mão dele", body:`
+    <p class="dica">Não expliques. Dá-lhe a placa e deixa-o experimentar <b>com o telemóvel dele</b>. Esta parte vende sozinha — a tua única função é estar calado.</p>
+    <div class="fala">"Pegue aqui. Encoste ao telemóvel… está a ver? Abriu."</div>
+    <p class="beat">↳ dois segundos de silêncio. Deixa-o olhar.</p>
+    <div class="fala">"Na sua, abre a página do seu negócio. Não é preciso instalar nada, não há código para apontar, não há palavra-passe. Encosta e escreve."</div>
+    <div class="stop">Se ele sorrir ou disser "ah, isso é fixe" — pára de falar do produto. Está vendido. Vai direto ao preço.</div>`},
+
+  {id:"g5", fase:"Fecho", t:"O preço e o fecho", body:`
+    <p class="dica">Diz o preço com naturalidade, sem pedir desculpa e sem enfeitar. E cala-te outra vez.</p>
+    <div class="fala">"São 49 euros, uma vez. Não há mensalidade nenhuma, a placa fica sua. Programo já com o nome da casa?"</div>
+    <p class="beat">↳ se hesitar, e só se hesitar:</p>
+    <div class="fala">"Se fecharmos agora fica em 45 — é que hoje só estou nesta zona."</div>
+    <p><b>Chão: 40€.</b> Nunca abaixo disso. O combo Instagram (79€) só se fala <b>depois</b> do sim, nunca antes.</p>
+    <div class="stop">Máximo 5 a 7 minutos por porta. Se passar disso, marca hora para voltar e segue — a rua tem mais portas e o dia acaba.</div>`},
+
+  {id:"g6", fase:"Fecho", t:"Objeções — pergunta primeiro, responde depois", body:`
+    <p class="dica">Não te atires logo à defesa. A objeção que ele diz muitas vezes não é a verdadeira. Devolve uma pergunta, ouve o que ele responde, e só depois responde <b>àquilo</b>.</p>
+    <div class="obj"><b>"É caro."</b><span class="perg">"Caro em relação a quê?"</span>"Isto é uma vez na vida, não é mensalidade. Se lhe trouxer uma mesa a mais, já se pagou."</div>
+    <div class="obj"><b>"Já tenho avaliações."</b><span class="perg">"E estão a entrar esta semana?"</span>"É que o que conta é serem recentes. Muita gente nem olha para as antigas."</div>
+    <div class="obj"><b>"Um QR code é grátis."</b><span class="perg">"E o seu está a dar quantas por mês?"</span>"O código obriga a abrir a câmara, apontar, esperar. E aquele papelinho plastificado ao pé da caixa ninguém vê. Isto é encostar e já está."</div>
+    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia — passo cá antes de ir embora. Fica nos 45."</div>
+    <div class="obj"><b>"Tenho de falar com o meu sócio / a minha mulher."</b><span class="perg">"Faz todo o sentido. O que é que ele ia querer saber?"</span>Responde a isso já, ali. "Olhe, volto quinta às três e meia e mostro aos dois." — hora exata, e cumpre.</div>
+    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em qualquer telemóvel dos últimos anos. E basta um em cada dez usar — são avaliações que hoje não tem."</div>
+    <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"Quem sai zangado escreve à mesma, esse encontra o caminho sozinho. Isto é para os contentes, que são a maioria e são os que se esquecem. Com mais avaliações, a média sobe e uma má dilui-se."</div>
+    <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos — a placa está lá para toda a gente, igual."</div>
+    <div class="obj"><b>"Agora não tenho tempo."</b><span class="perg">"Dois minutos, cronometrados. Ou diga-me a que horas e eu volto."</span>E voltas à hora que ele disser.</div>
+    <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente — testa antes de pagar."</div>`},
+
+  {id:"g7", fase:"Depois do sim", t:"Programar a placa (2 a 3 min)", body:`
+    <p class="dica">Faz isto à frente dele. Ver o nome da casa dele aparecer no ecrã é metade da confiança.</p>
+    <ol>
+      <li>Place ID Finder → escrever o nome do negócio</li>
+      <li>Colar o ID em <b>…writereview?placeid=</b></li>
+      <li><b>Testar no browser</b> — é mesmo este negócio? Confirmar com o dono, a olhar para o ecrã</li>
+      <li>NFC Tools → Escrever</li>
+      <li>Encostar duas vezes a confirmar</li>
+      <li><b>Só depois bloquear o chip — isto não tem volta</b></li>
+    </ol>`},
+
+  {id:"g8", fase:"Depois do sim", t:"Receber", body:`
+    <p>MB Way ou dinheiro — trocos preparados de manhã. <b>Fatura-recibo sempre</b>, mesmo em dinheiro (isenção do art. 53.º).</p>`},
+
+  {id:"g9", fase:"Depois do sim", t:"Antes de sair da porta", body:`
+    <p>Placa junto à caixa ou ao balcão, onde o cliente pára. E <b>regista na app antes de sair da porta</b> — se deixares para depois, esqueces.</p>
+    <div class="fala">"Já agora: conhece aqui alguém na rua a quem isto desse jeito? Digo que vou da sua parte."</div>
+    <p class="dica">A porta seguinte com o nome dele à frente é a mais fácil do dia. Aponta o nome na nota do registo.</p>`}
+];
+
+/* ───────── storage (mesma chave da v1 — dados antigos preservados) ───────── */
+let persist = true;
+const KEY = "placas-rua-v1";
+const DEFAULTS = { v:3, registos:[], feitas:{}, zonaAtiva:null, teste:null, ruas:{}, args:[] };
+function loadState(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw) return Object.assign({}, DEFAULTS, JSON.parse(raw));
+  }catch(e){ persist = false; }
+  return null;
+}
+function saveState(){
+  if(!persist){ return; }
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ persist = false; document.getElementById("aviso").style.display = "block"; }
+}
+let state = loadState() || Object.assign({}, DEFAULTS);
+try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); }
+catch(e){ persist = false; }
+if(!persist) document.getElementById("aviso").style.display = "block";
+
+function zonaDefault(){ return (ZONAS.find(z => !state.feitas[z.id]) || ZONAS[0]).id; }
+if(!state.zonaAtiva) state.zonaAtiva = zonaDefault();
+if(!state.ruas) state.ruas = {};
+if(!Array.isArray(state.args)) state.args = [];
+
+/* ───────── helpers ───────── */
+const $ = id => document.getElementById(id);
+const esc = s => String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur = n => "€" + (n||0);
+const zPor = id => ZONAS.find(z => z.id === id);
+const zCurta = id => { const z = zPor(id); return z ? ("Z"+z.n+" · "+z.nome.split("+")[0].trim()) : "—"; };
+let toastT = null;
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"), 1800); }
+const hojeISO = () => { const h = new Date(); return h.getFullYear()+"-"+String(h.getMonth()+1).padStart(2,"0")+"-"+String(h.getDate()).padStart(2,"0"); };
+
+/* ───────── chips ───────── */
+function makeChips(elId, items){
+  const el = $(elId); el.innerHTML = "";
+  items.forEach(it => {
+    const isObj = typeof it === "object";
+    const c = document.createElement("button");
+    c.type = "button";
+    c.className = "chip" + (isObj && it.cls ? " "+it.cls : "");
+    c.textContent = isObj ? it.txt : (typeof it === "number" ? "€"+it : it);
+    c.dataset.val = isObj ? it.id : it;
+    c.onclick = () => {
+      el.querySelectorAll(".chip").forEach(x => x.classList.remove("on"));
+      c.classList.add("on");
+      if(elId === "fRes"){
+        $("grpVenda").classList.toggle("hide", c.dataset.val !== "venda");
+        $("grpVoltar").classList.toggle("hide", c.dataset.val !== "voltar");
+        if(c.dataset.val === "venda" && !sel("fPreco")){
+          const first = $("fPreco").querySelector('[data-val="49"]'); if(first) first.classList.add("on");
+        }
+      }
+    };
+    el.appendChild(c);
+  });
+}
+const sel = elId => { const c = $(elId).querySelector(".chip.on"); return c ? c.dataset.val : null; };
+makeChips("fTipo", TIPOS);
+makeChips("fRes", RES);
+makeChips("fPreco", PRECOS);
+makeChips("fPag", PAGS);
+
+function renderSelZona(){
+  const s = $("selZona"); s.innerHTML = "";
+  ZONAS.forEach(z => {
+    const o = document.createElement("option");
+    o.value = z.id; o.textContent = "Z"+z.n+" · "+z.nome + (state.feitas[z.id] ? " ✓" : "");
+    if(z.id === state.zonaAtiva) o.selected = true;
+    s.appendChild(o);
+  });
+  $("hZona").textContent = zCurta(state.zonaAtiva);
+}
+$("selZona").onchange = e => { state.zonaAtiva = e.target.value; saveState(); renderTudo(); };
+
+/* ───────── guardar registo ───────── */
+$("btGuardar").onclick = () => {
+  const nome = $("fNome").value.trim();
+  const tipo = sel("fTipo"), res = sel("fRes");
+  if(!nome){ toast("Falta o nome do negócio"); $("fNome").focus(); return; }
+  if(!res){ toast("Escolhe o resultado"); return; }
+  state.registos.push({
+    id: Date.now() + "" + Math.floor(Math.random()*999),
+    ts: new Date().toISOString(),
+    dia: hojeISO(),
+    zona: state.zonaAtiva,
+    nome, tipo: tipo || "📦 Outro", res,
+    preco: res === "venda" ? Number(sel("fPreco") || 49) : 0,
+    pag: res === "venda" ? (sel("fPag") || "") : "",
+    quando: res === "voltar" ? $("fQuando").value.trim() : "",
+    nota: $("fNota").value.trim(),
+    resolvido: false
+  });
+  saveState();
+  ["fNome","fQuando","fNota"].forEach(i => $(i).value = "");
+  document.querySelectorAll("#fRes .chip, #fPreco .chip, #fPag .chip").forEach(c => c.classList.remove("on"));
+  $("grpVenda").classList.add("hide"); $("grpVoltar").classList.add("hide");
+  toast(res === "venda" ? "💰 Venda registada!" : "Porta registada");
+  renderTudo();
+};
+
+/* ───────── hoje ───────── */
+const BADGE = { venda:["venda","VENDA"], voltar:["voltar","VOLTAR"], nao:["nao","NÃO"], fech:["fech","FECHADO"] };
+function renderHoje(){
+  const hoje = state.registos.filter(r => r.dia === hojeISO()).sort((a,b) => b.ts.localeCompare(a.ts));
+  $("tHoje").textContent = hoje.length;
+  const vendas = hoje.filter(r => r.res === "venda");
+  $("tVendas").textContent = vendas.length;
+  $("tEuros").textContent = eur(vendas.reduce((s,r) => s+r.preco, 0));
+  const el = $("listaHoje");
+  if(!hoje.length){ el.innerHTML = '<p class="note">Ainda sem registos hoje.</p>'; return; }
+  el.innerHTML = hoje.map(r => {
+    const h = new Date(r.ts); const hh = String(h.getHours()).padStart(2,"0")+":"+String(h.getMinutes()).padStart(2,"0");
+    const [cls, txt] = BADGE[r.res] || ["fech", r.res];
+    const extra = r.res === "venda" ? " · "+eur(r.preco)+(r.pag ? " "+r.pag : "") : (r.quando ? " · "+esc(r.quando) : "");
+    return '<div class="reg"><span class="h">'+hh+'</span><span class="n"><b>'+esc(r.nome)+'</b><small>'+esc(r.tipo)+extra+'</small></span><span class="badge '+cls+'">'+txt+'</span><button class="x" data-del="'+r.id+'">✕</button></div>';
+  }).join("");
+  el.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+    if(b.classList.contains("confirm")){
+      state.registos = state.registos.filter(r => r.id !== b.dataset.del);
+      saveState(); renderTudo();
+    } else { b.classList.add("confirm"); b.textContent = "apagar?"; setTimeout(()=>{ b.classList.remove("confirm"); b.textContent = "✕"; }, 2500); }
+  });
+}
+
+/* ───────── zonas ───────── */
+function statsZona(id){
+  const rs = state.registos.filter(r => r.zona === id);
+  return { portas: rs.length, vendas: rs.filter(r=>r.res==="venda").length,
+    euros: rs.filter(r=>r.res==="venda").reduce((s,r)=>s+r.preco,0),
+    voltar: rs.filter(r=>r.res==="voltar" && !r.resolvido).length };
+}
+function ruasFeitas(z){
+  const m = state.ruas[z.id] || {};
+  return z.ruas.reduce((s,_,i) => s + (m[i] ? 1 : 0), 0);
+}
+function renderZonas(){
+  const abertas = {};
+  document.querySelectorAll("#listaZonas details.ruas").forEach(d => { if(d.open) abertas[d.dataset.z] = true; });
+  const el = $("listaZonas");
+  el.innerHTML = ZONAS.map(z => {
+    const st = statsZona(z.id);
+    const feita = !!state.feitas[z.id], ativa = z.id === state.zonaAtiva;
+    const rf = ruasFeitas(z), rt = z.ruas.length;
+    const estado = feita ? '<span class="estado done">FEITA ✓</span>' : (ativa ? '<span class="estado curso">EM CURSO</span>' : '<span class="estado futuro">POR FAZER</span>');
+    const ruasHtml = z.ruas.map((rua,i) => {
+      const on = !!(state.ruas[z.id] && state.ruas[z.id][i]);
+      return '<label class="rua'+(on?' done':'')+'"><input type="checkbox" data-z="'+z.id+'" data-i="'+i+'"'+(on?' checked':'')+'><span>'+esc(rua)+'</span></label>';
+    }).join("");
+    return '<div class="zcard'+(ativa?' ativa':'')+(feita?' feita':'')+'">'+estado+
+      '<div class="sem">Zona '+z.n+'</div>'+
+      '<div class="nome">'+esc(z.nome)+'</div>'+
+      (z.nota ? '<div class="nota">⏰ '+esc(z.nota)+'</div>' : '')+
+      '<div class="st">'+st.portas+' portas · '+st.vendas+' vendas ('+eur(st.euros)+') · '+st.voltar+' «Voltar»'+(rf===rt && rt>0 ? ' · <b style="color:var(--ok)">ruas todas varridas ✓</b>' : '')+'</div>'+
+      '<details class="ruas" data-z="'+z.id+'"'+(abertas[z.id]?' open':'')+'><summary>Ruas '+rf+'/'+rt+' ▾</summary>'+ruasHtml+'</details>'+
+      '<div class="zbtns">'+
+        (ativa ? '' : '<button class="btn ghost mini" data-ativar="'+z.id+'">Ativar</button>')+
+        '<button class="btn ghost mini" data-feita="'+z.id+'" style="color:var(--ok);border-color:var(--ok)">'+(feita?'Reabrir':'Marcar feita ✓')+'</button>'+
+      '</div></div>';
+  }).join("");
+  el.querySelectorAll("[data-ativar]").forEach(b => b.onclick = () => { state.zonaAtiva = b.dataset.ativar; saveState(); renderTudo(); toast("Zona ativa: "+zCurta(state.zonaAtiva)); });
+  el.querySelectorAll("[data-feita]").forEach(b => b.onclick = () => {
+    const id = b.dataset.feita;
+    if(state.feitas[id]) delete state.feitas[id]; else state.feitas[id] = true;
+    if(state.zonaAtiva === id && state.feitas[id]) state.zonaAtiva = zonaDefault();
+    saveState(); renderTudo();
+  });
+  el.querySelectorAll('.rua input').forEach(c => c.onchange = () => {
+    const z = c.dataset.z, i = c.dataset.i;
+    if(!state.ruas[z]) state.ruas[z] = {};
+    if(c.checked) state.ruas[z][i] = true; else delete state.ruas[z][i];
+    saveState(); renderZonas(); pintarMapa();
+  });
+}
+
+/* ───────── mapa ───────── */
+let map = null, polys = {};
+function corZona(z){
+  if(state.feitas[z.id]) return "#188038";
+  if(z.id === state.zonaAtiva) return "#0B57D0";
+  return "#9CA3AF";
+}
+function pintarMapa(){
+  if(!map) return;
+  ZONAS.forEach(z => {
+    const p = polys[z.id]; if(!p) return;
+    const c = corZona(z);
+    p.setStyle({ color:c, fillColor:c, fillOpacity: state.feitas[z.id] ? .40 : (z.id === state.zonaAtiva ? .35 : .18), weight:2 });
+    const st = statsZona(z.id);
+    const estado = state.feitas[z.id] ? "FEITA ✓" : (z.id === state.zonaAtiva ? "EM CURSO" : "por fazer");
+    p.bindPopup("<b>Zona "+z.n+" — "+esc(z.nome)+"</b><br>"+estado+" · "+st.portas+" portas · "+st.vendas+" vendas<br><small>Ruas: "+ruasFeitas(z)+"/"+z.ruas.length+" · ativa no cartão em baixo</small>");
+  });
+}
+function tentarMapa(){
+  if(map || typeof L === "undefined"){
+    $("mapFallback").style.display = (typeof L === "undefined") ? "block" : "none";
+    $("map").style.display = (typeof L === "undefined") ? "none" : "block";
+    if(map) setTimeout(()=>map.invalidateSize(), 60);
+    return;
+  }
+  try{
+    map = L.map("map", { scrollWheelZoom:false });
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      { attribution:"© OpenStreetMap", maxZoom:19 }).addTo(map);
+    const grupo = [];
+    ZONAS.forEach(z => {
+      polys[z.id] = L.polygon(z.poly, { weight:2 }).addTo(map);
+      grupo.push(polys[z.id]);
+    });
+    map.fitBounds(L.featureGroup(grupo).getBounds().pad(0.08));
+    pintarMapa();
+    $("mapFallback").style.display = "none"; $("map").style.display = "block";
+  }catch(e){
+    $("map").style.display = "none"; $("mapFallback").style.display = "block";
+  }
+}
+
+/* ───────── guião ───────── */
+function argPorId(id){
+  for(let i=0;i<GUIAO.length;i++){
+    const g = GUIAO[i];
+    if(!g.args) continue;
+    for(let j=0;j<g.args.length;j++) if(g.args[j].id === id) return g.args[j];
+  }
+  return null;
+}
+function renderArgs(g){
+  if(!g.args || !g.args.length) return "";
+  const cards = g.args.map(a => {
+    const on = state.args.indexOf(a.id) >= 0;
+    return '<div class="argc'+(on?' on':'')+'" data-arg="'+a.id+'">'+
+      '<div class="argh">'+esc(a.tag)+'<span class="argp">'+(on?'✓ escolhido':'escolher')+'</span></div>'+
+      '<div class="argf">"'+esc(a.fala)+'"</div>'+
+      (a.src ? '<div class="argsrc">'+esc(a.src)+'</div>' : '')+
+    '</div>';
+  }).join("");
+  return '<div class="argw"><div class="argt">👉 Toca para escolher. Um chega — dois no máximo.</div>'+cards+'</div>';
+}
+function renderArmas(){
+  const card = $("armasCard");
+  if(!state.args.length){ card.style.display = "none"; return; }
+  card.style.display = "block";
+  $("armasLista").innerHTML = state.args.map(id => {
+    const a = argPorId(id);
+    return a ? '<span class="armas-chip">'+esc(a.tag.split("—")[0].trim())+'</span>' : "";
+  }).join("") + (state.args.length > 2 ? '<p class="note" style="color:var(--warn)">Escolheste '+state.args.length+'. Na porta usa só um ou dois — mais que isso soa a discurso.</p>' : "");
+}
+function renderGuiao(){
+  const abertas = {};
+  document.querySelectorAll("#listaGuiao details.g").forEach(d => { if(d.open) abertas[d.dataset.g] = true; });
+  const el = $("listaGuiao");
+  const nenhumaAberta = !Object.keys(abertas).length;
+  el.innerHTML = GUIAO.map((g,i) => {
+    return '<details class="g" data-g="'+g.id+'"'+(abertas[g.id] || (i===0 && nenhumaAberta) ? ' open' : '')+'>'+
+      '<summary><span class="num">'+(i+1)+'</span><span class="stit"><span class="fase">'+esc(g.fase)+'</span>'+esc(g.t)+'</span>'+
+      (state.teste===g.id?'<span class="teste-badge">EM TESTE</span>':'')+'</summary>'+
+      '<div class="gbody">'+g.body+renderArgs(g)+
+      '<button class="tbtn'+(state.teste===g.id?' on':'')+'" data-teste="'+g.id+'">'+(state.teste===g.id?'Tirar de teste':'Pôr esta parte EM TESTE')+'</button>'+
+      '</div></details>';
+  }).join("");
+  el.querySelectorAll("[data-teste]").forEach(b => b.onclick = () => {
+    state.teste = state.teste === b.dataset.teste ? null : b.dataset.teste;
+    saveState(); renderGuiao();
+  });
+  el.querySelectorAll("[data-arg]").forEach(c => c.onclick = () => {
+    const id = c.dataset.arg, k = state.args.indexOf(id);
+    if(k >= 0) state.args.splice(k,1); else state.args.push(id);
+    saveState(); renderGuiao(); renderArmas();
+  });
+  renderArmas();
+}
+$("btLimparArgs").onclick = () => { state.args = []; saveState(); renderGuiao(); renderArmas(); };
+
+/* ───────── dados ───────── */
+function renderDados(){
+  const rs = state.registos;
+  const vendas = rs.filter(r => r.res === "venda");
+  $("dPortas").textContent = rs.length;
+  $("dVendas").textContent = vendas.length;
+  $("dEuros").textContent = eur(vendas.reduce((s,r)=>s+r.preco,0));
+  const abordadas = rs.filter(r => r.res !== "fech").length;
+  $("dConv").textContent = abordadas ? Math.round(100*vendas.length/abordadas)+"%" : "—";
+
+  const pend = rs.filter(r => r.res === "voltar" && !r.resolvido).sort((a,b)=>a.ts.localeCompare(b.ts));
+  $("listaVoltar").innerHTML = pend.length ? pend.map(r =>
+    '<div class="reg"><span class="n"><b>'+esc(r.nome)+'</b><small>'+esc(zCurta(r.zona))+(r.quando?' · '+esc(r.quando):'')+'</small></span>'+
+    '<button class="btn ghost mini" data-ret="'+r.id+'">Retorno →</button></div>').join("")
+    : '<p class="note">Nenhum pendente. 👌</p>';
+  $("listaVoltar").querySelectorAll("[data-ret]").forEach(b => b.onclick = () => {
+    const r = state.registos.find(x => x.id === b.dataset.ret);
+    if(!r) return;
+    r.resolvido = true;
+    state.zonaAtiva = r.zona; saveState();
+    showTab("registar");
+    $("fNome").value = r.nome;
+    document.querySelectorAll("#fTipo .chip").forEach(c => c.classList.toggle("on", c.dataset.val === r.tipo));
+    renderTudo();
+    toast("Retorno: regista o resultado");
+  });
+
+  $("tbodyZonas").innerHTML = ZONAS.map(z => {
+    const st = statsZona(z.id);
+    if(!st.portas && !state.feitas[z.id]) return "";
+    return "<tr><td>"+(state.feitas[z.id]?"✓ ":"")+esc(z.nome)+"</td><td>"+st.portas+"</td><td>"+st.vendas+"</td><td>"+st.euros+"</td></tr>";
+  }).join("") || '<tr><td colspan="4" class="note">Sem registos ainda.</td></tr>';
+}
+
+/* ───────── export / import / apagar ───────── */
+$("btExport").onclick = () => {
+  const blob = new Blob([JSON.stringify(state, null, 1)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "placas-backup-" + hojeISO() + ".json";
+  a.click(); URL.revokeObjectURL(a.href);
+  toast("Backup exportado ⬇");
+};
+$("btImport").onclick = () => $("fileImport").click();
+$("fileImport").onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    try{
+      const d = JSON.parse(rd.result);
+      if(!d || !Array.isArray(d.registos)) throw 0;
+      state = Object.assign({}, DEFAULTS, d);
+      if(!state.zonaAtiva) state.zonaAtiva = zonaDefault();
+      if(!Array.isArray(state.args)) state.args = [];
+      saveState(); renderTudo(); pintarMapa(); toast("Dados importados ✓");
+    }catch(_){ toast("Ficheiro inválido"); }
+    e.target.value = "";
+  };
+  rd.readAsText(f);
+};
+let apagarArm = false;
+$("btApagar").onclick = () => {
+  if(!apagarArm){ apagarArm = true; $("btApagar").textContent = "Tens a certeza? Toca outra vez";
+    setTimeout(()=>{ apagarArm = false; $("btApagar").textContent = "Apagar tudo"; }, 3000); return; }
+  state = Object.assign({}, DEFAULTS, { zonaAtiva: null, args: [] });
+  state.zonaAtiva = zonaDefault();
+  saveState(); apagarArm = false; $("btApagar").textContent = "Apagar tudo";
+  renderTudo(); pintarMapa(); toast("Dados apagados");
+};
+
+/* ───────── tabs ───────── */
+function showTab(name){
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.id === "tab-"+name));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === name));
+  if(name === "zonas"){ tentarMapa(); if(map) setTimeout(()=>{ map.invalidateSize(); }, 60); }
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+
+/* ───────── boot ───────── */
+function renderTudo(){ renderSelZona(); renderHoje(); renderZonas(); renderDados(); pintarMapa(); }
+renderGuiao(); renderTudo(); saveState();
+
+/* ───────── funciona sem rede (quando aberta a partir do link) ───────── */
+if("serviceWorker" in navigator && location.protocol.indexOf("http") === 0){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
