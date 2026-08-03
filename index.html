@@ -839,6 +839,73 @@ if("serviceWorker" in navigator && location.protocol.indexOf("http") === 0){
     navigator.serviceWorker.register("sw.js").catch(function(){});
   });
 }
+
+/* ===== v5 — RASTO GPS: cada porta registada vira um pino no mapa ===== */
+let _pinos = [];
+const _CORPIN = { venda:"#188038", voltar:"#B45309", nao:"#B3261E", fech:"#5F6368" };
+
+function _pedirPos(cb){
+  if(!navigator.geolocation){ cb(null); return; }
+  navigator.geolocation.getCurrentPosition(
+    function(p){ cb({lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy)}); },
+    function(){ cb(null); },
+    {enableHighAccuracy:true, timeout:15000, maximumAge:60000}
+  );
+}
+
+function _marcarPosicao(rec){
+  if(!rec) return;
+  _pedirPos(function(p){
+    if(!p) return;
+    rec.lat = p.lat; rec.lng = p.lng; rec.acc = p.acc;
+    saveState(); _pintarPinos();
+  });
+}
+
+function _pintarPinos(){
+  if(typeof map === "undefined" || !map || typeof L === "undefined") return;
+  _pinos.forEach(function(p){ try{ map.removeLayer(p); }catch(e){} });
+  _pinos = [];
+  (state.registos||[]).filter(function(x){ return x.lat && x.lng; }).forEach(function(x){
+    var c = _CORPIN[x.res] || "#5F6368";
+    var mk = L.circleMarker([x.lat, x.lng], {radius:7, weight:2, color:"#fff", fillColor:c, fillOpacity:1});
+    mk.bindPopup("<b>" + esc(x.nome) + "</b><br>" + esc(x.tipo||"") + "<br>" + x.dia);
+    mk.addTo(map); _pinos.push(mk);
+  });
+}
+
+function _ondeEstou(){
+  toast("A procurar GPS...");
+  _pedirPos(function(p){
+    if(!p){ toast("Sem GPS — liga a localizacao"); return; }
+    if(map){
+      map.setView([p.lat, p.lng], 17);
+      L.circleMarker([p.lat, p.lng], {radius:9, weight:3, color:"#0B57D0", fillColor:"#0B57D0", fillOpacity:.25}).addTo(map);
+      toast("Estas aqui (±" + p.acc + " m)");
+    }
+  });
+}
+
+(function(){
+  var n = (state.registos||[]).length;
+  setInterval(function(){
+    var agora = (state.registos||[]).length;
+    if(agora > n){
+      var rec = state.registos[agora-1];
+      if(rec && !rec.lat) _marcarPosicao(rec);
+    }
+    n = agora;
+  }, 1200);
+  var cartao = document.getElementById("mapCard");
+  if(cartao){
+    var btn = document.createElement("button");
+    btn.textContent = "Onde estou";
+    btn.style.cssText = "position:absolute;z-index:900;right:10px;top:10px;background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:7px 11px;font-size:.78rem;font-weight:700;color:#0B57D0;cursor:pointer";
+    btn.onclick = _ondeEstou;
+    cartao.appendChild(btn);
+  }
+  setInterval(_pintarPinos, 4000);
+})();
 </script>
 </body>
 </html>
