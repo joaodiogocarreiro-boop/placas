@@ -117,6 +117,13 @@ if(alvo){
     <input type="text" id="nome" placeholder="ex.: Tasca do Zé" autocomplete="off">
     <button class="btn" id="ir">Gerar endereço da placa</button>
 
+    <div class="aviso hide" id="aviso-curto" style="margin-top:14px">
+      Esse é um <b>link de partilha</b> — abre a ficha do negócio, não a caixa de avaliação. Não serve para a placa.<br><br>
+      Cola-o aqui para ele te devolver o código <b>ChIJ…</b>:<br>
+      <a href="https://www.brightlocal.com/free-local-seo-tools/google-id-and-review-link-generator/" target="_blank" rel="noopener" style="color:var(--warn);font-weight:800;text-decoration:underline">abrir o gerador da BrightLocal ↗</a><br><br>
+      Depois volta aqui e cola o <b>ChIJ…</b> em cima.
+    </div>
+
     <div class="out" id="out">
       <div class="passo">1 · Testar primeiro</div>
       <button class="btn ghost" id="testar">Abrir e ver se é o negócio certo</button>
@@ -155,12 +162,20 @@ if(!alvo){
     if(c) return c[1];
     return "";
   }
+  const ENCURTADO = /(share\.google|maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)/i;
 
   $("ir").onclick = () => {
-    const bruto = $("pid").value;
+    const bruto = $("pid").value.trim();
+    if(!extrair(bruto) && ENCURTADO.test(bruto)){
+      $("out").classList.remove("on");
+      $("aviso-curto").classList.remove("hide");
+      $("aviso-curto").scrollIntoView({behavior:"smooth", block:"nearest"});
+      return;
+    }
+    $("aviso-curto").classList.add("hide");
     const codigo = extrair(bruto);
     if(!codigo){
-      alert("Não reconheci o código.\n\nCola o código que começa por ChIJ, ou um link do Maps que tenha place_id lá dentro.\n\nUm link maps.app.goo.gl encurtado não serve — tens de o abrir primeiro.");
+      alert("Não reconheci o código.\n\nPrecisas do código que começa por ChIJ.\n\nUsa o Place ID Finder ou o gerador da BrightLocal (links no fim da página).");
       return;
     }
     atual = location.origin + location.pathname.replace(/[^/]*$/, "") + "#" + codigo;
