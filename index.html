@@ -171,7 +171,9 @@
   .argc.on .argp{background:var(--accent); color:#fff}
   .argf{font-style:italic; margin-top:7px; font-size:.9rem; line-height:1.45}
   .argq{margin-top:6px; font-size:.78rem; color:var(--ink-2)}
-  .argsrc{margin-top:6px; font-size:.66rem; color:var(--ink-3)}
+  .argsrc{margin-top:7px; font-size:.68rem; color:var(--ink-3); line-height:1.5}
+  .vfonte{display:inline-block; margin-top:3px; color:var(--accent); font-weight:700;
+    text-decoration:underline; white-space:nowrap}
   .armas-chip{display:inline-block; background:var(--accent-soft); color:var(--accent); font-size:.76rem;
     font-weight:700; padding:6px 11px; border-radius:999px; margin:0 6px 6px 0}
 
@@ -493,23 +495,23 @@ const PITCH = [
    nota:`<b>Cala-te e deixa-o responder.</b> Quem diz o problema em voz alta passa a ser ele — e a resposta diz-te qual número usar a seguir.`},
 
   {id:"p5", rot:"A dimensão", txt:"E para lhe dar a dimensão: um estudo com 64 mil negócios viu que subir uma décima na média das estrelas dava até 25% mais visitas. Uma décima.",
-   nota:`Um número <b>só</b>. Escolhe em baixo o que encaixa na resposta dele.`,
+   nota:`Um número <b>só</b>. Escolhe em baixo o que encaixa na resposta dele.<br><br><b>Se ele duvidar</b> — "onde é que viu isso?" — não te justifiques: <b>"Quer ver? Está aqui."</b> e abres a fonte no telemóvel à frente dele. É aí que deixas de ser vendedor.`,
    args:[
      {id:"a1", tag:"Ninguém pede — serve para quase toda a gente",
       fala:"A maior parte das pessoas até deixa avaliação, se lhe pedirem. O problema é que ninguém pede. E estar a pedir na cara do cliente, a meio do serviço, é chato para os dois. A placa pede por si, sem incomodar ninguém.",
-      src:"BrightLocal 2026 — quando lhes pedem diretamente, 83% deixam avaliação"},
+      src:"BrightLocal 2026 — 83% de quem foi convidado a avaliar acabou por avaliar", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
      {id:"a2", tag:"As estrelas decidem antes de entrar",
       fala:"Hoje as pessoas escolhem pelas estrelas antes sequer de entrar na porta. Quem está abaixo das quatro, a maioria nem considera. É duro, mas é o que é.",
-      src:"BrightLocal 2026 — 68% só consideram negócios a partir de 4 estrelas"},
+      src:"BrightLocal 2026 — 68% só usam negócios com 4 estrelas ou mais (eram 55% em 2025)", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
      {id:"a3", tag:"Uma décima já dá dinheiro — para quem já tem boa nota",
       fala:"O senhor já tem boa nota, o que lhe falta é volume. Só de subir uma décima na média, houve um estudo com 64 mil negócios que viu as visitas subirem até 25%. Uma décima. Isso são duas ou três mesas por semana.",
-      src:"Uberall, 64 mil localizações"},
+      src:"Uberall 2019 — 64 mil localizações; de 3,5 para 3,7 estrelas: +120%", url:"https://uberall.com/en-us/company/press-releases/study-brick-and-mortar-businesses-small-increase-in-online-ratings-boosts-conversion-by-25-percent"},
      {id:"a4", tag:"As antigas não contam — para quem diz que já tem",
-      fala:"Repare no que o senhor faz quando vê um sítio: olha logo para a data da última avaliação. Há gente que só confia se for das últimas duas semanas. Ter duzentas de 2019 não o safa — o que conta é entrarem sempre.",
-      src:"BrightLocal — cerca de 1 em cada 4 só valoriza avaliações das últimas 2 semanas"},
+      fala:"Repare no que o senhor faz quando vê um sítio: olha logo para a data da última avaliação. Três em cada quatro pessoas só ligam às que foram escritas nos últimos três meses. Ter duzentas de 2019 não o safa — o que conta é entrarem sempre.",
+      src:"BrightLocal 2026 — 74% procuram avaliações escritas nos últimos 3 meses", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
      {id:"a5", tag:"Agora também é a IA que lê — donos mais novos",
       fala:"E já nem é só o Google. Muita gente pergunta ao ChatGPT onde é que se come bem aqui perto — e ele vai buscar as avaliações do Google. Quem não as tem, para ele não existe.",
-      src:"BrightLocal 2026 — 45% já usam IA para procurar negócios locais"},
+      src:"BrightLocal 2026 — o uso de IA subiu de 6% para 45% num ano", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
      {id:"a6", tag:"O vizinho — pica o brio, usar com jeito",
       fala:"O café aqui em baixo não tem clientes melhores que os seus. Tem é alguém a pedir-lhes a avaliação. É só isso que vos separa.",
       src:""}
@@ -1157,7 +1159,8 @@ function renderArgs(g){
     return '<div class="argc'+(on?' on':'')+'" data-arg="'+a.id+'">'+
       '<div class="argh">'+esc(a.tag)+'<span class="argp">'+(on?'✓ escolhido':'escolher')+'</span></div>'+
       '<div class="argf">"'+esc(a.fala)+'"</div>'+
-      (a.src ? '<div class="argsrc">'+esc(a.src)+'</div>' : '')+
+      (a.src ? '<div class="argsrc">'+esc(a.src)+
+        (a.url ? ' <a class="vfonte" href="'+a.url+'" target="_blank" rel="noopener">mostrar a fonte ↗</a>' : '')+'</div>' : '')+
     '</div>';
   }).join("");
   return '<div class="argw"><div class="argt">👉 Escolhe o que encaixa na resposta dele. Um chega.</div>'+cards+'</div>';
@@ -1210,7 +1213,8 @@ function renderGuiao(){
     if(state.frases) delete state.frases[b.dataset.repor];
     saveState(); renderGuiao(); renderCompleto(); toast("Frase reposta");
   });
-  $("listaPitch").querySelectorAll("[data-arg]").forEach(c => c.onclick = () => {
+  $("listaPitch").querySelectorAll("[data-arg]").forEach(c => c.onclick = ev => {
+    if(ev.target.closest("a")) return;
     const id = c.dataset.arg, k = state.args.indexOf(id);
     if(k >= 0) state.args.splice(k,1); else state.args.push(id);
     saveState(); renderGuiao();
