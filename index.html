@@ -136,6 +136,29 @@
   .tbtn{border:1px solid var(--warn); color:var(--warn); background:#fff; border-radius:999px; padding:6px 12px; font-size:.74rem; font-weight:700; cursor:pointer; margin-top:10px}
   .tbtn.on{background:var(--warn); color:#fff}
 
+  /* guião em peças */
+  .pcard{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:13px 14px; margin-bottom:10px}
+  .pcard.teste{border:1.5px solid var(--warn)}
+  .phead{display:flex; align-items:center; gap:9px; margin-bottom:9px}
+  .phead .num{background:var(--accent-soft); color:var(--accent); border-radius:8px; min-width:26px; height:26px;
+    display:inline-flex; align-items:center; justify-content:center; font-size:.8rem; flex:none; font-weight:700}
+  .phead .rot{font-weight:800; font-size:.95rem; flex:1; min-width:0}
+  .phead .tb{font-size:.62rem; background:var(--warn-soft); color:var(--warn); padding:3px 8px;
+    border-radius:999px; font-weight:800; letter-spacing:.4px; flex:none}
+  .fbox{width:100%; display:block; background:var(--accent-soft); border:1px solid var(--accent);
+    border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:10px 12px;
+    font-family:inherit; font-size:.95rem; line-height:1.45; font-style:italic; color:var(--ink);
+    resize:none; overflow:hidden}
+  .fbox:focus{outline:2px solid var(--accent); font-style:normal; background:#fff}
+  .pnota{font-size:.8rem; color:var(--ink-2); margin:9px 2px 0; line-height:1.45}
+  .pfoot{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center}
+  .mini2{border:1px solid var(--line); background:#fff; color:var(--ink-2); border-radius:999px;
+    padding:6px 11px; font-size:.72rem; font-weight:700; cursor:pointer; font-family:inherit}
+  .mini2.on{background:var(--warn); border-color:var(--warn); color:#fff}
+  .mini2.rep{color:var(--accent); border-color:var(--accent)}
+  .completo p{margin:0 0 11px; font-size:.95rem; line-height:1.5; font-style:italic; color:var(--ink)}
+  .completo .b{font-style:normal; color:var(--ink-3); font-size:.76rem; margin:-6px 0 12px 2px}
+
   /* argumentos escolhíveis */
   .argw{margin:12px 0 2px; border-top:1px dashed var(--line); padding-top:11px}
   .argt{font-size:.74rem; color:var(--ink-2); font-weight:700; margin-bottom:9px}
@@ -356,8 +379,22 @@
       <div id="armasLista"></div>
       <button class="btn ghost mini" id="btLimparArgs" style="margin-top:10px">Limpar</button>
     </div>
-    <p class="note">A conversa vai por esta ordem. Em cada momento tens as falas — e onde há argumentos para escolher, <b>toca só nos que vais usar</b>.</p>
-    <div id="listaGuiao"></div>
+
+    <p class="note">Cada frase é tua e podes mudá-la — toca no texto e escreve. Marca <b>EM TESTE</b> a que estiveres a experimentar, e ao fim de uns dias vê nos Dados se subiu.</p>
+
+    <div id="listaPitch"></div>
+
+    <div class="card completo">
+      <h2>O guião completo</h2>
+      <div id="guiaoCompleto"></div>
+      <button class="btn ghost mini" id="btCopiarGuiao">Copiar</button>
+    </div>
+
+    <details class="loc" style="margin-bottom:12px">
+      <summary><span class="lnome">O resto — objeções, programar, faturar</span><span class="lst">▾</span></summary>
+      <div class="lruas" id="listaExtras"></div>
+    </details>
+
     <div class="card" style="border-left:3px solid var(--ok)">
       <h2 style="color:var(--ok)">O que faz mesmo diferença</h2>
       <p class="note" style="color:var(--ink)">
@@ -366,7 +403,7 @@
         <b>Ouvir sem julgar.</b> Mesmo quando ele diz que não precisa. Quem se sente ouvido não se fecha — e é a mesma porta daqui a três meses.<br><br>
         <b>Volume.</b> Os efeitos reais de todas estas técnicas são pequenos. Ninguém fecha por ser esperto: fecha por bater a muitas portas e não desistir à quinta.
       </p>
-      <p class="note">Desconfia de qualquer formação que te venda «escada de sins» ou percentagens grandes de Cialdini. Fui procurar: não há um único estudo credível por trás da escada de sins, e os números reais das outras técnicas são uma fração do que dizem nas formações.</p>
+      <p class="note">Desconfia de qualquer formação que te venda «escada de sins» ou percentagens grandes de Cialdini. Fui procurar: não há um único estudo credível por trás da escada de sins.</p>
     </div>
 
     <div class="card" style="border-left:3px solid var(--bad)">
@@ -442,32 +479,21 @@ const PAGS = ["MB Way","Dinheiro"];
 /* ───────── GUIÃO v3 — falado, pela ordem da conversa ─────────
    Argumentos integrados no momento em que se dizem (não numa lista à parte).
    Números verificados: BrightLocal 2026, Uberall (64 mil negócios), política do Google. */
-const GUIAO = [
-  {id:"g1", fase:"Introdução", t:"Os primeiros 30 segundos", body:`
-    <p class="dica">Entra devagar, sorri, olha nos olhos. <b>Nome primeiro, pergunta a seguir</b> — assim deixas de ser um desconhecido antes de perguntares quem manda.</p>
-    <div class="fala">"Boa tarde. Chamo-me João. É o senhor o responsável?"</div>
-    <div class="stop">Não é ele? <b>Não gastes o pitch.</b> "A que horas é que o responsável costuma cá estar?" → registas «Voltar» com a hora → e voltas à hora certa. Quem cumpre a hora combinada fecha muito mais.</div>
-    <div class="fala">"Vou ser direto, que não lhe quero tirar muito tempo. Queria mostrar-lhe estas placas que facilitam os clientes deixarem a avaliação no Google. Vai ver, não dá trabalho nenhum."</div>
-    <p class="beat">↳ e vais <b>já</b> à demo. Não expliques mais — a placa explica-se sozinha na mão dele.</p>
-    <p class="dica"><b>Conforme a porta:</b></p>
-    <div class="obj"><b>Casa cheia</b>Diz o óbvio primeiro, cai bem: "Vejo que tem sempre gente, isso é bom sinal."</div>
-    <div class="obj"><b>Casa vazia</b>"Apanhei-o num bom momento?"</div>
-    <div class="obj"><b>Já está a abanar a cabeça</b>Tira-lhe o medo antes de ele o dizer: "Não venho vender nada com mensalidade, fique descansado."</div>
-    <p class="dica">Nunca digas <b>"venho vender"</b>. Diz <b>"queria mostrar-lhe"</b>. Vender é o que tu queres; mostrar é o que ele aceita.</p>`},
-  {id:"g4", fase:"Desenvolvimento", t:"A demo — a placa na mão dele", body:`
-    <p class="dica">Não expliques. Dá-lhe a placa e deixa-o experimentar <b>com o telemóvel dele</b>. Esta parte vende sozinha — a tua única função é estar calado.</p>
-    <div class="fala">"Pegue aqui. Encoste ao telemóvel… está a ver? Abriu."</div>
-    <p class="beat">↳ dois segundos de silêncio. Deixa-o olhar.</p>
-    <div class="fala">"Na sua, abre a página do seu negócio. Não é preciso instalar nada, não há código para apontar, não há palavra-passe. Encosta e escreve."</div>
-    <div class="stop">Se ele sorrir ou disser "ah, isso é fixe" — pára de falar do produto. Está vendido.</div>
-    <p class="dica"><b>Antes do número, uma pergunta.</b> Custa cinco segundos e vale mais que todos os argumentos juntos — porque quem diz o problema em voz alta passa a ser ele.</p>
-    <div class="fala">"Diga-me uma coisa: quantas avaliações é que lhe deixam por semana?"</div>
-    <p class="beat">↳ cala-te e deixa-o responder. A resposta dele diz-te qual o número a usar a seguir:</p>
-    <div class="obj"><b>"Nenhumas" / "poucas"</b>→ o das estrelas: a maioria nem considera abaixo de quatro</div>
-    <div class="obj"><b>"Algumas" / "vai havendo"</b>→ o da décima: 64 mil negócios, +25% de visitas</div>
-    <div class="obj"><b>"Tenho muitas"</b>→ o das recentes: as antigas já não contam</div>`},
-  {id:"g3", fase:"Desenvolvimento", t:"Dar a dimensão — escolhe um", body:`
-    <p class="dica">Ele já tocou na placa e já te disse quantas avaliações tem. Agora o número — <b>um só</b>, o que encaixar na resposta dele. Um argumento bem dito vale mais que cinco atirados à pressa. Toca no que fizer sentido <b>para aquela porta</b> e usa só esse. Os números são reais, mas diz-os como quem conta uma coisa, não como quem lê um relatório.</p>`,
+const PITCH = [
+  {id:"p1", rot:"Entrada", txt:"Boa tarde. Chamo-me João. É o senhor o responsável?",
+   nota:`Nome primeiro, pergunta a seguir. <b>Não é ele?</b> Não gastes o pitch — "A que horas é que ele costuma cá estar?" → «Voltar» com a hora → e volta à hora certa.`},
+
+  {id:"p2", rot:"Direto ao assunto", txt:"Vou ser direto, que não lhe quero tirar muito tempo. Queria mostrar-lhe estas placas que facilitam os clientes deixarem a avaliação no Google. Vai ver, não dá trabalho nenhum.",
+   nota:`Nunca digas <b>«venho vender»</b>. E não expliques mais nada — vai já à placa.`},
+
+  {id:"p3", rot:"A demo", txt:"Toque aqui com o telemóvel… está a ver? Abriu logo a avaliação.",
+   nota:`A placa na <b>mão dele</b>, com o telemóvel <b>dele</b>. Dois segundos calado. É aqui que ele compra.`},
+
+  {id:"p4", rot:"A pergunta", txt:"Diga-me uma coisa: quantas avaliações é que lhe deixam por semana?",
+   nota:`<b>Cala-te e deixa-o responder.</b> Quem diz o problema em voz alta passa a ser ele — e a resposta diz-te qual número usar a seguir.`},
+
+  {id:"p5", rot:"A dimensão", txt:"E para lhe dar a dimensão: um estudo com 64 mil negócios viu que subir uma décima na média das estrelas dava até 25% mais visitas. Uma décima.",
+   nota:`Um número <b>só</b>. Escolhe em baixo o que encaixa na resposta dele.`,
    args:[
      {id:"a1", tag:"Ninguém pede — serve para quase toda a gente",
       fala:"A maior parte das pessoas até deixa avaliação, se lhe pedirem. O problema é que ninguém pede. E estar a pedir na cara do cliente, a meio do serviço, é chato para os dois. A placa pede por si, sem incomodar ninguém.",
@@ -488,15 +514,15 @@ const GUIAO = [
       fala:"O café aqui em baixo não tem clientes melhores que os seus. Tem é alguém a pedir-lhes a avaliação. É só isso que vos separa.",
       src:""}
    ]},
-  {id:"g5", fase:"Fecho", t:"O preço e o fecho", body:`
-    <p class="dica">Diz o preço com naturalidade, sem pedir desculpa e sem enfeitar. E cala-te outra vez.</p>
-    <div class="fala">"Está interessado?"</div>
-    <p class="beat">↳ se sim, o preço sai a seguir sem pausa nenhuma.</p>
-    <div class="fala">"São 49 euros, uma vez. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada."</div>
-    <p class="beat">↳ se hesitar, e só se hesitar:</p>
-    <div class="fala">"Se fecharmos agora fica em 45 — é que hoje só estou nesta zona."</div>
-    <p><b>Chão: 40€.</b> Nunca abaixo disso. O combo Instagram (79€) só se fala <b>depois</b> do sim, nunca antes.</p>
-    <div class="stop">Máximo 5 a 7 minutos por porta. Se passar disso, marca hora para voltar e segue — a rua tem mais portas e o dia acaba.</div>`},
+
+  {id:"p6", rot:"O interesse", txt:"Está interessado?",
+   nota:`E cala-te outra vez. Se disser que sim, o preço sai a seguir sem pausa nenhuma.`},
+
+  {id:"p7", rot:"O preço", txt:"São 49 euros, uma vez. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada.",
+   nota:`Hesita? <b>«€45 se fecharmos já»</b>. Chão: <b>€40</b>, nunca abaixo. Combo Instagram (€79) só depois do sim.`}
+];
+
+const EXTRAS = [
   {id:"g6", fase:"Fecho", t:"Objeções — pergunta primeiro, responde depois", body:`
     <p class="dica">Não te atires logo à defesa. A objeção que ele diz muitas vezes não é a verdadeira. Devolve uma pergunta, ouve o que ele responde, e só depois responde <b>àquilo</b>.</p>
     <div class="obj"><b>"É caro."</b><span class="perg">"Caro em relação a quê?"</span>"Isto é uma vez na vida, não é mensalidade. Se lhe trouxer uma mesa a mais, já se pagou."</div>
@@ -509,14 +535,6 @@ const GUIAO = [
     <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos — a placa está lá para toda a gente, igual."</div>
     <div class="obj"><b>"Agora não tenho tempo."</b><span class="perg">"Dois minutos, cronometrados. Ou diga-me a que horas e eu volto."</span>E voltas à hora que ele disser.</div>
     <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente — testa antes de pagar."</div>`},
-  {id:"g2", fase:"Se houver conversa", t:"A pergunta que o faz pensar", body:`
-    <p class="dica">Não precisas disto em todas as portas. Usa quando ele <b>tiver tempo e vontade de falar</b> — é o que faz o dono chegar sozinho à conclusão de que precisa da placa.<br><br>Faz a pergunta e cala-te. A seguir a uma pergunta destas, quem fala primeiro perde. Deixa-o desabafar — é aí que ele te diz onde lhe dói.</p>
-    <div class="fala">"Quantas avaliações é que lhe deixam no Google, por semana?"</div>
-    <p class="beat">↳ a resposta é quase sempre "poucas", "sei lá" ou "nenhumas".</p>
-    <div class="fala">"E clientes contentes tem todos os dias, certo?"</div>
-    <p class="beat">↳ deixa-o dizer que sim. A partir daqui é ele que está a concordar contigo.</p>
-    <div class="fala">"Pois. Então o problema não é o serviço que faz. É que a pessoa sai satisfeita, vai à vida dela e nunca mais se lembra."</div>
-    <p class="dica">É aqui, e só aqui, que entra o argumento. Escolhe em baixo.</p>`},
   {id:"g7", fase:"Depois do sim", t:"Programar a placa (2 a 3 min)", body:`
     <p class="dica">Faz isto à frente dele. Ver o nome da casa dele aparecer no ecrã é metade da confiança.</p>
     <div class="stop">Atalho: pergunta primeiro se ele tem o negócio no Google no telemóvel. Se tiver — ele pesquisa o próprio negócio, carrega em <b>«Pedir avaliações»</b> e passa-te o link. É o link oficial, zero risco de erro, e põe-no a participar.</div>
@@ -557,14 +575,21 @@ const GUIAO = [
     <p><b>Regista na app antes de sair da porta</b>, com o número dele na nota — se deixares para depois, esqueces.</p>
     <p><b>Uma semana depois, mensagem:</b></p>
     <div class="fala">"Boa tarde! Então, já apareceram avaliações novas? Ainda bem. Já agora, se conhecer aí algum vizinho a quem isto desse jeito, diga-me que eu passo por lá da sua parte."</div>
-    <p class="dica">É aqui que o pedido funciona: já lhe entregaste resultado. É também o momento certo para o combo Instagram (€79).</p>`}
-
+    <p class="dica">É aqui que o pedido funciona: já lhe entregaste resultado. É também o momento certo para o combo Instagram (€79).</p>`},
+  {id:"g2", fase:"Se houver conversa", t:"A pergunta que o faz pensar", body:`
+    <p class="dica">Não precisas disto em todas as portas. Usa quando ele <b>tiver tempo e vontade de falar</b> — é o que faz o dono chegar sozinho à conclusão de que precisa da placa.<br><br>Faz a pergunta e cala-te. A seguir a uma pergunta destas, quem fala primeiro perde. Deixa-o desabafar — é aí que ele te diz onde lhe dói.</p>
+    <div class="fala">"Quantas avaliações é que lhe deixam no Google, por semana?"</div>
+    <p class="beat">↳ a resposta é quase sempre "poucas", "sei lá" ou "nenhumas".</p>
+    <div class="fala">"E clientes contentes tem todos os dias, certo?"</div>
+    <p class="beat">↳ deixa-o dizer que sim. A partir daqui é ele que está a concordar contigo.</p>
+    <div class="fala">"Pois. Então o problema não é o serviço que faz. É que a pessoa sai satisfeita, vai à vida dela e nunca mais se lembra."</div>
+    <p class="dica">É aqui, e só aqui, que entra o argumento. Escolhe em baixo.</p>`}
 ];
 
 /* ───────── storage (mesma chave da v1 — dados antigos preservados) ───────── */
 let persist = true;
 const KEY = "placas-rua-v1";
-const DEFAULTS = { v:6, registos:[], teste:null, args:[], placas:[], sitios:{}, aqui:{local:"",rua:""}, feitas:{}, ruas:{}, zonaAtiva:null };
+const DEFAULTS = { v:7, registos:[], teste:null, args:[], frases:{}, placas:[], sitios:{}, aqui:{local:"",rua:""}, feitas:{}, ruas:{}, zonaAtiva:null };
 function loadState(){
   try{
     const raw = localStorage.getItem(KEY);
@@ -587,6 +612,7 @@ if(!state.sitios || typeof state.sitios !== "object") state.sitios = {};
 if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"" };
 if(!Array.isArray(state.args)) state.args = [];
 if(!Array.isArray(state.placas)) state.placas = [];
+if(!state.frases || typeof state.frases !== "object") state.frases = {};
 state.registos.forEach(r => {
   if(!r.local && r.zona && ZONAS_ANTIGAS[r.zona]) r.local = ZONAS_ANTIGAS[r.zona];
   if(!r.local) r.local = "";
@@ -1110,13 +1136,20 @@ function renderPlacas(){
 
 /* ───────── guião ───────── */
 function argPorId(id){
-  for(let i=0;i<GUIAO.length;i++){
-    const g = GUIAO[i];
-    if(!g.args) continue;
-    for(let j=0;j<g.args.length;j++) if(g.args[j].id === id) return g.args[j];
-  }
+  for(const g of PITCH){ if(!g.args) continue;
+    for(const a of g.args) if(a.id === id) return a; }
   return null;
 }
+function frase(id){
+  if(state.frases && typeof state.frases[id] === "string") return state.frases[id];
+  const p = PITCH.find(x => x.id === id);
+  return p ? p.txt : "";
+}
+const mudada = id => state.frases && typeof state.frases[id] === "string"
+  && state.frases[id] !== (PITCH.find(x => x.id === id) || {}).txt;
+
+function crescer(t){ t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }
+
 function renderArgs(g){
   if(!g.args || !g.args.length) return "";
   const cards = g.args.map(a => {
@@ -1127,7 +1160,7 @@ function renderArgs(g){
       (a.src ? '<div class="argsrc">'+esc(a.src)+'</div>' : '')+
     '</div>';
   }).join("");
-  return '<div class="argw"><div class="argt">👉 Toca para escolher. Um chega — dois no máximo.</div>'+cards+'</div>';
+  return '<div class="argw"><div class="argt">👉 Escolhe o que encaixa na resposta dele. Um chega.</div>'+cards+'</div>';
 }
 function renderArmas(){
   const card = $("armasCard");
@@ -1136,33 +1169,70 @@ function renderArmas(){
   $("armasLista").innerHTML = state.args.map(id => {
     const a = argPorId(id);
     return a ? '<span class="armas-chip">'+esc(a.tag.split("—")[0].trim())+'</span>' : "";
-  }).join("") + (state.args.length > 2 ? '<p class="note" style="color:var(--warn)">Escolheste '+state.args.length+'. Na porta usa só um ou dois — mais que isso soa a discurso.</p>' : "");
+  }).join("");
+}
+function renderCompleto(){
+  $("guiaoCompleto").innerHTML = PITCH.map((p,i) =>
+    '<p>"'+esc(frase(p.id))+'"</p>' +
+    (p.id === "p3" || p.id === "p4" || p.id === "p6" ? '<div class="b">↳ e cala-te</div>' : "")
+  ).join("");
 }
 function renderGuiao(){
-  const abertas = {};
-  document.querySelectorAll("#listaGuiao details.g").forEach(d => { if(d.open) abertas[d.dataset.g] = true; });
-  const el = $("listaGuiao");
-  const nenhumaAberta = !Object.keys(abertas).length;
-  el.innerHTML = GUIAO.map((g,i) => {
-    return '<details class="g" data-g="'+g.id+'"'+(abertas[g.id] || (i===0 && nenhumaAberta) ? ' open' : '')+'>'+
-      '<summary><span class="num">'+(i+1)+'</span><span class="stit"><span class="fase">'+esc(g.fase)+'</span>'+esc(g.t)+'</span>'+
-      (state.teste===g.id?'<span class="teste-badge">EM TESTE</span>':'')+'</summary>'+
-      '<div class="gbody">'+g.body+renderArgs(g)+
-      '<button class="tbtn'+(state.teste===g.id?' on':'')+'" data-teste="'+g.id+'">'+(state.teste===g.id?'Tirar de teste':'Pôr esta parte EM TESTE')+'</button>'+
-      '</div></details>';
-  }).join("");
-  el.querySelectorAll("[data-teste]").forEach(b => b.onclick = () => {
+  $("listaPitch").innerHTML = PITCH.map((p,i) =>
+    '<div class="pcard'+(state.teste===p.id?' teste':'')+'">'+
+      '<div class="phead"><span class="num">'+(i+1)+'</span><span class="rot">'+esc(p.rot)+'</span>'+
+      (state.teste===p.id?'<span class="tb">EM TESTE</span>':'')+'</div>'+
+      '<textarea class="fbox" data-f="'+p.id+'" rows="1">'+esc(frase(p.id))+'</textarea>'+
+      '<p class="pnota">'+p.nota+'</p>'+
+      renderArgs(p)+
+      '<div class="pfoot">'+
+        '<button class="mini2'+(state.teste===p.id?' on':'')+'" data-teste="'+p.id+'">'+(state.teste===p.id?'Tirar de teste':'Pôr EM TESTE')+'</button>'+
+        '<button class="mini2 rep" data-repor="'+p.id+'" style="display:'+(mudada(p.id)?'inline-block':'none')+'">Repor original</button>'+
+      '</div>'+
+    '</div>').join("");
+
+  $("listaPitch").querySelectorAll("textarea[data-f]").forEach(t => {
+    crescer(t);
+    t.addEventListener("input", () => {
+      crescer(t);
+      state.frases = state.frases || {};
+      state.frases[t.dataset.f] = t.value;
+      saveState(); renderCompleto();
+      const r = t.parentNode.querySelector('[data-repor="'+t.dataset.f+'"]');
+      if(r) r.style.display = mudada(t.dataset.f) ? "inline-block" : "none";
+    });
+  });
+  $("listaPitch").querySelectorAll("[data-teste]").forEach(b => b.onclick = () => {
     state.teste = state.teste === b.dataset.teste ? null : b.dataset.teste;
     saveState(); renderGuiao();
   });
-  el.querySelectorAll("[data-arg]").forEach(c => c.onclick = () => {
+  $("listaPitch").querySelectorAll("[data-repor]").forEach(b => b.onclick = () => {
+    if(state.frases) delete state.frases[b.dataset.repor];
+    saveState(); renderGuiao(); renderCompleto(); toast("Frase reposta");
+  });
+  $("listaPitch").querySelectorAll("[data-arg]").forEach(c => c.onclick = () => {
     const id = c.dataset.arg, k = state.args.indexOf(id);
     if(k >= 0) state.args.splice(k,1); else state.args.push(id);
-    saveState(); renderGuiao(); renderArmas();
+    saveState(); renderGuiao();
   });
-  renderArmas();
+
+  $("listaExtras").innerHTML = EXTRAS.map((g,i) =>
+    '<details class="g" style="margin:8px 0"><summary><span class="num">'+(i+1)+'</span>'+
+    '<span class="stit"><span class="fase">'+esc(g.fase)+'</span>'+esc(g.t)+'</span></summary>'+
+    '<div class="gbody">'+g.body+'</div></details>').join("");
+
+  renderCompleto(); renderArmas();
 }
-$("btLimparArgs").onclick = () => { state.args = []; saveState(); renderGuiao(); renderArmas(); };
+$("btLimparArgs").onclick = () => { state.args = []; saveState(); renderGuiao(); };
+$("btCopiarGuiao").onclick = () => {
+  const txt = PITCH.map(p => frase(p.id)).join("\n\n");
+  const b = $("btCopiarGuiao");
+  const ok = () => { b.textContent = "Copiado ✓"; setTimeout(()=>b.textContent="Copiar", 1800); };
+  const fb = () => { const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t);
+    t.select(); try{document.execCommand("copy"); ok();}catch(e){} document.body.removeChild(t); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(fb);
+  else fb();
+};
 
 /* ───────── dados ───────── */
 function renderDados(){
