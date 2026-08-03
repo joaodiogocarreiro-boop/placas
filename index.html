@@ -315,11 +315,12 @@
       <input type="text" id="pNome" placeholder="ex.: Tasca do Zé" autocomplete="off">
       <div class="row" style="margin-top:8px">
         <button class="btn ghost mini" id="pBuscar">🔍 Procurar no Maps</button>
-        <button class="btn ghost mini" id="pFinder">Apanhar o código</button>
+        <button class="btn ghost mini" id="pFinder">Ajuda com o código</button>
       </div>
 
-      <label style="margin-top:14px">Código do negócio (ChIJ…) ou link do Maps</label>
-      <input type="text" id="pCod" placeholder="ChIJ…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <label style="margin-top:14px">Link do Maps ou código do negócio</label>
+      <input type="text" id="pCod" placeholder="cola aqui o link do Google Maps" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <p class="note" style="margin:6px 2px 0">Serve o link longo, o link de partilha, ou o código <b>ChIJ…</b>. A app tira o resto sozinha.</p>
       <div class="aviso hide" id="pAviso"></div>
 
       <button class="btn" id="pGerar">Gerar endereço da placa</button>
@@ -946,13 +947,56 @@ document.getElementById("btOndeEstou").onclick = () => {
 /* ───────── placa NFC ───────── */
 const ENCURTADO = /(share\.google|maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)/i;
 const BASE_R = location.origin + location.pathname.replace(/[^/]*$/, "") + "r/";
+/* O código ChIJ… não é nenhum segredo: é o "Feature ID" (0x…:0x…) que vem
+   dentro do link do Google Maps, escrito noutro alfabeto. Converte-se aqui
+   mesmo, sem internet e sem chave nenhuma. */
+function leHexLE(buf, off, hex){
+  hex = String(hex).replace(/^0x/i,"").toLowerCase();
+  if(hex.length > 16) hex = hex.slice(-16);
+  while(hex.length < 16) hex = "0" + hex;
+  for(let i = 0; i < 8; i++) buf[off+i] = parseInt(hex.substr(16-(i+1)*2, 2), 16);
+}
+function fidParaPlaceId(h1, h2){
+  const b = new Uint8Array(20);
+  b[0]=0x0a; b[1]=0x12; b[2]=0x09; leHexLE(b,3,h1); b[11]=0x11; leHexLE(b,12,h2);
+  let bin = ""; for(let i=0;i<20;i++) bin += String.fromCharCode(b[i]);
+  return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
 function extrairPID(txt){
   txt = String(txt||"").trim();
-  const m = txt.match(/(?:place_id[:=]|placeid=)\s*([A-Za-z0-9_\-]{10,})/i);
+  /* 1. já vem o código, sozinho ou dentro de um link */
+  let m = txt.match(/(?:place_id[:=]|placeid=|!1s)(ChIJ[A-Za-z0-9_\-]{10,})/i);
   if(m) return m[1];
-  const c = txt.match(/^([A-Za-z0-9_\-]{15,})$/);
-  if(c) return c[1];
+  if(/^ChIJ[A-Za-z0-9_\-]{10,}$/.test(txt)) return txt;
+  m = txt.match(/(?:place_id[:=]|placeid=)\s*([A-Za-z0-9_\-]{15,})/i);
+  if(m) return m[1];
+  /* 2. Feature ID dentro do link longo do Maps — converte-se */
+  m = txt.match(/!1s0x([0-9a-f]{1,16}):0x([0-9a-f]{1,16})/i)
+   || txt.match(/0x([0-9a-f]{1,16})\s*:\s*0x([0-9a-f]{1,16})/i);
+  if(m && m[2] && m[2] !== "0") return fidParaPlaceId(m[1], m[2]);
+  /* 3. código isolado de outro formato */
+  if(/^[A-Za-z0-9_\-]{20,}$/.test(txt) && !/^https?:/i.test(txt)) return txt;
   return "";
+}
+/* tenta desencurtar um share.google / maps.app.goo.gl usando um leitor público.
+   Se falhar (sem rede, serviço em baixo), cai no caminho manual. */
+function resolverCurto(url){
+  const vias = [
+    { u: "https://api.allorigins.win/get?url=" + encodeURIComponent(url),
+      le: t => { try{ const j = JSON.parse(t); return ((j.status && j.status.url) || "") + " " + (j.contents || ""); }
+                 catch(e){ return t; } } },
+    { u: "https://r.jina.ai/" + url, le: t => t }
+  ];
+  const tentar = i => {
+    if(i >= vias.length) return Promise.resolve("");
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 9000);
+    return fetch(vias[i].u, { signal: ctl.signal })
+      .then(r => r.text())
+      .then(txt => { clearTimeout(t); const c = extrairPID(vias[i].le(txt)); return c || tentar(i+1); })
+      .catch(() => { clearTimeout(t); return tentar(i+1); });
+  };
+  return tentar(0);
 }
 const linkReview = c => "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(c);
 let pidAtual = "", urlAtual = "";
@@ -969,30 +1013,48 @@ $("pBuscar").onclick = () => {
   window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(n), "_blank");
 };
 $("pFinder").onclick = () => {
-  window.open("https://www.brightlocal.com/free-local-seo-tools/google-id-and-review-link-generator/", "_blank");
-  toast("Cola lá o nome ou o link — devolve o ChIJ");
+  avisoPlaca(
+    '<b>Como apanhar o link certo:</b><br>' +
+    '1. Carrega em <b>\ud83d\udd0d Procurar no Maps</b> \u2014 abre o Chrome<br>' +
+    '2. Toca no neg\u00f3cio certo (confirma a <b>morada</b>)<br>' +
+    '3. Copia o endere\u00e7o da <b>barra de cima</b> do Chrome<br>' +
+    '4. Cola aqui e carrega em Gerar<br><br>' +
+    'Um link de partilha (<i>share.google</i>) tamb\u00e9m serve \u2014 eu tento abri-lo por ti.'
+  );
 };
 
-$("pGerar").onclick = () => {
-  const bruto = $("pCod").value.trim();
-  const codigo = extrairPID(bruto);
-  if(!codigo && ENCURTADO.test(bruto)){
-    $("pOut").classList.add("hide");
-    avisoPlaca('Esse \u00e9 um <b>link de partilha</b> \u2014 abre a ficha do neg\u00f3cio, n\u00e3o a caixa das estrelas. N\u00e3o serve para a placa.<br><br>' +
-      'Carrega em <b>Apanhar o c\u00f3digo</b> aqui em cima, cola l\u00e1 esse link, e ele devolve-te o <b>ChIJ\u2026</b>. Depois colas aqui.');
-    return;
-  }
-  if(!codigo){
-    $("pOut").classList.add("hide");
-    avisoPlaca('N\u00e3o reconheci o c\u00f3digo. Precisas do que come\u00e7a por <b>ChIJ</b> \u2014 usa o bot\u00e3o <b>Apanhar o c\u00f3digo</b>.');
-    return;
-  }
+function mostrarCodigo(codigo){
   avisoPlaca("");
   pidAtual = codigo;
   urlAtual = BASE_R + "#" + codigo;
   $("pUrl").textContent = urlAtual;
   $("pOut").classList.remove("hide");
   $("pOut").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+const AJUDA_MANUAL =
+  'N\u00e3o consegui abrir esse link encurtado daqui.<br><br>' +
+  '<b>Faz assim:</b> abre o link no Chrome, espera que ele salte para o Google Maps, e <b>copia o endere\u00e7o da barra de cima</b> (o comprido). Cola esse aqui \u2014 eu tiro o c\u00f3digo dele.<br><br>' +
+  'Se abrir na app do Maps em vez do Chrome, usa antes o bot\u00e3o <b>\ud83d\udd0d Procurar no Maps</b> aqui em cima.';
+
+$("pGerar").onclick = () => {
+  const bruto = $("pCod").value.trim();
+  if(!bruto){ avisoPlaca("Cola o link do Maps ou o c\u00f3digo."); return; }
+  const codigo = extrairPID(bruto);
+  if(codigo){ mostrarCodigo(codigo); return; }
+
+  if(ENCURTADO.test(bruto)){
+    $("pOut").classList.add("hide");
+    avisoPlaca("A abrir o link para lhe tirar o c\u00f3digo\u2026");
+    const b = $("pGerar"); b.disabled = true; b.textContent = "A tratar\u2026";
+    resolverCurto(bruto).then(c => {
+      b.disabled = false; b.textContent = "Gerar endere\u00e7o da placa";
+      if(c){ mostrarCodigo(c); toast("C\u00f3digo apanhado \u2713"); }
+      else avisoPlaca(AJUDA_MANUAL);
+    });
+    return;
+  }
+  $("pOut").classList.add("hide");
+  avisoPlaca('N\u00e3o encontrei nenhum c\u00f3digo a\u00ed. Cola o <b>endere\u00e7o completo</b> da p\u00e1gina do neg\u00f3cio no Google Maps, ou o c\u00f3digo <b>ChIJ\u2026</b>.');
 };
 $("pTestar").onclick = () => { if(pidAtual) window.open(linkReview(pidAtual), "_blank"); };
 $("pCopiar").onclick = () => {
