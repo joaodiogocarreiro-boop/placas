@@ -432,29 +432,25 @@ const PAGS = ["MB Way","Dinheiro"];
    Argumentos integrados no momento em que se dizem (não numa lista à parte).
    Números verificados: BrightLocal 2026, Uberall (64 mil negócios), política do Google. */
 const GUIAO = [
-
   {id:"g1", fase:"Introdução", t:"Os primeiros 30 segundos", body:`
-    <p class="dica">Entra devagar, sorri, olha nos olhos. Não comeces a falar do produto — pede 30 segundos e faz uma pergunta.</p>
-    <div class="fala">"Boa tarde. Chamo-me João, ando aqui pela zona. Dá-me 30 segundos? Prometo que não o prendo."</div>
-    <p class="beat">↳ espera pelo sim. Se ele disser que sim, já te está a ouvir.</p>
-    <div class="fala">"Só uma pergunta: quando alguém pega no telemóvel e escreve 'restaurante aqui perto', o senhor sabe se aparece à frente ou atrás dos outros aqui da rua?"</div>
-    <p class="dica"><b>Conforme a porta, entra assim:</b></p>
-    <div class="obj"><b>Casa cheia</b>Diz o óbvio primeiro, cai bem: "Vejo que tem sempre gente, isso é bom sinal. Diga-me só uma coisa…"</div>
-    <div class="obj"><b>Casa vazia</b>"Apanhei-o num bom momento? São 30 segundos."</div>
-    <div class="obj"><b>Já está a abanar a cabeça</b>Tira-lhe o medo antes de ele o dizer: "Não venho vender nada com mensalidade, fique descansado. É uma pergunta e vou-me embora."</div>
-    <div class="stop">O dono não está? Não vendes ao empregado — nunca. Perguntas a que horas ele costuma cá estar, registas «Voltar» com a hora, e voltas à hora certa. Quem aparece à hora combinada fecha muito mais.</div>`},
-
-  {id:"g2", fase:"Desenvolvimento", t:"A pergunta que abre a conversa", body:`
-    <p class="dica">Faz a pergunta e cala-te. A seguir a uma pergunta destas, quem fala primeiro perde. Deixa-o desabafar — é aí que ele te diz onde lhe dói.</p>
-    <div class="fala">"Quantas avaliações é que lhe deixam no Google, por semana?"</div>
-    <p class="beat">↳ a resposta é quase sempre "poucas", "sei lá" ou "nenhumas".</p>
-    <div class="fala">"E clientes contentes tem todos os dias, certo?"</div>
-    <p class="beat">↳ deixa-o dizer que sim. A partir daqui é ele que está a concordar contigo.</p>
-    <div class="fala">"Pois. Então o problema não é o serviço que faz. É que a pessoa sai satisfeita, vai à vida dela e nunca mais se lembra."</div>
-    <p class="dica">É aqui, e só aqui, que entra o argumento. Escolhe em baixo.</p>`},
-
-  {id:"g3", fase:"Desenvolvimento", t:"O argumento — escolhe um", body:`
-    <p class="dica">Um argumento bem dito vale mais que cinco atirados à pressa. Toca no que fizer sentido <b>para aquela porta</b> e usa só esse. Os números são reais, mas diz-os como quem conta uma coisa, não como quem lê um relatório.</p>`,
+    <p class="dica">Entra devagar, sorri, olha nos olhos. <b>Nome primeiro, pergunta a seguir</b> — assim deixas de ser um desconhecido antes de perguntares quem manda.</p>
+    <div class="fala">"Boa tarde. Chamo-me João. É o senhor o responsável?"</div>
+    <div class="stop">Não é ele? <b>Não gastes o pitch.</b> "A que horas é que o responsável costuma cá estar?" → registas «Voltar» com a hora → e voltas à hora certa. Quem cumpre a hora combinada fecha muito mais.</div>
+    <div class="fala">"Vou ser direto, que não lhe quero tirar muito tempo. Queria mostrar-lhe estas placas que facilitam os clientes deixarem a avaliação no Google. Depois não dá trabalho nenhum."</div>
+    <p class="beat">↳ e vais <b>já</b> à demo. Não expliques mais — a placa explica-se sozinha na mão dele.</p>
+    <p class="dica"><b>Conforme a porta:</b></p>
+    <div class="obj"><b>Casa cheia</b>Diz o óbvio primeiro, cai bem: "Vejo que tem sempre gente, isso é bom sinal."</div>
+    <div class="obj"><b>Casa vazia</b>"Apanhei-o num bom momento?"</div>
+    <div class="obj"><b>Já está a abanar a cabeça</b>Tira-lhe o medo antes de ele o dizer: "Não venho vender nada com mensalidade, fique descansado."</div>
+    <p class="dica">Nunca digas <b>"venho vender"</b>. Diz <b>"queria mostrar-lhe"</b>. Vender é o que tu queres; mostrar é o que ele aceita.</p>`},
+  {id:"g4", fase:"Desenvolvimento", t:"A demo — a placa na mão dele", body:`
+    <p class="dica">Não expliques. Dá-lhe a placa e deixa-o experimentar <b>com o telemóvel dele</b>. Esta parte vende sozinha — a tua única função é estar calado.</p>
+    <div class="fala">"Pegue aqui. Encoste ao telemóvel… está a ver? Abriu."</div>
+    <p class="beat">↳ dois segundos de silêncio. Deixa-o olhar.</p>
+    <div class="fala">"Na sua, abre a página do seu negócio. Não é preciso instalar nada, não há código para apontar, não há palavra-passe. Encosta e escreve."</div>
+    <div class="stop">Se ele sorrir ou disser "ah, isso é fixe" — pára de falar do produto. Está vendido. Vai direto ao preço.</div>`},
+  {id:"g3", fase:"Desenvolvimento", t:"Dar a dimensão — escolhe um", body:`
+    <p class="dica">Agora que ele já tocou na placa, é a altura do número. <b>Um só.</b> Um argumento bem dito vale mais que cinco atirados à pressa. Toca no que fizer sentido <b>para aquela porta</b> e usa só esse. Os números são reais, mas diz-os como quem conta uma coisa, não como quem lê um relatório.</p>`,
    args:[
      {id:"a1", tag:"Ninguém pede — serve para quase toda a gente",
       fala:"A maior parte das pessoas até deixa avaliação, se lhe pedirem. O problema é que ninguém pede. E estar a pedir na cara do cliente, a meio do serviço, é chato para os dois. A placa pede por si, sem incomodar ninguém.",
@@ -475,22 +471,15 @@ const GUIAO = [
       fala:"O café aqui em baixo não tem clientes melhores que os seus. Tem é alguém a pedir-lhes a avaliação. É só isso que vos separa.",
       src:""}
    ]},
-
-  {id:"g4", fase:"Desenvolvimento", t:"A demo — a placa na mão dele", body:`
-    <p class="dica">Não expliques. Dá-lhe a placa e deixa-o experimentar <b>com o telemóvel dele</b>. Esta parte vende sozinha — a tua única função é estar calado.</p>
-    <div class="fala">"Pegue aqui. Encoste ao telemóvel… está a ver? Abriu."</div>
-    <p class="beat">↳ dois segundos de silêncio. Deixa-o olhar.</p>
-    <div class="fala">"Na sua, abre a página do seu negócio. Não é preciso instalar nada, não há código para apontar, não há palavra-passe. Encosta e escreve."</div>
-    <div class="stop">Se ele sorrir ou disser "ah, isso é fixe" — pára de falar do produto. Está vendido. Vai direto ao preço.</div>`},
-
   {id:"g5", fase:"Fecho", t:"O preço e o fecho", body:`
     <p class="dica">Diz o preço com naturalidade, sem pedir desculpa e sem enfeitar. E cala-te outra vez.</p>
-    <div class="fala">"São 49 euros, uma vez. Não há mensalidade nenhuma, a placa fica sua. Programo já com o nome da casa?"</div>
+    <div class="fala">"Está interessado?"</div>
+    <p class="beat">↳ se sim, o preço sai a seguir sem pausa nenhuma.</p>
+    <div class="fala">"São 49 euros, uma vez. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada."</div>
     <p class="beat">↳ se hesitar, e só se hesitar:</p>
     <div class="fala">"Se fecharmos agora fica em 45 — é que hoje só estou nesta zona."</div>
     <p><b>Chão: 40€.</b> Nunca abaixo disso. O combo Instagram (79€) só se fala <b>depois</b> do sim, nunca antes.</p>
     <div class="stop">Máximo 5 a 7 minutos por porta. Se passar disso, marca hora para voltar e segue — a rua tem mais portas e o dia acaba.</div>`},
-
   {id:"g6", fase:"Fecho", t:"Objeções — pergunta primeiro, responde depois", body:`
     <p class="dica">Não te atires logo à defesa. A objeção que ele diz muitas vezes não é a verdadeira. Devolve uma pergunta, ouve o que ele responde, e só depois responde <b>àquilo</b>.</p>
     <div class="obj"><b>"É caro."</b><span class="perg">"Caro em relação a quê?"</span>"Isto é uma vez na vida, não é mensalidade. Se lhe trouxer uma mesa a mais, já se pagou."</div>
@@ -503,7 +492,14 @@ const GUIAO = [
     <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos — a placa está lá para toda a gente, igual."</div>
     <div class="obj"><b>"Agora não tenho tempo."</b><span class="perg">"Dois minutos, cronometrados. Ou diga-me a que horas e eu volto."</span>E voltas à hora que ele disser.</div>
     <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente — testa antes de pagar."</div>`},
-
+  {id:"g2", fase:"Se houver conversa", t:"A pergunta que o faz pensar", body:`
+    <p class="dica">Não precisas disto em todas as portas. Usa quando ele <b>tiver tempo e vontade de falar</b> — é o que faz o dono chegar sozinho à conclusão de que precisa da placa.<br><br>Faz a pergunta e cala-te. A seguir a uma pergunta destas, quem fala primeiro perde. Deixa-o desabafar — é aí que ele te diz onde lhe dói.</p>
+    <div class="fala">"Quantas avaliações é que lhe deixam no Google, por semana?"</div>
+    <p class="beat">↳ a resposta é quase sempre "poucas", "sei lá" ou "nenhumas".</p>
+    <div class="fala">"E clientes contentes tem todos os dias, certo?"</div>
+    <p class="beat">↳ deixa-o dizer que sim. A partir daqui é ele que está a concordar contigo.</p>
+    <div class="fala">"Pois. Então o problema não é o serviço que faz. É que a pessoa sai satisfeita, vai à vida dela e nunca mais se lembra."</div>
+    <p class="dica">É aqui, e só aqui, que entra o argumento. Escolhe em baixo.</p>`},
   {id:"g7", fase:"Depois do sim", t:"Programar a placa (2 a 3 min)", body:`
     <p class="dica">Faz isto à frente dele. Ver o nome da casa dele aparecer no ecrã é metade da confiança.</p>
     <div class="stop">Atalho: pergunta primeiro se ele tem o negócio no Google no telemóvel. Se tiver — ele pesquisa o próprio negócio, carrega em <b>«Pedir avaliações»</b> e passa-te o link. É o link oficial, zero risco de erro, e põe-no a participar.</div>
@@ -520,7 +516,6 @@ const GUIAO = [
     </ol>
     <div class="stop">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível e o link <b>vai</b> ter de mudar um dia — o próprio Google avisa que estes códigos mudam com o tempo. A password protege na mesma e podes sempre corrigir.</div>
     <p class="dica">Balcão de aço ou caixa registadora? O metal mata o sinal. Leva sempre umas placas anti-metal no bolso.</p>`},
-
   {id:"g8", fase:"Depois do sim", t:"Receber + faturar (30 seg)", body:`
     <p class="dica">Logo a seguir ao sim, pede as duas coisas numa frase só. Ele dá-tas sem pensar, porque é para o servir.</p>
     <div class="fala">"Qual é o NIF da empresa? E um número de WhatsApp para lhe mandar a fatura."</div>
@@ -537,7 +532,6 @@ const GUIAO = [
     </ol>
     <div class="fala">"Já lhe mandei. E já ficou no seu e-fatura — o seu contabilista vê-a automaticamente, não tem de guardar nada."</div>
     <p class="dica"><b>Só muda o NIF e o valor.</b> O resto é sempre igual: decora e sais em 30 segundos. Treina 5 vezes em casa antes da primeira porta. Sem rede, regista com nota "fatura por emitir" — tens 5 dias úteis. Fatura sempre, mesmo em dinheiro.</p>`},
-
   {id:"g9", fase:"Depois do sim", t:"Antes de sair da porta", body:`
     <p>Placa junto à caixa ou ao balcão, onde o cliente pára.</p>
     <p><b>Deixa o número — como oferta, não como pedido.</b> Ele já o tem por causa da fatura:</p>
@@ -547,6 +541,7 @@ const GUIAO = [
     <p><b>Uma semana depois, mensagem:</b></p>
     <div class="fala">"Boa tarde! Então, já apareceram avaliações novas? Ainda bem. Já agora, se conhecer aí algum vizinho a quem isto desse jeito, diga-me que eu passo por lá da sua parte."</div>
     <p class="dica">É aqui que o pedido funciona: já lhe entregaste resultado. É também o momento certo para o combo Instagram (€79).</p>`}
+
 ];
 
 /* ───────── storage (mesma chave da v1 — dados antigos preservados) ───────── */
