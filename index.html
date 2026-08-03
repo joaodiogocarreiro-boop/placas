@@ -88,6 +88,9 @@
   #mapFallback{padding:22px 16px; text-align:center; color:var(--ink-2); font-size:.85rem; display:none}
   .legenda{position:absolute; z-index:900; left:10px; bottom:10px; background:rgba(255,255,255,.94);
     border:1px solid var(--line); border-radius:10px; padding:6px 10px; font-size:.68rem; display:flex; gap:10px}
+  .btnmapa{position:absolute; z-index:900; right:10px; top:10px; background:rgba(255,255,255,.95);
+    border:1px solid var(--line); border-radius:10px; padding:7px 11px; font-size:.78rem;
+    font-weight:700; color:var(--accent); cursor:pointer; font-family:inherit; display:none}
   .legenda i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:4px; vertical-align:-1px}
 
   /* zonas */
@@ -276,7 +279,8 @@
     <div class="card" id="mapCard">
       <div id="map"></div>
       <div id="mapFallback">🗺️ Ainda não há pontos no mapa.<br>Usa o <b>📍 Detetar</b> ao registar uma porta<br>e as ruas aparecem aqui.<br><button class="btn ghost mini" style="margin-top:8px" onclick="tentarMapa()">Tentar de novo</button></div>
-      <div class="legenda"><span><i style="background:#188038"></i>Varrida</span><span><i style="background:#B45309"></i>A meio</span><span><i style="background:#0B57D0"></i>Aqui agora</span></div>
+      <button class="btnmapa" id="btOndeEstou">Onde estou</button>
+      <div class="legenda"><span><i style="background:#188038"></i>Vendeu</span><span><i style="background:#B45309"></i>Voltar</span><span><i style="background:#B3261E"></i>Não</span><span><i style="background:#5F6368"></i>Fechado</span></div>
     </div>
 
     <div class="card" id="pendCard" style="display:none">
@@ -687,6 +691,7 @@ $("btGuardar").onclick = () => {
   document.querySelectorAll("#fRes .chip, #fPreco .chip, #fPag .chip").forEach(c => c.classList.remove("on"));
   $("grpVenda").classList.add("hide"); $("grpVoltar").classList.add("hide");
   toast(res === "venda" ? "💰 Venda registada!" : "Porta registada");
+  geoMarcar(state.registos[state.registos.length-1]);
   renderTudo();
 };
 
@@ -778,7 +783,31 @@ function renderSitios(){
 }
 
 /* ───────── mapa ───────── */
-let map = null, camada = null;
+let map = null, camada = null, marcaEu = null;
+const CORPIN = { venda:"#188038", voltar:"#B45309", nao:"#B3261E", fech:"#5F6368" };
+
+function posicao(cb){
+  if(!navigator.geolocation){ cb(null); return; }
+  navigator.geolocation.getCurrentPosition(
+    p => cb({ lat:p.coords.latitude, lon:p.coords.longitude, acc:Math.round(p.coords.accuracy) }),
+    () => cb(null),
+    { enableHighAccuracy:true, timeout:15000, maximumAge:60000 }
+  );
+}
+/* cada porta registada fica com a posição — vira pino no mapa */
+function geoMarcar(rec){
+  if(!rec || rec.lat) return;
+  posicao(p => {
+    if(!p) return;
+    rec.lat = p.lat; rec.lon = p.lon; rec.acc = p.acc;
+    if(rec.local && rec.rua){
+      const ro = ruaObj(rec.local, rec.rua, true);
+      if(ro && typeof ro.lat !== "number"){ ro.lat = p.lat; ro.lon = p.lon; }
+    }
+    saveState(); tentarMapa();
+  });
+}
+function portasNoMapa(){ return state.registos.filter(r => typeof r.lat === "number" && typeof r.lon === "number"); }
 function pontos(){
   const out = [];
   Object.keys(state.sitios).forEach(lk => { const sl = state.sitios[lk];
@@ -788,39 +817,43 @@ function pontos(){
   });
   return out;
 }
-function corRua(r, atual){
-  if(atual) return "#0B57D0";
-  if(r.estado === "feita") return "#188038";
-  if(r.estado === "meio")  return "#B45309";
-  return "#9CA3AF";
-}
 function pintarMapa(){
   if(!map || !camada) return;
   camada.clearLayers();
-  const aquiL = slug(state.aqui.local), aquiR = slug(state.aqui.rua), grupo = [];
-  pontos().forEach(p => {
-    const atual = (p.lk === aquiL && p.rk === aquiR), c = corRua(p.r, atual);
-    const st = statsRua(p.lk, p.rk);
-    const m = L.circleMarker([p.r.lat, p.r.lon],
-      { radius: atual ? 10 : 8, color:c, fillColor:c, fillOpacity:.85, weight:2 });
-    m.bindPopup("<b>"+esc(p.r.nome)+"</b><br>"+esc(p.sl.nome)+"<br>"+st.portas+" portas · "+st.vendas+" vendas ("+eur(st.euros)+")");
+  const grupo = [];
+  portasNoMapa().forEach(r => {
+    const c = CORPIN[r.res] || "#5F6368";
+    const m = L.circleMarker([r.lat, r.lon],
+      { radius:7, weight:2, color:"#fff", fillColor:c, fillOpacity:1 });
+    m.bindPopup("<b>"+esc(r.nome)+"</b><br>"+esc(r.tipo||"")+
+      (r.res === "venda" ? " · "+eur(r.preco) : "")+"<br><small>"+esc(zCurta(r))+" · "+r.dia+"</small>");
     camada.addLayer(m); grupo.push(m);
   });
-  if(grupo.length) map.fitBounds(L.featureGroup(grupo).getBounds().pad(0.3), { maxZoom:16 });
+  /* ruas sem nenhuma porta com posição — marca discreta, só para não desaparecerem */
+  pontos().forEach(p => {
+    const jaTem = grupo.length && portasNoMapa().some(r => slug(r.local)===p.lk && slug(r.rua)===p.rk);
+    if(jaTem) return;
+    const m = L.circleMarker([p.r.lat, p.r.lon],
+      { radius:6, weight:2, color:"#9CA3AF", fillColor:"#fff", fillOpacity:.9, dashArray:"2,3" });
+    m.bindPopup("<b>"+esc(p.r.nome)+"</b><br>"+esc(p.sl.nome));
+    camada.addLayer(m); grupo.push(m);
+  });
+  if(grupo.length) map.fitBounds(L.featureGroup(grupo).getBounds().pad(0.3), { maxZoom:17 });
 }
 function legenda(mostrar){
-  const el = document.querySelector(".legenda");
-  if(el) el.style.display = mostrar ? "flex" : "none";
+  const el = document.querySelector(".legenda"); if(el) el.style.display = mostrar ? "flex" : "none";
+  const b = $("btOndeEstou"); if(b) b.style.display = mostrar ? "block" : "none";
 }
 function tentarMapa(){
-  const temL = (typeof L !== "undefined"), ps = pontos().length;
-  if(!temL || !ps){
+  const temL = (typeof L !== "undefined");
+  const nPontos = portasNoMapa().length + pontos().length;
+  if(!temL || !nPontos){
     $("map").style.display = "none";
     $("mapFallback").style.display = "block";
     legenda(false);
     $("mapFallback").innerHTML = !temL
       ? '🗺️ O mapa precisa de internet.<br>As ruas continuam todas em baixo.<br><button class="btn ghost mini" style="margin-top:8px" onclick="tentarMapa()">Tentar de novo</button>'
-      : '🗺️ Ainda não há pontos no mapa.<br>Carrega em <b>📍 Detetar</b> quando estiveres numa rua<br>e ela fica marcada aqui.';
+      : '🗺️ Ainda não há nada no mapa.<br>Cada porta que registas com o GPS ligado<br>fica aqui marcada.';
     return;
   }
   try{
@@ -838,6 +871,19 @@ function tentarMapa(){
     $("map").style.display = "none"; $("mapFallback").style.display = "block"; legenda(false);
   }
 }
+document.getElementById("btOndeEstou").onclick = () => {
+  toast("A procurar GPS…");
+  posicao(p => {
+    if(!p){ toast("Sem GPS — liga a localização"); return; }
+    if(!map) tentarMapa();
+    if(!map) return;
+    if(marcaEu) { try{ map.removeLayer(marcaEu); }catch(e){} }
+    marcaEu = L.circleMarker([p.lat, p.lon],
+      { radius:9, weight:3, color:"#0B57D0", fillColor:"#0B57D0", fillOpacity:.25 }).addTo(map);
+    map.setView([p.lat, p.lon], 17);
+    toast("Estás aqui (±"+p.acc+" m)");
+  });
+};
 
 /* ───────── guião ───────── */
 function argPorId(id){
@@ -987,72 +1033,6 @@ if("serviceWorker" in navigator && location.protocol.indexOf("http") === 0){
   });
 }
 
-/* ===== v5 — RASTO GPS: cada porta registada vira um pino no mapa ===== */
-let _pinos = [];
-const _CORPIN = { venda:"#188038", voltar:"#B45309", nao:"#B3261E", fech:"#5F6368" };
-
-function _pedirPos(cb){
-  if(!navigator.geolocation){ cb(null); return; }
-  navigator.geolocation.getCurrentPosition(
-    function(p){ cb({lat:p.coords.latitude, lng:p.coords.longitude, acc:Math.round(p.coords.accuracy)}); },
-    function(){ cb(null); },
-    {enableHighAccuracy:true, timeout:15000, maximumAge:60000}
-  );
-}
-
-function _marcarPosicao(rec){
-  if(!rec) return;
-  _pedirPos(function(p){
-    if(!p) return;
-    rec.lat = p.lat; rec.lng = p.lng; rec.acc = p.acc;
-    saveState(); _pintarPinos();
-  });
-}
-
-function _pintarPinos(){
-  if(typeof map === "undefined" || !map || typeof L === "undefined") return;
-  _pinos.forEach(function(p){ try{ map.removeLayer(p); }catch(e){} });
-  _pinos = [];
-  (state.registos||[]).filter(function(x){ return x.lat && x.lng; }).forEach(function(x){
-    var c = _CORPIN[x.res] || "#5F6368";
-    var mk = L.circleMarker([x.lat, x.lng], {radius:7, weight:2, color:"#fff", fillColor:c, fillOpacity:1});
-    mk.bindPopup("<b>" + esc(x.nome) + "</b><br>" + esc(x.tipo||"") + "<br>" + x.dia);
-    mk.addTo(map); _pinos.push(mk);
-  });
-}
-
-function _ondeEstou(){
-  toast("A procurar GPS...");
-  _pedirPos(function(p){
-    if(!p){ toast("Sem GPS — liga a localizacao"); return; }
-    if(map){
-      map.setView([p.lat, p.lng], 17);
-      L.circleMarker([p.lat, p.lng], {radius:9, weight:3, color:"#0B57D0", fillColor:"#0B57D0", fillOpacity:.25}).addTo(map);
-      toast("Estas aqui (±" + p.acc + " m)");
-    }
-  });
-}
-
-(function(){
-  var n = (state.registos||[]).length;
-  setInterval(function(){
-    var agora = (state.registos||[]).length;
-    if(agora > n){
-      var rec = state.registos[agora-1];
-      if(rec && !rec.lat) _marcarPosicao(rec);
-    }
-    n = agora;
-  }, 1200);
-  var cartao = document.getElementById("mapCard");
-  if(cartao){
-    var btn = document.createElement("button");
-    btn.textContent = "Onde estou";
-    btn.style.cssText = "position:absolute;z-index:900;right:10px;top:10px;background:#fff;border:1px solid #E5E7EB;border-radius:10px;padding:7px 11px;font-size:.78rem;font-weight:700;color:#0B57D0;cursor:pointer";
-    btn.onclick = _ondeEstou;
-    cartao.appendChild(btn);
-  }
-  setInterval(_pintarPinos, 4000);
-})();
 </script>
 </body>
 </html>
