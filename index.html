@@ -430,14 +430,20 @@ const GUIAO = [
 
   {id:"g7", fase:"Depois do sim", t:"Programar a placa (2 a 3 min)", body:`
     <p class="dica">Faz isto à frente dele. Ver o nome da casa dele aparecer no ecrã é metade da confiança.</p>
+    <div class="stop">Atalho: pergunta primeiro se ele tem o negócio no Google no telemóvel. Se tiver — ele pesquisa o próprio negócio, carrega em <b>«Pedir avaliações»</b> e passa-te o link. É o link oficial, zero risco de erro, e põe-no a participar.</div>
     <ol>
-      <li>Place ID Finder → escrever o nome do negócio</li>
-      <li>Colar o ID em <b>…writereview?placeid=</b></li>
-      <li><b>Testar no browser</b> — é mesmo este negócio? Confirmar com o dono, a olhar para o ecrã</li>
-      <li>NFC Tools → Escrever</li>
-      <li>Encostar duas vezes a confirmar</li>
-      <li><b>Só depois bloquear o chip — isto não tem volta</b></li>
-    </ol>`},
+      <li>Se não tiver: Chrome → <b>Place ID Finder</b> → menu ⋮ → <b>Site para computador</b></li>
+      <li>Escrever o nome e <b>tocar no resultado</b> da lista (não escrever à mão)</li>
+      <li><b>Confirmar a MORADA</b>, não só o nome — "Café Central" há dezenas</li>
+      <li>Copiar o código <b>ChIJ…</b> e colar na <a href="r/" style="color:var(--accent);font-weight:700">página de programar</a></li>
+      <li><b>Testar</b> — abre a caixa de avaliação com o nome certo? Se abrir outra casa, pára já</li>
+      <li>NFC Tools → Write → Add a record → <b>URL/URI</b> → colar → Write</li>
+      <li>Ler de volta e <b>encostar o telemóvel</b> para testar a sério</li>
+      <li>Dar a placa ao dono para <b>ele</b> testar — é o melhor momento da venda</li>
+      <li>Só agora: Other → <b>Set password</b> → a tua password mestre. <b>AUTHLIM desligado.</b></li>
+    </ol>
+    <div class="stop">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível e o link <b>vai</b> ter de mudar um dia — o próprio Google avisa que estes códigos mudam com o tempo. A password protege na mesma e podes sempre corrigir.</div>
+    <p class="dica">Balcão de aço ou caixa registadora? O metal mata o sinal. Leva sempre umas placas anti-metal no bolso.</p>`},
 
   {id:"g8", fase:"Depois do sim", t:"Receber + faturar (30 seg)", body:`
     <p class="dica">Logo a seguir ao sim, pede as duas coisas numa frase só. Ele dá-tas sem pensar, porque é para o servir.</p>

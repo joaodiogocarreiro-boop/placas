@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Avaliar no Google</title>
+<style>
+  :root{--accent:#0B57D0;--accent-soft:#E8F0FE;--ink:#1F2937;--ink-2:#6B7280;--ink-3:#9CA3AF;
+    --line:#E5E7EB;--bg:#F6F7F9;--ok:#188038;--ok-soft:#E6F4EA;--warn:#B45309;--warn-soft:#FEF3C7}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    max-width:540px;margin:0 auto;padding:18px 16px 40px}
+  h1{font-size:1.15rem;margin:6px 0 2px}
+  .sub{color:var(--ink-2);font-size:.85rem;margin-bottom:18px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  label{display:block;font-size:.76rem;color:var(--ink-2);margin:0 2px 6px;font-weight:600}
+  input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit}
+  input:focus{outline:2px solid var(--accent);border-color:transparent}
+  .btn{display:block;width:100%;padding:14px;border:0;border-radius:12px;background:var(--accent);color:#fff;
+    font-size:1rem;font-weight:700;cursor:pointer;margin-top:12px;font-family:inherit}
+  .btn.ghost{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+  .out{display:none;margin-top:14px}
+  .out.on{display:block}
+  .url{background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:11px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;word-break:break-all;color:var(--ink)}
+  .passo{font-size:.8rem;color:var(--ink-2);margin:14px 2px 4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .aviso{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:.82rem;font-weight:600;margin-top:12px}
+  .redir{text-align:center;padding:60px 20px}
+  .redir .p{font-size:1.05rem;font-weight:700;margin-bottom:6px}
+  .redir a{color:var(--accent)}
+  .spin{width:34px;height:34px;border:3px solid var(--accent-soft);border-top-color:var(--accent);
+    border-radius:50%;animation:g .8s linear infinite;margin:0 auto 16px}
+  @keyframes g{to{transform:rotate(360deg)}}
+  .nota{font-size:.74rem;color:var(--ink-3);margin-top:10px;line-height:1.45}
+  .hide{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PÁGINA DE REDIRECIONAMENTO DAS PLACAS NFC
+     ---------------------------------------------------------------
+     O que vai ESCRITO na placa é sempre um endereço destes:
+        https://joaodiogocarreiro-boop.github.io/placas/r/#ChIJ.....
+     e esta página reencaminha para a caixa de avaliação do Google.
+
+     PORQUÊ ESTA VOLTA?  Porque assim o João controla o destino.
+     Se o código de um negócio morrer (o Google avisa que mudam),
+     ou se o Google mudar o endereço das avaliações, corrige-se AQUI
+     e todas as placas já colocadas passam a funcionar outra vez —
+     sem ir buscar nenhuma placa a nenhum balcão.
+
+     PARA CORRIGIR UM CLIENTE: acrescenta uma linha em CORRECOES.
+     ═══════════════════════════════════════════════════════════════ -->
+
+<script>
+"use strict";
+
+/* ─── 1. CORREÇÕES ────────────────────────────────────────────────
+   Só se mexe aqui quando a placa de alguém deixar de funcionar.
+   À esquerda o que está escrito na placa, à direita o destino novo.
+
+   Exemplos (apagar o // para ficarem ativos):
+   "ChIJcodigoAntigo":  "ChIJcodigoNovo",                  // mudou de morada
+   "tasca-do-ze":       "ChIJxxxxxxxxxxxxxxxx",            // placa com nome
+   "ChIJoutro":         "https://exemplo.pt/qualquer",     // destino à medida
+*/
+const CORRECOES = {
+};
+
+/* ─── 2. Para onde vai, por defeito ────────────────────────────── */
+function destino(codigo){
+  return "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(codigo);
+}
+
+/* ─── 3. Motor ─────────────────────────────────────────────────── */
+function limpar(v){
+  v = String(v || "").trim();
+  if(v.charAt(0) === "#") v = v.slice(1);
+  try { v = decodeURIComponent(v); } catch(e){}
+  return v.trim();
+}
+function resolver(entrada){
+  let v = limpar(entrada), saltos = 0;
+  while(Object.prototype.hasOwnProperty.call(CORRECOES, v) && saltos < 5){
+    v = CORRECOES[v]; saltos++;
+    if(/^https?:\/\//i.test(v)) return v;
+  }
+  if(/^https?:\/\//i.test(v)) return v;
+  return v ? destino(v) : "";
+}
+
+const params = new URLSearchParams(location.search);
+const entrada = location.hash ? location.hash.slice(1) : (params.get("p") || params.get("id") || "");
+const alvo = resolver(entrada);
+
+if(alvo){
+  document.write(
+    '<div class="redir"><div class="spin"></div>' +
+    '<div class="p">A abrir as avaliações…</div>' +
+    '<p class="nota">Se não abrir sozinho, <a href="' + alvo.replace(/"/g,"&quot;") + '">toca aqui</a>.</p></div>'
+  );
+  location.replace(alvo);
+}
+</script>
+
+<!-- ─── Ferramenta de programação (só aparece se não houver código no endereço) ─── -->
+<div id="tool" class="hide">
+  <h1>Programar uma placa</h1>
+  <p class="sub">Cola o código do negócio e sai o endereço para escrever na placa.</p>
+
+  <div class="card">
+    <label>Código do negócio (Place ID) ou link do Google Maps</label>
+    <input type="text" id="pid" placeholder="ChIJ…" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <label style="margin-top:12px">Nome do negócio (só para ti, opcional)</label>
+    <input type="text" id="nome" placeholder="ex.: Tasca do Zé" autocomplete="off">
+    <button class="btn" id="ir">Gerar endereço da placa</button>
+
+    <div class="out" id="out">
+      <div class="passo">1 · Testar primeiro</div>
+      <button class="btn ghost" id="testar">Abrir e ver se é o negócio certo</button>
+      <p class="nota">Tem de abrir a caixa de avaliação <b>com o nome e a morada certos</b>. Se abrir outra casa, pára — o código está errado.</p>
+
+      <div class="passo">2 · Escrever isto na placa</div>
+      <div class="url" id="url"></div>
+      <button class="btn ghost" id="copiar" style="margin-top:8px">Copiar endereço</button>
+      <p class="nota">NFC Tools → Write → Add a record → <b>URL/URI</b> → colar → Write.</p>
+
+      <div class="passo">3 · Proteger</div>
+      <p class="nota">Depois de tocar com o telemóvel e confirmar que abre: NFC Tools → Other → <b>Set password</b> → password mestre. <b>AUTHLIM desligado.</b></p>
+      <div class="aviso">Nunca carregues em «Lock tag» ou «Make read-only». Não tem volta e um dia vais precisar de mudar o link.</div>
+    </div>
+  </div>
+
+  <p class="nota">Ferramentas: <a href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" target="_blank" rel="noopener">Place ID Finder do Google</a> (abre em «Site para computador») · <a href="https://www.brightlocal.com/free-local-seo-tools/google-id-and-review-link-generator/" target="_blank" rel="noopener">Gerador da BrightLocal</a> (segunda opinião)</p>
+  <p class="nota"><a href="../">← voltar à app</a></p>
+</div>
+
+<script>
+"use strict";
+if(!alvo){
+  document.getElementById("tool").classList.remove("hide");
+
+  const $ = id => document.getElementById(id);
+  let atual = "";
+
+  function extrair(txt){
+    txt = String(txt||"").trim();
+    // link do Maps com place_id lá dentro
+    const m = txt.match(/(?:place_id[:=]|placeid=)\s*([A-Za-z0-9_\-]{10,})/i);
+    if(m) return m[1];
+    // já é um código
+    const c = txt.match(/^([A-Za-z0-9_\-]{15,})$/);
+    if(c) return c[1];
+    return "";
+  }
+
+  $("ir").onclick = () => {
+    const bruto = $("pid").value;
+    const codigo = extrair(bruto);
+    if(!codigo){
+      alert("Não reconheci o código.\n\nCola o código que começa por ChIJ, ou um link do Maps que tenha place_id lá dentro.\n\nUm link maps.app.goo.gl encurtado não serve — tens de o abrir primeiro.");
+      return;
+    }
+    atual = location.origin + location.pathname.replace(/[^/]*$/, "") + "#" + codigo;
+    $("url").textContent = atual;
+    $("out").classList.add("on");
+    $("testar").onclick = () => window.open("https://search.google.com/local/writereview?placeid=" + encodeURIComponent(codigo), "_blank");
+    $("out").scrollIntoView({behavior:"smooth", block:"nearest"});
+  };
+
+  $("copiar").onclick = () => {
+    const b = $("copiar");
+    const ok = () => { b.textContent = "Copiado ✓"; setTimeout(()=>b.textContent="Copiar endereço", 1800); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(atual).then(ok).catch(()=>{
+        const t=document.createElement("textarea"); t.value=atual; document.body.appendChild(t);
+        t.select(); try{document.execCommand("copy"); ok();}catch(e){} document.body.removeChild(t);
+      });
+    } else {
+      const t=document.createElement("textarea"); t.value=atual; document.body.appendChild(t);
+      t.select(); try{document.execCommand("copy"); ok();}catch(e){} document.body.removeChild(t);
+    }
+  };
+
+  $("pid").addEventListener("keydown", e => { if(e.key === "Enter") $("ir").click(); });
+}
+</script>
+
+</body>
+</html>
