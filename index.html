@@ -175,6 +175,20 @@
   .est.nada{background:var(--off-soft); color:var(--off)}
   .est.aqui{background:var(--accent); color:#fff}
 
+  /* placa */
+  .passo{font-size:.72rem; color:var(--ink-2); font-weight:800; text-transform:uppercase;
+    letter-spacing:.5px; margin:16px 2px 6px}
+  .urlbox{background:var(--accent-soft); border:1px solid var(--accent); border-radius:10px; padding:11px;
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.74rem; word-break:break-all; color:var(--ink)}
+  .aviso{background:var(--warn-soft); color:var(--warn); border-radius:10px; padding:11px 12px;
+    font-size:.82rem; font-weight:600; margin-top:12px; line-height:1.5}
+  .aviso a{color:var(--warn)}
+  .pl{display:flex; align-items:center; gap:9px; padding:10px 2px; border-top:1px solid var(--line)}
+  .pl:first-child{border-top:0}
+  .pl .n{flex:1; min-width:0}
+  .pl .n b{display:block; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .pl .n small{color:var(--ink-3); font-size:.7rem; font-family:ui-monospace,Menlo,monospace}
+
   /* dados */
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
   table{width:100%; border-collapse:collapse; font-size:.84rem}
@@ -187,7 +201,7 @@
 
   nav{position:fixed; bottom:0; left:0; right:0; z-index:1100; background:var(--card); border-top:1px solid var(--line);
     display:flex; max-width:540px; margin:0 auto; padding-bottom:env(safe-area-inset-bottom)}
-  nav button{flex:1; border:0; background:none; padding:9px 4px 7px; font-size:.68rem; color:var(--ink-2); cursor:pointer; font-weight:600}
+  nav button{flex:1; border:0; background:none; padding:9px 2px 7px; font-size:.62rem; color:var(--ink-2); cursor:pointer; font-weight:600}
   nav button .i{display:block; font-size:1.25rem; margin-bottom:2px}
   nav button.on{color:var(--accent)}
 
@@ -292,6 +306,48 @@
     <div id="listaSitios"><p class="note">Ainda não registaste nenhuma porta. Começa na aba Registar.</p></div>
   </section>
 
+  <!-- ═══════════ PLACA ═══════════ -->
+  <section id="tab-placa" class="tab">
+    <div class="card">
+      <h2 style="margin-bottom:4px">Programar uma placa</h2>
+
+      <label>Nome do negócio</label>
+      <input type="text" id="pNome" placeholder="ex.: Tasca do Zé" autocomplete="off">
+      <div class="row" style="margin-top:8px">
+        <button class="btn ghost mini" id="pBuscar">🔍 Procurar no Maps</button>
+        <button class="btn ghost mini" id="pFinder">Apanhar o código</button>
+      </div>
+
+      <label style="margin-top:14px">Código do negócio (ChIJ…) ou link do Maps</label>
+      <input type="text" id="pCod" placeholder="ChIJ…" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="aviso hide" id="pAviso"></div>
+
+      <button class="btn" id="pGerar">Gerar endereço da placa</button>
+
+      <div class="hide" id="pOut">
+        <div class="passo">1 · Testar primeiro</div>
+        <button class="btn ghost" id="pTestar">Abrir — é o negócio certo?</button>
+        <p class="note">Tem de abrir a caixa das estrelas com o nome <b>e a morada</b> certos. Se abrir outra casa, pára já.</p>
+
+        <div class="passo">2 · Escrever na placa</div>
+        <div class="urlbox" id="pUrl"></div>
+        <button class="btn ghost" id="pCopiar" style="margin-top:8px">Copiar endereço</button>
+        <p class="note">NFC Tools → <b>WRITE</b> → Add a record → <b>URL/URI</b> → gaveta em <b>https://</b> (ou <b>None</b> se colares o link todo) → OK → botão <b>Write</b> → <b>só então</b> encostas a placa.</p>
+
+        <div class="passo">3 · Proteger</div>
+        <p class="note">Depois de encostares e veres abrir: Other → <b>Set password</b> → password mestre, AUTHLIM desligado.</p>
+        <div class="aviso">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível — e o link vai ter de mudar um dia.</div>
+
+        <button class="btn" id="pGuardar">Guardar esta placa ✓</button>
+      </div>
+    </div>
+
+    <div class="card" id="pListaCard" style="display:none">
+      <h2>Placas que já programaste</h2>
+      <div id="pLista"></div>
+    </div>
+  </section>
+
   <!-- ═══════════ GUIÃO ═══════════ -->
   <section id="tab-guiao" class="tab">
     <div class="card" id="armasCard" style="display:none">
@@ -345,6 +401,7 @@
 <nav>
   <button data-tab="registar" class="on"><span class="i">✍️</span>Registar</button>
   <button data-tab="zonas"><span class="i">🗺️</span>Ruas</button>
+  <button data-tab="placa"><span class="i">📡</span>Placa</button>
   <button data-tab="guiao"><span class="i">💬</span>Guião</button>
   <button data-tab="dados"><span class="i">📊</span>Dados</button>
 </nav>
@@ -494,7 +551,7 @@ const GUIAO = [
 /* ───────── storage (mesma chave da v1 — dados antigos preservados) ───────── */
 let persist = true;
 const KEY = "placas-rua-v1";
-const DEFAULTS = { v:5, registos:[], teste:null, args:[], sitios:{}, aqui:{local:"",rua:""}, feitas:{}, ruas:{}, zonaAtiva:null };
+const DEFAULTS = { v:6, registos:[], teste:null, args:[], placas:[], sitios:{}, aqui:{local:"",rua:""}, feitas:{}, ruas:{}, zonaAtiva:null };
 function loadState(){
   try{
     const raw = localStorage.getItem(KEY);
@@ -516,6 +573,7 @@ if(!persist) document.getElementById("aviso").style.display = "block";
 if(!state.sitios || typeof state.sitios !== "object") state.sitios = {};
 if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"" };
 if(!Array.isArray(state.args)) state.args = [];
+if(!Array.isArray(state.placas)) state.placas = [];
 state.registos.forEach(r => {
   if(!r.local && r.zona && ZONAS_ANTIGAS[r.zona]) r.local = ZONAS_ANTIGAS[r.zona];
   if(!r.local) r.local = "";
@@ -885,6 +943,97 @@ document.getElementById("btOndeEstou").onclick = () => {
   });
 };
 
+/* ───────── placa NFC ───────── */
+const ENCURTADO = /(share\.google|maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)/i;
+const BASE_R = location.origin + location.pathname.replace(/[^/]*$/, "") + "r/";
+function extrairPID(txt){
+  txt = String(txt||"").trim();
+  const m = txt.match(/(?:place_id[:=]|placeid=)\s*([A-Za-z0-9_\-]{10,})/i);
+  if(m) return m[1];
+  const c = txt.match(/^([A-Za-z0-9_\-]{15,})$/);
+  if(c) return c[1];
+  return "";
+}
+const linkReview = c => "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(c);
+let pidAtual = "", urlAtual = "";
+
+function avisoPlaca(html){
+  const a = $("pAviso");
+  if(!html){ a.classList.add("hide"); a.innerHTML = ""; return; }
+  a.innerHTML = html; a.classList.remove("hide");
+}
+
+$("pBuscar").onclick = () => {
+  const n = $("pNome").value.trim();
+  if(!n){ toast("Escreve o nome do negócio"); $("pNome").focus(); return; }
+  window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(n), "_blank");
+};
+$("pFinder").onclick = () => {
+  window.open("https://www.brightlocal.com/free-local-seo-tools/google-id-and-review-link-generator/", "_blank");
+  toast("Cola lá o nome ou o link — devolve o ChIJ");
+};
+
+$("pGerar").onclick = () => {
+  const bruto = $("pCod").value.trim();
+  const codigo = extrairPID(bruto);
+  if(!codigo && ENCURTADO.test(bruto)){
+    $("pOut").classList.add("hide");
+    avisoPlaca('Esse \u00e9 um <b>link de partilha</b> \u2014 abre a ficha do neg\u00f3cio, n\u00e3o a caixa das estrelas. N\u00e3o serve para a placa.<br><br>' +
+      'Carrega em <b>Apanhar o c\u00f3digo</b> aqui em cima, cola l\u00e1 esse link, e ele devolve-te o <b>ChIJ\u2026</b>. Depois colas aqui.');
+    return;
+  }
+  if(!codigo){
+    $("pOut").classList.add("hide");
+    avisoPlaca('N\u00e3o reconheci o c\u00f3digo. Precisas do que come\u00e7a por <b>ChIJ</b> \u2014 usa o bot\u00e3o <b>Apanhar o c\u00f3digo</b>.');
+    return;
+  }
+  avisoPlaca("");
+  pidAtual = codigo;
+  urlAtual = BASE_R + "#" + codigo;
+  $("pUrl").textContent = urlAtual;
+  $("pOut").classList.remove("hide");
+  $("pOut").scrollIntoView({behavior:"smooth", block:"nearest"});
+};
+$("pTestar").onclick = () => { if(pidAtual) window.open(linkReview(pidAtual), "_blank"); };
+$("pCopiar").onclick = () => {
+  const b = $("pCopiar");
+  const ok = () => { b.textContent = "Copiado \u2713"; setTimeout(()=>b.textContent="Copiar endere\u00e7o", 1800); };
+  const fallback = () => {
+    const t = document.createElement("textarea"); t.value = urlAtual; document.body.appendChild(t);
+    t.select(); try{ document.execCommand("copy"); ok(); }catch(e){} document.body.removeChild(t);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(urlAtual).then(ok).catch(fallback);
+  else fallback();
+};
+$("pGuardar").onclick = () => {
+  if(!pidAtual){ toast("Gera o endere\u00e7o primeiro"); return; }
+  const nome = $("pNome").value.trim() || "(sem nome)";
+  state.placas = state.placas || [];
+  const ja = state.placas.find(x => x.pid === pidAtual);
+  if(ja){ ja.nome = nome; ja.dia = hojeISO(); }
+  else state.placas.unshift({ nome, pid: pidAtual, dia: hojeISO(), local: state.aqui.local, rua: state.aqui.rua });
+  saveState(); renderPlacas();
+  toast("Placa guardada \u2713");
+  $("pNome").value = ""; $("pCod").value = "";
+  $("pOut").classList.add("hide"); pidAtual = ""; urlAtual = "";
+};
+function renderPlacas(){
+  const ps = state.placas || [];
+  $("pListaCard").style.display = ps.length ? "block" : "none";
+  $("pLista").innerHTML = ps.map((x,i) =>
+    '<div class="pl"><span class="n"><b>'+esc(x.nome)+'</b><small>'+esc(x.pid)+'</small></span>'+
+    '<button class="btn ghost mini" data-ptest="'+i+'">Testar</button>'+
+    '<button class="x" data-pdel="'+i+'">\u2715</button></div>').join("");
+  $("pLista").querySelectorAll("[data-ptest]").forEach(b => b.onclick = () =>
+    window.open(linkReview(ps[b.dataset.ptest].pid), "_blank"));
+  $("pLista").querySelectorAll("[data-pdel]").forEach(b => b.onclick = () => {
+    if(b.classList.contains("confirm")){ state.placas.splice(b.dataset.pdel,1); saveState(); renderPlacas(); }
+    else { b.classList.add("confirm"); b.textContent = "apagar?";
+           setTimeout(()=>{ b.classList.remove("confirm"); b.textContent = "\u2715"; }, 2500); }
+  });
+}
+
 /* ───────── guião ───────── */
 function argPorId(id){
   for(let i=0;i<GUIAO.length;i++){
@@ -998,6 +1147,7 @@ $("fileImport").onchange = e => {
       if(!state.sitios || typeof state.sitios !== "object") state.sitios = {};
       if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"" };
       if(!Array.isArray(state.args)) state.args = [];
+      if(!Array.isArray(state.placas)) state.placas = [];
       saveState(); renderTudo(); pintarMapa(); toast("Dados importados ✓");
     }catch(_){ toast("Ficheiro inválido"); }
     e.target.value = "";
@@ -1017,13 +1167,17 @@ $("btApagar").onclick = () => {
 function showTab(name){
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.id === "tab-"+name));
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === name));
+  if(name === "placa" && !$("pNome").value && state.registos.length){
+    const u = state.registos[state.registos.length-1];
+    if(u && u.res === "venda") $("pNome").value = u.nome;
+  }
   if(name === "zonas"){ tentarMapa(); if(map) setTimeout(()=>{ map.invalidateSize(); }, 60); }
   window.scrollTo(0,0);
 }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 
 /* ───────── boot ───────── */
-function renderTudo(){ renderAqui(); renderHoje(); renderSitios(); renderDados(); pintarMapa(); }
+function renderTudo(){ renderAqui(); renderHoje(); renderSitios(); renderPlacas(); renderDados(); pintarMapa(); }
 renderGuiao(); renderTudo(); saveState();
 
 /* ───────── funciona sem rede (quando aberta a partir do link) ───────── */
