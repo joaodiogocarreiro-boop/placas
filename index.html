@@ -208,6 +208,24 @@
   .aviso{background:var(--warn-soft); color:var(--warn); border-radius:10px; padding:11px 12px;
     font-size:.82rem; font-weight:600; margin-top:12px; line-height:1.5}
   .aviso a{color:var(--warn)}
+  /* gráfico das semanas */
+  .sem{display:flex; align-items:flex-end; gap:6px; height:120px; margin:10px 2px 4px}
+  .sem .col{flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%}
+  .sem .bar{width:100%; border-radius:5px 5px 0 0; background:var(--accent); min-height:3px;
+    display:flex; align-items:flex-start; justify-content:center}
+  .sem .bar.demo{background:var(--accent-soft); border:1px solid var(--accent); border-bottom:0}
+  .sem .col small{font-size:.6rem; color:var(--ink-3); margin-top:4px; text-align:center; line-height:1.2}
+  .sem .col .pc{font-size:.66rem; font-weight:800; color:var(--ink-2); margin-bottom:3px}
+  .semleg{display:flex; gap:12px; font-size:.68rem; color:var(--ink-2); margin:2px 2px 0}
+  .semleg i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:4px; vertical-align:-1px}
+  .fr{display:flex; align-items:center; gap:9px; padding:10px 2px; border-top:1px solid var(--line)}
+  .fr:first-child{border-top:0}
+  .fr .n{flex:1; min-width:0}
+  .fr .n b{display:block; font-size:.9rem}
+  .fr .n small{color:var(--ink-3); font-size:.7rem; display:block; line-height:1.4}
+  .fr .dias{font-size:.68rem; font-weight:800; padding:4px 8px; border-radius:999px; white-space:nowrap;
+    background:var(--accent-soft); color:var(--accent)}
+  .fr .dias.velho{background:var(--warn-soft); color:var(--warn)}
   .pl{display:flex; align-items:center; gap:9px; padding:10px 2px; border-top:1px solid var(--line)}
   .pl:first-child{border-top:0}
   .pl .n{flex:1; min-width:0}
@@ -248,27 +266,43 @@
   <!-- ═══════════ REGISTAR ═══════════ -->
   <section id="tab-registar" class="tab on">
     <div class="card aqui">
-      <div class="row spread" style="margin-bottom:2px">
+      <div class="row spread" style="margin-bottom:6px">
         <h2 style="margin:0">Onde estás agora</h2>
         <button class="btn ghost mini" id="btGPS">📍 Detetar</button>
       </div>
+
+      <div class="chips" id="fModo" style="margin-bottom:10px">
+        <button class="chip on" data-val="rua">🚶 Rua</button>
+        <button class="chip" data-val="feira">🎪 Feira</button>
+      </div>
+
       <div class="grid2" style="gap:8px">
         <div>
           <label>Localidade</label>
           <input type="text" id="fLocal" list="dlLocais" placeholder="ex.: Seixal" autocomplete="off">
         </div>
-        <div>
+        <div id="wrapRua">
           <label>Rua</label>
           <input type="text" id="fRua" list="dlRuas" placeholder="ex.: R. da Cordoaria" autocomplete="off">
+        </div>
+        <div id="wrapFeira" class="hide">
+          <label>Feira</label>
+          <input type="text" id="fFeira" list="dlFeiras" placeholder="ex.: Feira da Ladra" autocomplete="off">
         </div>
       </div>
       <datalist id="dlLocais"></datalist>
       <datalist id="dlRuas"></datalist>
-      <div class="row" style="margin-top:10px">
+      <datalist id="dlFeiras"></datalist>
+
+      <div class="aviso hide" id="avisoFeira" style="margin-top:10px"></div>
+
+      <button class="btn" id="btSessao" style="margin-top:10px">▶ Comecei aqui</button>
+      <p class="note" id="notaSessao" style="margin:6px 2px 0">Carrega ao chegar e ao sair. É isto que te dá os <b>euros por hora</b> — o número que decide onde vale a pena voltar.</p>
+
+      <div class="row" style="margin-top:10px" id="rowRua">
         <button class="btn ghost mini" id="btRuaFeita" style="color:var(--ok);border-color:var(--ok)">Rua varrida ✓</button>
         <button class="btn ghost mini" id="btRuaMeio" style="color:var(--warn);border-color:var(--warn)">Deixei a meio</button>
       </div>
-      <p class="note" style="margin-bottom:0">Escreves uma vez e fica. Só mudas quando mudares de rua.</p>
     </div>
 
     <div class="today">
@@ -278,10 +312,11 @@
     </div>
 
     <div class="card">
-      <h2 style="margin:0 2px 10px">Registar porta</h2>
+      <h2 style="margin:0 2px 10px" id="hRegistar">Registar porta</h2>
 
-      <label>Negócio</label>
+      <label id="lblNome">Negócio</label>
       <input type="text" id="fNome" placeholder="ex.: Tasca do Zé" autocomplete="off">
+      <div class="aviso hide" id="avisoRepetido" style="margin-top:8px"></div>
 
       <label>Tipo</label>
       <div class="chips" id="fTipo"></div>
@@ -325,6 +360,12 @@
     <div class="card" id="pendCard" style="display:none">
       <h2 style="color:var(--warn)">Ruas que deixaste a meio</h2>
       <div id="listaPend"></div>
+    </div>
+
+    <div class="card" id="feirasCard" style="display:none">
+      <h2>Feiras</h2>
+      <p class="note" style="margin-top:0">Ordenadas pela que está há mais tempo sem ires. As feiras repetem-se — o que interessa não é «já fui», é <b>há quanto tempo</b> e <b>quantas bancas ainda te faltam lá</b>.</p>
+      <div id="listaFeiras"></div>
     </div>
 
     <p class="note">Cada rua que fazes fica guardada aqui sozinha. Marca <b>varrida</b> quando acabares uma, ou <b>a meio</b> se tiveres de sair — assim sabes sempre onde voltar.</p>
@@ -429,6 +470,25 @@
       <div class="tile"><div class="v" id="dConv">—</div><div class="l">Conversão</div></div>
     </div>
 
+    <div class="card" id="domingoCard">
+      <h2>Domingo · 10 minutos</h2>
+      <p class="note" style="margin-top:0">A conversão não conta os fechados — uma porta fechada não foi uma oportunidade perdida.</p>
+
+      <div class="passo">Estás a melhorar?</div>
+      <div id="graficoSemanas"></div>
+      <p class="note" id="lidoSemanas"></p>
+
+      <div class="passo">Onde é que rende mais</div>
+      <table>
+        <thead><tr><th>Sítio</th><th>Portas</th><th>Vendas</th><th>€/hora</th></tr></thead>
+        <tbody id="tbodyRende"></tbody>
+      </table>
+      <p class="note">O €/hora só aparece nos sítios onde carregaste em <b>Comecei</b> e <b>Acabei</b>.</p>
+
+      <div class="passo">A decisão da semana</div>
+      <p class="note" id="decisaoSemana"></p>
+    </div>
+
     <div class="card">
       <h2>Retornos pendentes («Voltar»)</h2>
       <div id="listaVoltar"><p class="note">Nenhum pendente. 👌</p></div>
@@ -478,11 +538,17 @@ const TIPOS = ["🍽 Restauração","☕ Café/Pastelaria","💈 Salão/Barbeari
 const RES = [
   {id:"venda", txt:"✅ Vendeu", cls:"ok"},
   {id:"voltar", txt:"🔁 Voltar", cls:"warn"},
-  {id:"nao", txt:"❌ Não", cls:"bad"},
+  {id:"nao", txt:"❌ Não (viu a demo)", cls:"bad"},
+  {id:"porta", txt:"🚫 Nem me ouviu", cls:"bad"},
   {id:"fech", txt:"🚪 Fechado/Férias", cls:"off"}
 ];
 const PRECOS = [49,45,40,79];
 const PAGS = ["MB Way","Dinheiro"];
+
+/* Feiras já mapeadas — só para sugerir enquanto escreve. Pode escrever qualquer outra. */
+const FEIRAS = ["LX Market (LX Factory)","Feira da Ladra","Feira da Avenida","FIARTIL (Estoril)",
+  "Mercado da Baixa","Mercado de Santa Clara","Feira de Belém","FeirAlegria","Feira do Príncipe Real",
+  "Feira do Relógio","Anjos70","Crafts & Design (Estrela)","Bazar Bombarda","Com.Tradição","Mercado CCB"];
 
 /* ───────── GUIÃO v3 — falado, pela ordem da conversa ─────────
    Argumentos integrados no momento em que se dizem (não numa lista à parte).
@@ -597,7 +663,9 @@ const EXTRAS = [
 /* ───────── storage (mesma chave da v1 — dados antigos preservados) ───────── */
 let persist = true;
 const KEY = "placas-rua-v1";
-const DEFAULTS = { v:7, registos:[], teste:null, args:[], frases:{}, placas:[], sitios:{}, aqui:{local:"",rua:""}, feitas:{}, ruas:{}, zonaAtiva:null };
+const DEFAULTS = { v:8, registos:[], teste:null, args:[], frases:{}, placas:[], sitios:{},
+  aqui:{local:"",rua:"",feira:"",modo:"rua"}, sessao:null, sessoes:[],
+  feitas:{}, ruas:{}, zonaAtiva:null };
 function loadState(){
   try{
     const raw = localStorage.getItem(KEY);
@@ -617,14 +685,19 @@ if(!persist) document.getElementById("aviso").style.display = "block";
 
 /* migração: registos antigos passam a ter localidade */
 if(!state.sitios || typeof state.sitios !== "object") state.sitios = {};
-if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"" };
+if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"", feira:"", modo:"rua" };
+if(typeof state.aqui.feira !== "string") state.aqui.feira = "";
+if(state.aqui.modo !== "feira") state.aqui.modo = "rua";
 if(!Array.isArray(state.args)) state.args = [];
 if(!Array.isArray(state.placas)) state.placas = [];
+if(!Array.isArray(state.sessoes)) state.sessoes = [];
 if(!state.frases || typeof state.frases !== "object") state.frases = {};
 state.registos.forEach(r => {
   if(!r.local && r.zona && ZONAS_ANTIGAS[r.zona]) r.local = ZONAS_ANTIGAS[r.zona];
   if(!r.local) r.local = "";
   if(!r.rua) r.rua = "";
+  if(typeof r.feira !== "string") r.feira = "";      /* registos antigos são todos de rua */
+  if(r.modo !== "feira") r.modo = "rua";
 });
 
 /* ───────── helpers ───────── */
@@ -633,8 +706,43 @@ const esc = s => String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;"
 const eur = n => "€" + (n||0);
 const slug = v => String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
   .toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
-const zCurta = r => { const l=(r&&r.local)||"", u=(r&&r.rua)||"";
+const zCurta = r => {
+  if(r && r.modo === "feira") return "🎪 " + ((r.feira||"").trim() || "feira sem nome");
+  const l=(r&&r.local)||"", u=(r&&r.rua)||"";
   if(!l && !u) return "—"; return u ? (l ? l+" · "+u : u) : l; };
+
+/* ─── datas ─── */
+const diaParaData = d => { const p = String(d||"").split("-"); return new Date(+p[0], (+p[1]||1)-1, +p[2]||1); };
+function diasDesde(dia){
+  if(!dia) return null;
+  const ms = diaParaData(hojeISO()) - diaParaData(dia);
+  return Math.max(0, Math.round(ms / 86400000));
+}
+const haQuanto = d => { const n = diasDesde(d);
+  return n === null ? "" : n === 0 ? "hoje" : n === 1 ? "ontem" : "há " + n + " dias"; };
+/* segunda-feira da semana de uma data, em ISO */
+function semanaDe(dia){
+  const d = diaParaData(dia);
+  const off = (d.getDay() + 6) % 7;           /* 0 = segunda */
+  d.setDate(d.getDate() - off);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+const ddmm = dia => { const p = String(dia||"").split("-"); return p.length===3 ? p[2]+"/"+p[1] : dia; };
+
+/* ─── contas honestas ─────────────────────────────────────────────
+   Fechado não entra em lado nenhum: não foi uma oportunidade.
+   «Nem me ouviu» entra nas abordadas mas não nas que viram a demo. */
+const ABORDADAS = r => r.res !== "fech";
+const VIU_DEMO  = r => r.res === "venda" || r.res === "voltar" || r.res === "nao";
+function contas(rs){
+  const ab = rs.filter(ABORDADAS), demo = ab.filter(VIU_DEMO), v = ab.filter(r => r.res === "venda");
+  return {
+    portas: rs.length, abordadas: ab.length, demos: demo.length, vendas: v.length,
+    euros: v.reduce((a,r)=>a+(r.preco||0),0),
+    conv: ab.length ? Math.round(100*v.length/ab.length) : null,
+    taxaDemo: ab.length ? Math.round(100*demo.length/ab.length) : null
+  };
+}
 
 /* ─── sítios e ruas ─── */
 function sitio(local){
@@ -656,8 +764,14 @@ function statsFiltro(fn){
   return { portas: rs.length, vendas: v.length, euros: v.reduce((a,r)=>a+r.preco,0),
            voltar: rs.filter(r=>r.res==="voltar" && !r.resolvido).length };
 }
-const statsLocal = lk => statsFiltro(r => slug(r.local) === lk);
-const statsRua = (lk,rk) => statsFiltro(r => slug(r.local) === lk && slug(r.rua) === rk);
+const daRua = r => r.modo !== "feira";
+/* «há quantos dias» do último registo que passa no filtro */
+function ultimaVez(fn){
+  const ds = state.registos.filter(fn).map(r => r.dia).filter(Boolean).sort();
+  return ds.length ? haQuanto(ds[ds.length-1]) : "";
+}
+const statsLocal = lk => statsFiltro(r => daRua(r) && slug(r.local) === lk);
+const statsRua = (lk,rk) => statsFiltro(r => daRua(r) && slug(r.local) === lk && slug(r.rua) === rk);
 let toastT = null;
 function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("on");
   clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"), 1800); }
@@ -703,14 +817,122 @@ function renderAqui(){
   const sl = state.sitios[slug(state.aqui.local)];
   const ruas = sl ? Object.keys(sl.ruas).map(k => sl.ruas[k].nome).filter(Boolean).sort() : [];
   $("dlRuas").innerHTML = ruas.map(n => '<option value="'+esc(n)+'">').join("");
+
+  const ff = $("fFeira");
+  if(document.activeElement !== ff && ff.value !== (state.aqui.feira||"")) ff.value = state.aqui.feira||"";
+  const jaFeitas = [...new Set(state.registos.filter(r=>r.modo==="feira").map(r=>r.feira).filter(Boolean))];
+  $("dlFeiras").innerHTML = [...new Set(jaFeitas.concat(FEIRAS))]
+    .map(n => '<option value="'+esc(n)+'">').join("");
+
+  renderModo(); renderSessao(); renderAvisoFeira();
 }
 function comitarAqui(){
   state.aqui.local = $("fLocal").value.trim();
   state.aqui.rua   = $("fRua").value.trim();
+  state.aqui.feira = $("fFeira").value.trim();
   if(state.aqui.local) sitio(state.aqui.local);
-  if(state.aqui.local && state.aqui.rua) ruaObj(state.aqui.local, state.aqui.rua, true);
+  if(state.aqui.modo !== "feira" && state.aqui.local && state.aqui.rua) ruaObj(state.aqui.local, state.aqui.rua, true);
   saveState();
 }
+
+/* ─── rua ou feira ─── */
+function renderModo(){
+  const f = state.aqui.modo === "feira";
+  $("fModo").querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.val === state.aqui.modo));
+  $("wrapRua").classList.toggle("hide", f);
+  $("wrapFeira").classList.toggle("hide", !f);
+  $("rowRua").classList.toggle("hide", f);
+  $("hRegistar").textContent = f ? "Registar banca" : "Registar porta";
+  $("lblNome").textContent   = f ? "Banca / marca" : "Negócio";
+  $("fNome").placeholder     = f ? "ex.: Cerâmica da Rita" : "ex.: Tasca do Zé";
+  $("btGuardar").textContent = f ? "Guardar banca" : "Guardar porta";
+}
+$("fModo").querySelectorAll(".chip").forEach(c => c.onclick = () => {
+  if(state.sessao){ toast("Acaba a sessão antes de mudares"); return; }
+  state.aqui.modo = c.dataset.val;
+  saveState(); renderTudo();
+});
+$("fFeira").addEventListener("input", () => {
+  state.aqui.feira = $("fFeira").value.trim();
+  $("hZona").textContent = zCurta(state.aqui);
+  saveState(); renderAvisoFeira();
+});
+
+/* quando foi a última vez nesta feira, e quanto já lá fizeste */
+function renderAvisoFeira(){
+  const a = $("avisoFeira"), nome = (state.aqui.feira||"").trim();
+  if(state.aqui.modo !== "feira" || !nome){ a.classList.add("hide"); return; }
+  const rs = state.registos.filter(r => r.modo === "feira" && slug(r.feira) === slug(nome));
+  if(!rs.length){ a.classList.add("hide"); return; }
+  const dias = [...new Set(rs.map(r => r.dia))].sort();
+  const c = contas(rs);
+  a.innerHTML = "Já cá estiveste <b>"+dias.length+(dias.length===1?" vez":" vezes")+"</b>, a última <b>"+
+    haQuanto(dias[dias.length-1])+"</b>. Falaste com <b>"+rs.length+"</b> bancas ao todo"+
+    (c.vendas ? " e vendeste <b>"+c.vendas+"</b>." : ".");
+  a.classList.remove("hide");
+}
+
+/* ─── sessão: comecei / acabei ─── */
+const chaveSitio = a => a.modo === "feira" ? "feira|"+slug(a.feira) : "rua|"+slug(a.local)+"|"+slug(a.rua);
+const nomeSitio  = a => zCurta(a);
+function duracao(min){
+  if(min < 60) return min + " min";
+  const h = Math.floor(min/60), m = min%60;
+  return h + "h" + (m ? String(m).padStart(2,"0") : "");
+}
+function renderSessao(){
+  const b = $("btSessao"), n = $("notaSessao");
+  if(state.sessao){
+    const min = Math.max(1, Math.round((Date.now() - new Date(state.sessao.inicio).getTime())/60000));
+    b.textContent = "⏹ Acabei — " + duracao(min);
+    b.style.background = "var(--warn)";
+    n.innerHTML = "A contar desde as <b>" + new Date(state.sessao.inicio)
+      .toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"}) + "</b> em " + esc(state.sessao.nome) + ".";
+  } else {
+    b.textContent = "▶ Comecei aqui";
+    b.style.background = "";
+    n.innerHTML = "Carrega ao chegar e ao sair. É isto que te dá os <b>euros por hora</b> — o número que decide onde vale a pena voltar.";
+  }
+}
+$("btSessao").onclick = () => {
+  comitarAqui();
+  if(state.sessao){
+    const min = Math.max(1, Math.round((Date.now() - new Date(state.sessao.inicio).getTime())/60000));
+    state.sessoes.push(Object.assign({}, state.sessao, { fim: new Date().toISOString(), minutos: min }));
+    state.sessao = null;
+    saveState(); renderTudo();
+    toast("Sessão fechada — " + duracao(min));
+    return;
+  }
+  const a = state.aqui;
+  if(a.modo === "feira" ? !a.feira : (!a.local || !a.rua)){
+    toast(a.modo === "feira" ? "Escreve o nome da feira" : "Escreve a localidade e a rua");
+    return;
+  }
+  state.sessao = { inicio: new Date().toISOString(), dia: hojeISO(), modo: a.modo,
+                   local: a.local, rua: a.rua, feira: a.feira,
+                   chave: chaveSitio(a), nome: nomeSitio(a) };
+  saveState(); renderTudo();
+  toast("A contar. Bom trabalho 💪");
+};
+setInterval(() => { if(state.sessao) renderSessao(); }, 30000);
+
+/* ─── já falaste com este? ─── */
+$("fNome").addEventListener("input", () => {
+  const a = $("avisoRepetido"), nome = $("fNome").value.trim();
+  if(nome.length < 3){ a.classList.add("hide"); return; }
+  const k = slug(nome);
+  const antes = state.registos.filter(r => slug(r.nome) === k).sort((x,y)=>y.ts.localeCompare(x.ts));
+  if(!antes.length){ a.classList.add("hide"); return; }
+  const u = antes[0];
+  const COMO = { venda:"comprou", voltar:"pediu para voltares", nao:"viu a demo e disse que não",
+                 porta:"nem te ouviu", fech:"estava fechado" };
+  a.innerHTML = "⚠️ <b>Já falaste com este.</b> " + haQuanto(u.dia).replace(/^h/,"H") +
+    ", em " + esc(zCurta(u)) + " — " + (COMO[u.res] || u.res) + "." +
+    (u.nota ? "<br><i>«" + esc(u.nota) + "»</i>" : "") +
+    (antes.length > 1 ? "<br>São <b>" + antes.length + "</b> abordagens ao todo." : "");
+  a.classList.remove("hide");
+});
 let localAnterior = state.aqui.local || "";
 ["fLocal","fRua"].forEach(id => {
   $(id).addEventListener("input", () => {
@@ -783,7 +1005,8 @@ $("btGuardar").onclick = () => {
     id: Date.now() + "" + Math.floor(Math.random()*999),
     ts: new Date().toISOString(),
     dia: hojeISO(),
-    local: state.aqui.local, rua: state.aqui.rua, zona: "",
+    local: state.aqui.local, rua: state.aqui.modo === "feira" ? "" : state.aqui.rua, zona: "",
+    modo: state.aqui.modo, feira: state.aqui.modo === "feira" ? state.aqui.feira : "",
     nome, tipo: tipo || "📦 Outro", res,
     preco: res === "venda" ? Number(sel("fPreco") || 49) : 0,
     pag: res === "venda" ? (sel("fPag") || "") : "",
@@ -793,15 +1016,17 @@ $("btGuardar").onclick = () => {
   });
   saveState();
   ["fNome","fQuando","fNota"].forEach(i => $(i).value = "");
+  $("avisoRepetido").classList.add("hide");
   document.querySelectorAll("#fRes .chip, #fPreco .chip, #fPag .chip").forEach(c => c.classList.remove("on"));
   $("grpVenda").classList.add("hide"); $("grpVoltar").classList.add("hide");
-  toast(res === "venda" ? "💰 Venda registada!" : "Porta registada");
+  toast(res === "venda" ? "💰 Venda registada!" : (state.aqui.modo === "feira" ? "Banca registada" : "Porta registada"));
   geoMarcar(state.registos[state.registos.length-1]);
   renderTudo();
 };
 
 /* ───────── hoje ───────── */
-const BADGE = { venda:["venda","VENDA"], voltar:["voltar","VOLTAR"], nao:["nao","NÃO"], fech:["fech","FECHADO"] };
+const BADGE = { venda:["venda","VENDA"], voltar:["voltar","VOLTAR"], nao:["nao","NÃO"],
+                porta:["nao","NEM OUVIU"], fech:["fech","FECHADO"] };
 function renderHoje(){
   const hoje = state.registos.filter(r => r.dia === hojeISO()).sort((a,b) => b.ts.localeCompare(a.ts));
   $("tHoje").textContent = hoje.length;
@@ -862,9 +1087,11 @@ function renderSitios(){
     const linhas = rks.map(rk => {
       const r = sl.ruas[rk], rs = statsRua(lk,rk), atual = (lk===aquiL && rk===aquiR);
       const e = ESTADOS[r.estado] || ["nada","POR ACABAR"];
+      const q = ultimaVez(x => daRua(x) && slug(x.local)===lk && slug(x.rua)===rk);
       return '<div class="rr'+(r.estado==="feita"?" feita":"")+'">'+
         '<span class="rn" data-ir="'+lk+'|'+rk+'"><b>'+(atual?"📍 ":"")+esc(r.nome)+'</b>'+
-        '<small>'+rs.portas+' portas · '+rs.vendas+' vendas · '+eur(rs.euros)+(rs.voltar?' · '+rs.voltar+' «Voltar»':'')+'</small></span>'+
+        '<small>'+rs.portas+' portas · '+rs.vendas+' vendas · '+eur(rs.euros)+(rs.voltar?' · '+rs.voltar+' «Voltar»':'')+
+        (q?' · <b>'+q+'</b>':'')+'</small></span>'+
         '<button class="est '+e[0]+'" data-est="'+lk+'|'+rk+'">'+e[1]+'</button></div>';
     }).join("") || '<p class="note">Sem ruas ainda.</p>';
     return '<details class="loc" data-l="'+lk+'"'+((abertos[lk]||lk===aquiL)?' open':'')+'>'+
@@ -887,9 +1114,47 @@ function renderSitios(){
   });
 }
 
+/* ───────── feiras ─────────
+   Não há estrutura à parte: tudo se calcula dos próprios registos.
+   Uma feira repete-se — o que interessa é há quanto tempo lá foste. */
+function feirasResumo(){
+  const m = {};
+  state.registos.filter(r => r.modo === "feira" && r.feira).forEach(r => {
+    const k = slug(r.feira);
+    if(!m[k]) m[k] = { nome: r.feira, rs: [], dias: {} };
+    m[k].rs.push(r); m[k].dias[r.dia] = true;
+  });
+  return Object.keys(m).map(k => {
+    const f = m[k], dias = Object.keys(f.dias).sort(), ult = dias[dias.length-1];
+    const min = state.sessoes.filter(s => s.modo === "feira" && slug(s.feira) === k)
+                             .reduce((a,s)=>a+(s.minutos||0), 0);
+    return Object.assign({ k, nome: f.nome, dias, ult, idas: dias.length, minutos: min }, contas(f.rs));
+  }).sort((a,b) => (diasDesde(b.ult)||0) - (diasDesde(a.ult)||0));
+}
+function renderFeiras(){
+  const fs = feirasResumo();
+  $("feirasCard").style.display = fs.length ? "block" : "none";
+  if(!fs.length) return;
+  $("listaFeiras").innerHTML = fs.map(f => {
+    const n = diasDesde(f.ult);
+    const eh = f.minutos ? " · " + eur(Math.round(f.euros/(f.minutos/60))) + "/h" : "";
+    return '<div class="fr"><span class="n" data-feira="'+esc(f.nome)+'"><b>'+esc(f.nome)+'</b>'+
+      '<small>'+f.idas+(f.idas===1?" ida":" idas")+' · '+f.portas+(f.portas===1?" banca":" bancas")+
+      ' · '+f.vendas+(f.vendas===1?" venda":" vendas")+' · '+eur(f.euros)+eh+'</small>'+
+      '<small>'+(f.conv===null?"—":f.conv+"% conversão")+(f.taxaDemo===null?"":" · "+f.taxaDemo+"% viram a demo")+'</small></span>'+
+      '<span class="dias'+(n>=21?" velho":"")+'">'+haQuanto(f.ult)+'</span></div>';
+  }).join("");
+  $("listaFeiras").querySelectorAll("[data-feira]").forEach(b => b.onclick = () => {
+    if(state.sessao){ toast("Acaba a sessão primeiro"); return; }
+    state.aqui.modo = "feira"; state.aqui.feira = b.dataset.feira;
+    saveState(); showTab("registar"); renderTudo();
+    toast("Estás na " + b.dataset.feira);
+  });
+}
+
 /* ───────── mapa ───────── */
 let map = null, camada = null, marcaEu = null;
-const CORPIN = { venda:"#188038", voltar:"#B45309", nao:"#B3261E", fech:"#5F6368" };
+const CORPIN = { venda:"#188038", voltar:"#B45309", nao:"#B3261E", porta:"#7F1D1D", fech:"#5F6368" };
 
 function posicao(cb){
   if(!navigator.geolocation){ cb(null); return; }
@@ -1342,14 +1607,86 @@ $("btCopiarGuiao").onclick = () => {
 };
 
 /* ───────── dados ───────── */
+/* ───────── domingo ─────────
+   Por semana e não por mês: um mês dá um ponto só, e um ponto não ensina nada.
+   A taxa de demo sobe muito antes das vendas — é aí que se vê o guião a melhorar. */
+function porSemana(n){
+  const m = {};
+  state.registos.forEach(r => { const s = semanaDe(r.dia); (m[s] = m[s] || []).push(r); });
+  return Object.keys(m).sort().slice(-n).map(s => Object.assign({ semana: s }, contas(m[s])));
+}
+function renderDomingo(){
+  const sems = porSemana(6).filter(s => s.abordadas > 0);
+  const g = $("graficoSemanas"), lido = $("lidoSemanas");
+  if(sems.length < 1){
+    g.innerHTML = '<p class="note">Ainda não há semanas com registos. Volta cá no domingo.</p>';
+    lido.textContent = ""; $("tbodyRende").innerHTML = "";
+    $("decisaoSemana").textContent = "Regista uma semana inteira e eu digo-te o que mudar.";
+    return;
+  }
+  const alto = Math.max(10, ...sems.map(s => s.taxaDemo || 0));
+  g.innerHTML = '<div class="sem">' + sems.map(s => {
+    const hD = Math.round(100 * (s.taxaDemo||0) / alto), hC = Math.round(100 * (s.conv||0) / alto);
+    return '<div class="col">' +
+      '<div class="pc">' + (s.conv===null?"—":s.conv+"%") + '</div>' +
+      '<div class="bar demo" style="height:' + Math.max(hD,2) + '%">' +
+        '<div class="bar" style="height:' + (hD ? Math.round(100*hC/hD) : 0) + '%;width:100%"></div>' +
+      '</div>' +
+      '<small>' + ddmm(s.semana) + '<br>' + s.abordadas + 'p</small></div>';
+  }).join("") + '</div>' +
+  '<div class="semleg"><span><i style="background:var(--accent)"></i>vendeu</span>' +
+  '<span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>viu a demo</span></div>';
+
+  const u = sems[sems.length-1], p = sems.length > 1 ? sems[sems.length-2] : null;
+  if(!p){
+    lido.innerHTML = "Primeira semana com registos: <b>"+u.conv+"%</b> de conversão, <b>"+u.taxaDemo+"%</b> deixaram-te fazer a demo. É a tua base — a partir daqui compara-se.";
+  } else {
+    const dC = u.conv - p.conv, dD = u.taxaDemo - p.taxaDemo;
+    const sinal = n => (n > 0 ? "subiu " + n : n < 0 ? "desceu " + Math.abs(n) : "ficou igual");
+    lido.innerHTML = "Esta semana a conversão <b>"+sinal(dC)+(dC?" pontos":"")+"</b> ("+p.conv+"% → "+u.conv+"%) e a taxa de demo <b>"+sinal(dD)+(dD?" pontos":"")+"</b> ("+p.taxaDemo+"% → "+u.taxaDemo+"%)." +
+      (dD > 0 && dC <= 0 ? " <b>Boa notícia:</b> estás a entrar mais — as vendas costumam vir a seguir." : "") +
+      (u.abordadas < 15 ? " Atenção: só "+u.abordadas+" abordagens, é pouco para tirar conclusões." : "");
+  }
+
+  /* onde rende mais — só onde há tempo medido */
+  const sitios = {};
+  state.sessoes.forEach(s => {
+    const k = s.chave || (s.modo === "feira" ? "feira|"+slug(s.feira) : "rua|"+slug(s.local)+"|"+slug(s.rua));
+    if(!sitios[k]) sitios[k] = { nome: s.nome || "—", minutos: 0, rs: [] };
+    sitios[k].minutos += (s.minutos||0);
+  });
+  state.registos.forEach(r => {
+    const k = chaveSitio(r);
+    if(sitios[k]) sitios[k].rs.push(r);
+  });
+  const linhas = Object.keys(sitios).map(k => Object.assign({ nome: sitios[k].nome, minutos: sitios[k].minutos }, contas(sitios[k].rs)))
+    .filter(x => x.minutos > 0)
+    .map(x => Object.assign(x, { eh: x.minutos ? x.euros/(x.minutos/60) : 0 }))
+    .sort((a,b) => b.eh - a.eh);
+  $("tbodyRende").innerHTML = linhas.length
+    ? linhas.map(x => "<tr><td>"+esc(x.nome)+"</td><td>"+x.portas+"</td><td>"+x.vendas+"</td><td><b>"+eur(Math.round(x.eh))+"</b></td></tr>").join("")
+    : '<tr><td colspan="4" class="note">Carrega em <b>Comecei</b> e <b>Acabei</b> num sítio e ele aparece aqui.</td></tr>';
+
+  /* uma decisão, não cinco */
+  const pend = state.registos.filter(r => r.res === "voltar" && !r.resolvido).length;
+  const partes = [];
+  if(linhas.length) partes.push("O sítio que mais te rende é <b>"+esc(linhas[0].nome)+"</b> ("+eur(Math.round(linhas[0].eh))+"/hora). É aí que voltas.");
+  else partes.push("Ainda não tens tempos medidos — usa o <b>Comecei/Acabei</b> esta semana e no próximo domingo já sabes onde rendes mais.");
+  if(u.taxaDemo !== null && u.taxaDemo < 50) partes.push("Menos de metade deixa-te fazer a demo: o que tens de mudar é a <b>entrada</b>, não o preço.");
+  else if(u.conv !== null && u.taxaDemo !== null && u.taxaDemo >= 50 && u.conv < 15) partes.push("Entras bem mas não fechas: o problema está no <b>fecho ou no preço</b>, não na abordagem.");
+  if(pend) partes.push("Tens <b>"+pend+"</b> retorno"+(pend>1?"s":"")+" por fazer — são as vendas mais fáceis que tens.");
+  $("decisaoSemana").innerHTML = partes.join(" ");
+}
+
 function renderDados(){
   const rs = state.registos;
   const vendas = rs.filter(r => r.res === "venda");
   $("dPortas").textContent = rs.length;
   $("dVendas").textContent = vendas.length;
   $("dEuros").textContent = eur(vendas.reduce((s,r)=>s+r.preco,0));
-  const abordadas = rs.filter(r => r.res !== "fech").length;
+  const abordadas = rs.filter(ABORDADAS).length;
   $("dConv").textContent = abordadas ? Math.round(100*vendas.length/abordadas)+"%" : "—";
+  renderDomingo();
 
   const pend = rs.filter(r => r.res === "voltar" && !r.resolvido).sort((a,b)=>a.ts.localeCompare(b.ts));
   $("listaVoltar").innerHTML = pend.length ? pend.map(r =>
@@ -1360,7 +1697,11 @@ function renderDados(){
     const r = state.registos.find(x => x.id === b.dataset.ret);
     if(!r) return;
     r.resolvido = true;
-    if(r.local){ state.aqui.local = r.local; state.aqui.rua = r.rua || ""; }
+    if(!state.sessao){
+      state.aqui.modo = r.modo === "feira" ? "feira" : "rua";
+      if(r.modo === "feira") state.aqui.feira = r.feira || "";
+      else if(r.local){ state.aqui.local = r.local; state.aqui.rua = r.rua || ""; }
+    }
     saveState();
     showTab("registar");
     $("fNome").value = r.nome;
@@ -1428,7 +1769,7 @@ function showTab(name){
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 
 /* ───────── boot ───────── */
-function renderTudo(){ renderAqui(); renderHoje(); renderSitios(); renderPlacas(); renderDados(); pintarMapa(); }
+function renderTudo(){ renderAqui(); renderHoje(); renderSitios(); renderFeiras(); renderPlacas(); renderDados(); pintarMapa(); }
 renderGuiao(); renderTudo(); saveState();
 
 /* ───────── funciona sem rede (quando aberta a partir do link) ───────── */
