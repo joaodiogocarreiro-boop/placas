@@ -336,16 +336,24 @@
     <div class="card">
       <h2 style="margin-bottom:4px">Programar uma placa</h2>
 
-      <label>Nome do negócio</label>
+      <label>O que é que a placa vai abrir?</label>
+      <div class="chips" id="pTipo">
+        <button class="chip on" data-val="google">⭐ Avaliação Google</button>
+        <button class="chip" data-val="ig">📷 Instagram</button>
+        <button class="chip" data-val="tt">🎵 TikTok</button>
+        <button class="chip" data-val="u">🔗 Link (loja, site, menu)</button>
+      </div>
+
+      <label style="margin-top:14px">Nome do negócio</label>
       <input type="text" id="pNome" placeholder="ex.: Tasca do Zé" autocomplete="off">
-      <div class="row" style="margin-top:8px">
+      <div class="row" style="margin-top:8px" id="pRowGoogle">
         <button class="btn ghost mini" id="pBuscar">🔍 Procurar no Maps</button>
         <button class="btn ghost mini" id="pFinder">Ajuda com o código</button>
       </div>
 
-      <label style="margin-top:14px">Link do Maps ou código do negócio</label>
+      <label style="margin-top:14px" id="pLabel">Link do Maps ou código do negócio</label>
       <input type="text" id="pCod" placeholder="cola aqui o link do Google Maps" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <p class="note" style="margin:6px 2px 0">Serve o link longo, o link de partilha, ou o código <b>ChIJ…</b>. A app tira o resto sozinha.</p>
+      <p class="note" style="margin:6px 2px 0" id="pDica">Serve o link longo, o link de partilha, ou o código <b>ChIJ…</b>. A app tira o resto sozinha.</p>
       <div class="aviso hide" id="pAviso"></div>
 
       <button class="btn" id="pGerar">Gerar endereço da placa</button>
@@ -353,7 +361,7 @@
       <div class="hide" id="pOut">
         <div class="passo">1 · Testar primeiro</div>
         <button class="btn ghost" id="pTestar">Abrir — é o negócio certo?</button>
-        <p class="note">Tem de abrir a caixa das estrelas com o nome <b>e a morada</b> certos. Se abrir outra casa, pára já.</p>
+        <p class="note" id="pTestarNota">Tem de abrir a caixa das estrelas com o nome <b>e a morada</b> certos. Se abrir outra casa, pára já.</p>
 
         <div class="passo">2 · Escrever na placa</div>
         <div class="urlbox" id="pUrl"></div>
@@ -1039,13 +1047,95 @@ function resolverCurto(url){
   return tentar(0);
 }
 const linkReview = c => "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(c);
-let pidAtual = "", urlAtual = "";
+let pidAtual = "", urlAtual = "", pTipo = "google";
+
+/* ── tipos de placa ──────────────────────────────────────────────
+   O que muda de tipo para tipo: o rótulo, a dica, e o "código" que
+   vai a seguir ao # no endereço da placa. O resto é tudo igual.   */
+const TIPOS_PLACA = {
+  google: {
+    label: "Link do Maps ou código do negócio",
+    ph:    "cola aqui o link do Google Maps",
+    dica:  "Serve o link longo, o link de partilha, ou o código <b>ChIJ…</b>. A app tira o resto sozinha.",
+    testar:"Abrir — é o negócio certo?",
+    nota:  "Tem de abrir a caixa das estrelas com o nome <b>e a morada</b> certos. Se abrir outra casa, pára já."
+  },
+  ig: {
+    label: "@ do Instagram ou link do perfil",
+    ph:    "@tascadoze",
+    dica:  "Cola o link do perfil (…instagram.com/tascadoze) ou só o <b>@</b>. A placa vai abrir a <b>app</b> do Instagram, sem a janela do login por cima.",
+    testar:"Abrir — é o perfil certo?",
+    nota:  "Tem de abrir o perfil dele. Testa num telemóvel com o Instagram instalado."
+  },
+  tt: {
+    label: "@ do TikTok ou link do perfil",
+    ph:    "@tascadoze",
+    dica:  "Cola o link do perfil (…tiktok.com/@tascadoze) ou só o <b>@</b>.",
+    testar:"Abrir — é o perfil certo?",
+    nota:  "Tem de abrir o perfil dele."
+  },
+  u: {
+    label: "Link para onde a placa vai",
+    ph:    "https://…",
+    dica:  "Loja online, site, menu, WhatsApp, o que for. Cola o link tal e qual.",
+    testar:"Abrir — é a página certa?",
+    nota:  "Confirma que abre a página certa antes de escrever na placa."
+  }
+};
+
+/* @nome · instagram.com/nome/?igshid=… · https://tiktok.com/@nome → nome */
+function utilizadorDe(v){
+  v = String(v || "").trim();
+  try { v = decodeURIComponent(v); } catch(e){}
+  v = v.replace(/^@+/, "").replace(/[?#].*$/, "").replace(/\/+$/, "");
+  const barra = v.lastIndexOf("/");
+  if(barra >= 0) v = v.slice(barra + 1);
+  return v.replace(/^@+/, "").replace(/[^A-Za-z0-9._]/g, "");
+}
+
+/* o que vai a seguir ao # — devolve "" se não perceber */
+function codigoDe(tipo, bruto){
+  if(tipo === "google") return extrairPID(bruto);
+  if(tipo === "ig"){ const u = utilizadorDe(bruto); return u ? "ig:" + u : ""; }
+  if(tipo === "tt"){ const u = utilizadorDe(bruto); return u ? "tt:" + u : ""; }
+  let a = String(bruto || "").trim();
+  if(!a) return "";
+  if(!/^https?:\/\//i.test(a)) a = "https://" + a;
+  if(!/^https?:\/\/[^\s.]+\.[^\s]{2,}/i.test(a)) return "";
+  return "u:" + encodeURIComponent(a);
+}
+
+/* para onde é que este código aponta de facto (o botão Testar) */
+function destinoDe(codigo){
+  if(/^ig:/i.test(codigo)) return "https://www.instagram.com/" + codigo.slice(3) + "/";
+  if(/^tt:/i.test(codigo)) return "https://www.tiktok.com/@" + codigo.slice(3);
+  if(/^u:/i.test(codigo)){ try { return decodeURIComponent(codigo.slice(2)); } catch(e){ return codigo.slice(2); } }
+  return linkReview(codigo);
+}
+const nomeTipo = c => /^ig:/i.test(c) ? "Instagram" : /^tt:/i.test(c) ? "TikTok" : /^u:/i.test(c) ? "Link" : "Google";
 
 function avisoPlaca(html){
   const a = $("pAviso");
   if(!html){ a.classList.add("hide"); a.innerHTML = ""; return; }
   a.innerHTML = html; a.classList.remove("hide");
 }
+
+/* trocar de tipo */
+function trocarTipo(novo){
+  pTipo = novo;
+  $("pTipo").querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x.dataset.val === novo));
+  const t = TIPOS_PLACA[pTipo];
+  $("pLabel").textContent = t.label;
+  $("pCod").placeholder   = t.ph;
+  $("pDica").innerHTML    = t.dica;
+  $("pTestar").textContent   = t.testar;
+  $("pTestarNota").innerHTML = t.nota;
+  $("pRowGoogle").classList.toggle("hide", pTipo !== "google");
+  $("pOut").classList.add("hide");
+  avisoPlaca("");
+  pidAtual = ""; urlAtual = "";
+}
+$("pTipo").querySelectorAll(".chip").forEach(c => c.onclick = () => trocarTipo(c.dataset.val));
 
 $("pBuscar").onclick = () => {
   const n = $("pNome").value.trim();
@@ -1078,7 +1168,22 @@ const AJUDA_MANUAL =
 
 $("pGerar").onclick = () => {
   const bruto = $("pCod").value.trim();
-  if(!bruto){ avisoPlaca("Cola o link do Maps ou o c\u00f3digo."); return; }
+  if(!bruto){ avisoPlaca("Cola aqui o link ou o c\u00f3digo."); return; }
+
+  /* colou um link do Instagram/TikTok estando noutro tipo? troca sozinho */
+  if(pTipo !== "ig" && /instagram\.com/i.test(bruto)){ trocarTipo("ig"); }
+  else if(pTipo !== "tt" && /tiktok\.com/i.test(bruto)){ trocarTipo("tt"); }
+
+  if(pTipo !== "google"){
+    const c = codigoDe(pTipo, bruto);
+    if(c){ mostrarCodigo(c); return; }
+    avisoPlaca(pTipo === "u"
+      ? "Isso n\u00e3o me parece um link. Cola o endere\u00e7o completo, a come\u00e7ar por <b>https://</b>."
+      : "N\u00e3o percebi o <b>@</b>. Cola o link do perfil ou escreve s\u00f3 o nome de utilizador.");
+    $("pOut").classList.add("hide");
+    return;
+  }
+
   const codigo = extrairPID(bruto);
   if(codigo){ mostrarCodigo(codigo); return; }
 
@@ -1096,7 +1201,7 @@ $("pGerar").onclick = () => {
   $("pOut").classList.add("hide");
   avisoPlaca('N\u00e3o encontrei nenhum c\u00f3digo a\u00ed. Cola o <b>endere\u00e7o completo</b> da p\u00e1gina do neg\u00f3cio no Google Maps, ou o c\u00f3digo <b>ChIJ\u2026</b>.');
 };
-$("pTestar").onclick = () => { if(pidAtual) window.open(linkReview(pidAtual), "_blank"); };
+$("pTestar").onclick = () => { if(pidAtual) window.open(destinoDe(pidAtual), "_blank"); };
 $("pCopiar").onclick = () => {
   const b = $("pCopiar");
   const ok = () => { b.textContent = "Copiado \u2713"; setTimeout(()=>b.textContent="Copiar endere\u00e7o", 1800); };
@@ -1124,11 +1229,11 @@ function renderPlacas(){
   const ps = state.placas || [];
   $("pListaCard").style.display = ps.length ? "block" : "none";
   $("pLista").innerHTML = ps.map((x,i) =>
-    '<div class="pl"><span class="n"><b>'+esc(x.nome)+'</b><small>'+esc(x.pid)+'</small></span>'+
+    '<div class="pl"><span class="n"><b>'+esc(x.nome)+'</b><small>'+esc(nomeTipo(x.pid))+' \u00b7 '+esc(x.pid)+'</small></span>'+
     '<button class="btn ghost mini" data-ptest="'+i+'">Testar</button>'+
     '<button class="x" data-pdel="'+i+'">\u2715</button></div>').join("");
   $("pLista").querySelectorAll("[data-ptest]").forEach(b => b.onclick = () =>
-    window.open(linkReview(ps[b.dataset.ptest].pid), "_blank"));
+    window.open(destinoDe(ps[b.dataset.ptest].pid), "_blank"));
   $("pLista").querySelectorAll("[data-pdel]").forEach(b => b.onclick = () => {
     if(b.classList.contains("confirm")){ state.placas.splice(b.dataset.pdel,1); saveState(); renderPlacas(); }
     else { b.classList.add("confirm"); b.textContent = "apagar?";
