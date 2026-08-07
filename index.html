@@ -297,7 +297,7 @@
       <div class="aviso hide" id="avisoFeira" style="margin-top:10px"></div>
 
       <button class="btn" id="btSessao" style="margin-top:10px">▶ Comecei aqui</button>
-      <p class="note" id="notaSessao" style="margin:6px 2px 0">Carrega ao chegar e ao sair. É isto que te dá os <b>euros por hora</b> — o número que decide onde vale a pena voltar.</p>
+      <p class="note" id="notaSessao" style="margin:6px 2px 0">Carrega ao chegar e ao sair. Sem isto não há <b>euros por hora</b>, e é por aí que decides onde voltar.</p>
 
       <div class="row" style="margin-top:10px" id="rowRua">
         <button class="btn ghost mini" id="btRuaFeita" style="color:var(--ok);border-color:var(--ok)">Rua varrida ✓</button>
@@ -364,11 +364,11 @@
 
     <div class="card" id="feirasCard" style="display:none">
       <h2>Feiras</h2>
-      <p class="note" style="margin-top:0">Ordenadas pela que está há mais tempo sem ires. As feiras repetem-se — o que interessa não é «já fui», é <b>há quanto tempo</b> e <b>quantas bancas ainda te faltam lá</b>.</p>
+      <p class="note" style="margin-top:0">Ordenadas pela que está há mais tempo sem ires. As feiras repetem-se todas as semanas, por isso o que conta é <b>há quantos dias</b> lá foste e <b>quantas bancas ainda te faltam</b>.</p>
       <div id="listaFeiras"></div>
     </div>
 
-    <p class="note">Cada rua que fazes fica guardada aqui sozinha. Marca <b>varrida</b> quando acabares uma, ou <b>a meio</b> se tiveres de sair — assim sabes sempre onde voltar.</p>
+    <p class="note">Cada rua que fazes fica guardada aqui sozinha. Marca <b>varrida</b> quando acabares uma, ou <b>a meio</b> se tiveres de sair antes do fim. Depois sabes onde voltar.</p>
     <div id="listaSitios"><p class="note">Ainda não registaste nenhuma porta. Começa na aba Registar.</p></div>
   </section>
 
@@ -429,7 +429,7 @@
       <button class="btn ghost mini" id="btLimparArgs" style="margin-top:10px">Limpar</button>
     </div>
 
-    <p class="note">Cada frase é tua e podes mudá-la — toca no texto e escreve. Marca <b>EM TESTE</b> a que estiveres a experimentar, e ao fim de uns dias vê nos Dados se subiu.</p>
+    <p class="note">Cada frase é tua. Toca no texto e escreve por cima. Marca <b>EM TESTE</b> a que estiveres a experimentar e ao fim de uns dias vê nos Dados se subiu.</p>
 
     <div id="listaPitch"></div>
 
@@ -452,12 +452,12 @@
         <b>Ouvir sem julgar.</b> Mesmo quando ele diz que não precisa. Quem se sente ouvido não se fecha — e é a mesma porta daqui a três meses.<br><br>
         <b>Volume.</b> Os efeitos reais de todas estas técnicas são pequenos. Ninguém fecha por ser esperto: fecha por bater a muitas portas e não desistir à quinta.
       </p>
-      <p class="note">Desconfia de qualquer formação que te venda «escada de sins» ou percentagens grandes de Cialdini. Fui procurar: não há um único estudo credível por trás da escada de sins.</p>
+      <p class="note">Desconfia de qualquer formação que te venda «escada de sins» ou percentagens grandes de Cialdini. Fui procurar e não encontrei um único estudo credível por trás da escada de sins.</p>
     </div>
 
     <div class="card" style="border-left:3px solid var(--bad)">
       <h2 style="color:var(--bad)">Regras fixas</h2>
-      <p class="note" style="color:var(--ink)">Pedir avaliações é permitido. <b>PROIBIDO:</b> pagar ou oferecer seja o que for por avaliações, e pedir só aos clientes contentes (review gating) — o Google exige que se peça a toda a gente da mesma maneira. Nunca prometas estrelas: prometes tirar a chatice do caminho. Fatura sempre, mesmo em dinheiro.</p>
+      <p class="note" style="color:var(--ink)">Pedir avaliações é permitido. <b>PROIBIDO:</b> pagar ou oferecer seja o que for por avaliações, e pedir só aos clientes contentes (review gating). O Google exige que peças a toda a gente da mesma maneira. Prometes tirar a chatice do caminho, nunca as estrelas. Fatura sempre, mesmo em dinheiro.</p>
     </div>
   </section>
 
@@ -472,7 +472,7 @@
 
     <div class="card" id="domingoCard">
       <h2>Domingo · 10 minutos</h2>
-      <p class="note" style="margin-top:0">A conversão não conta os fechados — uma porta fechada não foi uma oportunidade perdida.</p>
+      <p class="note" style="margin-top:0">A conversão não conta os fechados. Uma porta fechada não foi uma oportunidade que perdeste.</p>
 
       <div class="passo">Estás a melhorar?</div>
       <div id="graficoSemanas"></div>
@@ -504,7 +504,7 @@
 
     <div class="card">
       <h2>Backup</h2>
-      <p class="note">Domingo à noite: exporta e guarda o ficheiro. É o teu seguro.</p>
+      <p class="note">Domingo à noite: exporta e guarda o ficheiro. Se o telemóvel se perder, é o que te sobra.</p>
       <div class="row">
         <button class="btn ghost mini" id="btExport">⬇ Exportar dados</button>
         <button class="btn ghost mini" id="btImport">⬆ Importar</button>
@@ -555,19 +555,19 @@ const FEIRAS = ["LX Market (LX Factory)","Feira da Ladra","Feira da Avenida","FI
    Números verificados: BrightLocal 2026, Uberall (64 mil negócios), política do Google. */
 const PITCH = [
   {id:"p1", rot:"Entrada", txt:"Boa tarde. Chamo-me João. É o senhor o responsável?",
-   nota:`Nome primeiro, pergunta a seguir. <b>Não é ele?</b> Não gastes o pitch — "A que horas é que ele costuma cá estar?" → «Voltar» com a hora → e volta à hora certa.`},
+   nota:`Nome primeiro, pergunta a seguir. <b>Não é ele?</b> Não gastes o pitch. "A que horas é que ele costuma cá estar?" → «Voltar» com a hora → e volta à hora certa.`},
 
   {id:"p2", rot:"Direto ao assunto", txt:"Vou ser direto, que não lhe quero tirar muito tempo. Queria mostrar-lhe estas placas que facilitam os clientes deixarem a avaliação no Google. Vai ver, não dá trabalho nenhum.",
-   nota:`Nunca digas <b>«venho vender»</b>. E não expliques mais nada — vai já à placa.`},
+   nota:`Nunca digas <b>«venho vender»</b>. E não expliques mais nada. Vai já à placa.`},
 
   {id:"p3", rot:"A demo", txt:"Toque aqui com o telemóvel… está a ver? Abriu logo a avaliação.",
    nota:`A placa na <b>mão dele</b>, com o telemóvel <b>dele</b>. Dois segundos calado. É aqui que ele compra.`},
 
   {id:"p4", rot:"A pergunta", txt:"Diga-me uma coisa: quantas avaliações é que lhe deixam por semana?",
-   nota:`<b>Cala-te e deixa-o responder.</b> Quem diz o problema em voz alta passa a ser ele — e a resposta diz-te qual número usar a seguir.`},
+   nota:`<b>Cala-te e deixa-o responder.</b> Quem diz o problema em voz alta passa a ser ele. E a resposta diz-te que número usar a seguir.`},
 
   {id:"p5", rot:"A dimensão", txt:"E para lhe dar a dimensão: um estudo com 64 mil negócios viu que subir uma décima na média das estrelas dava até 25% mais visitas. Uma décima.",
-   nota:`Um número <b>só</b>. Escolhe em baixo o que encaixa na resposta dele.<br><br><b>Se ele duvidar</b> — "onde é que viu isso?" — não te justifiques: <b>"Quer ver? Está aqui."</b> e abres a fonte no telemóvel à frente dele. É aí que deixas de ser vendedor.`,
+   nota:`Um número <b>só</b>. Escolhe em baixo o que encaixa na resposta dele.<br><br><b>Se ele duvidar</b> ("onde é que viu isso?"), não te justifiques: <b>"Quer ver? Está aqui."</b> e abres a fonte no telemóvel à frente dele. É aí que deixas de ser vendedor.`,
    args:[
      {id:"a1", tag:"Ninguém pede — serve para quase toda a gente",
       fala:"A maior parte das pessoas até deixa avaliação, se lhe pedirem. O problema é que ninguém pede. E estar a pedir na cara do cliente, a meio do serviço, é chato para os dois. A placa pede por si, sem incomodar ninguém.",
@@ -884,14 +884,14 @@ function renderSessao(){
   const b = $("btSessao"), n = $("notaSessao");
   if(state.sessao){
     const min = Math.max(1, Math.round((Date.now() - new Date(state.sessao.inicio).getTime())/60000));
-    b.textContent = "⏹ Acabei — " + duracao(min);
+    b.textContent = "⏹ Acabei · " + duracao(min);
     b.style.background = "var(--warn)";
     n.innerHTML = "A contar desde as <b>" + new Date(state.sessao.inicio)
       .toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"}) + "</b> em " + esc(state.sessao.nome) + ".";
   } else {
     b.textContent = "▶ Comecei aqui";
     b.style.background = "";
-    n.innerHTML = "Carrega ao chegar e ao sair. É isto que te dá os <b>euros por hora</b> — o número que decide onde vale a pena voltar.";
+    n.innerHTML = "Carrega ao chegar e ao sair. Sem isto não há <b>euros por hora</b>, e é por aí que decides onde voltar.";
   }
 }
 $("btSessao").onclick = () => {
@@ -925,10 +925,10 @@ $("fNome").addEventListener("input", () => {
   const antes = state.registos.filter(r => slug(r.nome) === k).sort((x,y)=>y.ts.localeCompare(x.ts));
   if(!antes.length){ a.classList.add("hide"); return; }
   const u = antes[0];
-  const COMO = { venda:"comprou", voltar:"pediu para voltares", nao:"viu a demo e disse que não",
-                 porta:"nem te ouviu", fech:"estava fechado" };
+  const COMO = { venda:"Comprou", voltar:"Pediu para voltares", nao:"Viu a demo e disse que não",
+                 porta:"Nem te ouviu", fech:"Estava fechado" };
   a.innerHTML = "⚠️ <b>Já falaste com este.</b> " + haQuanto(u.dia).replace(/^h/,"H") +
-    ", em " + esc(zCurta(u)) + " — " + (COMO[u.res] || u.res) + "." +
+    ", em " + esc(zCurta(u)) + ". " + (COMO[u.res] || u.res) + "." +
     (u.nota ? "<br><i>«" + esc(u.nota) + "»</i>" : "") +
     (antes.length > 1 ? "<br>São <b>" + antes.length + "</b> abordagens ao todo." : "");
   a.classList.remove("hide");
@@ -1639,12 +1639,12 @@ function renderDomingo(){
 
   const u = sems[sems.length-1], p = sems.length > 1 ? sems[sems.length-2] : null;
   if(!p){
-    lido.innerHTML = "Primeira semana com registos: <b>"+u.conv+"%</b> de conversão, <b>"+u.taxaDemo+"%</b> deixaram-te fazer a demo. É a tua base — a partir daqui compara-se.";
+    lido.innerHTML = "Primeira semana com registos: <b>"+u.conv+"%</b> de conversão, <b>"+u.taxaDemo+"%</b> deixaram-te fazer a demo. É a tua base. Para a semana já tens com que comparar.";
   } else {
     const dC = u.conv - p.conv, dD = u.taxaDemo - p.taxaDemo;
     const sinal = n => (n > 0 ? "subiu " + n : n < 0 ? "desceu " + Math.abs(n) : "ficou igual");
     lido.innerHTML = "Esta semana a conversão <b>"+sinal(dC)+(dC?" pontos":"")+"</b> ("+p.conv+"% → "+u.conv+"%) e a taxa de demo <b>"+sinal(dD)+(dD?" pontos":"")+"</b> ("+p.taxaDemo+"% → "+u.taxaDemo+"%)." +
-      (dD > 0 && dC <= 0 ? " <b>Boa notícia:</b> estás a entrar mais — as vendas costumam vir a seguir." : "") +
+      (dD > 0 && dC <= 0 ? " <b>Boa notícia:</b> estás a entrar mais, e as vendas costumam vir a seguir." : "") +
       (u.abordadas < 15 ? " Atenção: só "+u.abordadas+" abordagens, é pouco para tirar conclusões." : "");
   }
 
@@ -1671,10 +1671,10 @@ function renderDomingo(){
   const pend = state.registos.filter(r => r.res === "voltar" && !r.resolvido).length;
   const partes = [];
   if(linhas.length) partes.push("O sítio que mais te rende é <b>"+esc(linhas[0].nome)+"</b> ("+eur(Math.round(linhas[0].eh))+"/hora). É aí que voltas.");
-  else partes.push("Ainda não tens tempos medidos — usa o <b>Comecei/Acabei</b> esta semana e no próximo domingo já sabes onde rendes mais.");
-  if(u.taxaDemo !== null && u.taxaDemo < 50) partes.push("Menos de metade deixa-te fazer a demo: o que tens de mudar é a <b>entrada</b>, não o preço.");
-  else if(u.conv !== null && u.taxaDemo !== null && u.taxaDemo >= 50 && u.conv < 15) partes.push("Entras bem mas não fechas: o problema está no <b>fecho ou no preço</b>, não na abordagem.");
-  if(pend) partes.push("Tens <b>"+pend+"</b> retorno"+(pend>1?"s":"")+" por fazer — são as vendas mais fáceis que tens.");
+  else partes.push("Ainda não tens tempos medidos. Usa o <b>Comecei/Acabei</b> esta semana e no próximo domingo já sabes onde rendes mais.");
+  if(u.taxaDemo !== null && u.taxaDemo < 50) partes.push("Menos de metade deixa-te fazer a demo. O trabalho está na <b>entrada</b>, não no preço.");
+  else if(u.conv !== null && u.taxaDemo !== null && u.taxaDemo >= 50 && u.conv < 15) partes.push("Entras bem e não fechas. Olha para o <b>fecho e para o preço</b>.");
+  if(pend) partes.push("Tens <b>"+pend+"</b> retorno"+(pend>1?"s":"")+" por fazer. São as vendas mais fáceis que tens à mão.");
   $("decisaoSemana").innerHTML = partes.join(" ");
 }
 
