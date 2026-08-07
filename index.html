@@ -259,7 +259,7 @@
   <div class="t">PLACAS <small>· rua</small></div>
   <div id="hZona">—</div>
 </header>
-<div id="aviso">⚠️ Este browser não guarda dados entre sessões — exporta antes de fechar (Dados → Exportar).</div>
+<div id="aviso">⚠️ Este browser não guarda dados entre sessões. Exporta antes de fechar (Dados → Exportar).</div>
 
 <main>
 
@@ -399,7 +399,7 @@
 
       <div class="hide" id="pOut">
         <div class="passo">1 · Testar primeiro</div>
-        <button class="btn ghost" id="pTestar">Abrir — é o negócio certo?</button>
+        <button class="btn ghost" id="pTestar">Abrir e ver se é o negócio certo</button>
         <p class="note" id="pTestarNota">Tem de abrir a caixa das estrelas com o nome <b>e a morada</b> certos. Se abrir outra casa, pára já.</p>
 
         <div class="passo">2 · Escrever na placa</div>
@@ -409,7 +409,7 @@
 
         <div class="passo">3 · Proteger</div>
         <p class="note">Depois de encostares e veres abrir: Other → <b>Set password</b> → password mestre, AUTHLIM desligado.</p>
-        <div class="aviso">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível — e o link vai ter de mudar um dia.</div>
+        <div class="aviso">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível, e o link vai ter de mudar um dia.</div>
 
         <button class="btn" id="pGuardar">Guardar esta placa ✓</button>
       </div>
@@ -440,16 +440,16 @@
     </div>
 
     <details class="loc" style="margin-bottom:12px">
-      <summary><span class="lnome">O resto — objeções, programar, faturar</span><span class="lst">▾</span></summary>
+      <summary><span class="lnome">O resto: objeções, programar, faturar</span><span class="lst">▾</span></summary>
       <div class="lruas" id="listaExtras"></div>
     </details>
 
     <div class="card" style="border-left:3px solid var(--ok)">
       <h2 style="color:var(--ok)">O que faz mesmo diferença</h2>
       <p class="note" style="color:var(--ink)">
-        <b>Apareceres.</b> Porta a porta move +8,7 pontos percentuais; ao telefone, zero. O guião não é o que vende — <b>tu estares ali</b> é.<br><br>
+        <b>Apareceres.</b> Porta a porta move +8,7 pontos percentuais; ao telefone, zero. O que vende é <b>tu estares ali</b>.<br><br>
         <b>Pô-lo a falar.</b> Nos estudos de campo, as conversas feitas só de argumentos não tiveram efeito nenhum. Só as que faziam a pessoa falar da experiência dela funcionaram. É por isso que a pergunta vem logo a seguir à demo.<br><br>
-        <b>Ouvir sem julgar.</b> Mesmo quando ele diz que não precisa. Quem se sente ouvido não se fecha — e é a mesma porta daqui a três meses.<br><br>
+        <b>Ouvir sem julgar.</b> Mesmo quando ele diz que não precisa. Quem se sente ouvido não se fecha, e é a mesma porta daqui a três meses.<br><br>
         <b>Volume.</b> Os efeitos reais de todas estas técnicas são pequenos. Ninguém fecha por ser esperto: fecha por bater a muitas portas e não desistir à quinta.
       </p>
       <p class="note">Desconfia de qualquer formação que te venda «escada de sins» ou percentagens grandes de Cialdini. Fui procurar e não encontrei um único estudo credível por trás da escada de sins.</p>
@@ -569,22 +569,22 @@ const PITCH = [
   {id:"p5", rot:"A dimensão", txt:"E para lhe dar a dimensão: um estudo com 64 mil negócios viu que subir uma décima na média das estrelas dava até 25% mais visitas. Uma décima.",
    nota:`Um número <b>só</b>. Escolhe em baixo o que encaixa na resposta dele.<br><br><b>Se ele duvidar</b> ("onde é que viu isso?"), não te justifiques: <b>"Quer ver? Está aqui."</b> e abres a fonte no telemóvel à frente dele. É aí que deixas de ser vendedor.`,
    args:[
-     {id:"a1", tag:"Ninguém pede — serve para quase toda a gente",
+     {id:"a1", tag:"Ninguém pede · serve para quase toda a gente",
       fala:"A maior parte das pessoas até deixa avaliação, se lhe pedirem. O problema é que ninguém pede. E estar a pedir na cara do cliente, a meio do serviço, é chato para os dois. A placa pede por si, sem incomodar ninguém.",
-      src:"BrightLocal 2026 — 83% de quem foi convidado a avaliar acabou por avaliar", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
+      src:"BrightLocal 2026 · 83% de quem foi convidado a avaliar acabou por avaliar", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
      {id:"a2", tag:"As estrelas decidem antes de entrar",
       fala:"Hoje as pessoas escolhem pelas estrelas antes sequer de entrar na porta. Quem está abaixo das quatro, a maioria nem considera. É duro, mas é o que é.",
-      src:"BrightLocal 2026 — 68% só usam negócios com 4 estrelas ou mais (eram 55% em 2025)", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
-     {id:"a3", tag:"Uma décima já dá dinheiro — para quem já tem boa nota",
+      src:"BrightLocal 2026 · 68% só usam negócios com 4 estrelas ou mais (eram 55% em 2025)", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
+     {id:"a3", tag:"Uma décima já dá dinheiro · para quem já tem boa nota",
       fala:"O senhor já tem boa nota, o que lhe falta é volume. Só de subir uma décima na média, houve um estudo com 64 mil negócios que viu as visitas subirem até 25%. Uma décima. Isso são duas ou três mesas por semana.",
-      src:"Uberall 2019 — 64 mil localizações; de 3,5 para 3,7 estrelas: +120%", url:"https://uberall.com/en-us/company/press-releases/study-brick-and-mortar-businesses-small-increase-in-online-ratings-boosts-conversion-by-25-percent"},
-     {id:"a4", tag:"As antigas não contam — para quem diz que já tem",
-      fala:"Repare no que o senhor faz quando vê um sítio: olha logo para a data da última avaliação. Três em cada quatro pessoas só ligam às que foram escritas nos últimos três meses. Ter duzentas de 2019 não o safa — o que conta é entrarem sempre.",
-      src:"BrightLocal 2026 — 74% procuram avaliações escritas nos últimos 3 meses", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
-     {id:"a5", tag:"Agora também é a IA que lê — donos mais novos",
-      fala:"E já nem é só o Google. Muita gente pergunta ao ChatGPT onde é que se come bem aqui perto — e ele vai buscar as avaliações do Google. Quem não as tem, para ele não existe.",
-      src:"BrightLocal 2026 — o uso de IA subiu de 6% para 45% num ano", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
-     {id:"a6", tag:"O vizinho — pica o brio, usar com jeito",
+      src:"Uberall 2019 · 64 mil localizações; de 3,5 para 3,7 estrelas: +120%", url:"https://uberall.com/en-us/company/press-releases/study-brick-and-mortar-businesses-small-increase-in-online-ratings-boosts-conversion-by-25-percent"},
+     {id:"a4", tag:"As antigas não contam · para quem diz que já tem",
+      fala:"Repare no que o senhor faz quando vê um sítio: olha logo para a data da última avaliação. Três em cada quatro pessoas só ligam às que foram escritas nos últimos três meses. Ter duzentas de 2019 não o safa. O que conta é entrarem sempre.",
+      src:"BrightLocal 2026 · 74% procuram avaliações escritas nos últimos 3 meses", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
+     {id:"a5", tag:"Agora também é a IA que lê · donos mais novos",
+      fala:"E já nem é só o Google. Muita gente pergunta ao ChatGPT onde é que se come bem aqui perto, e ele vai buscar as avaliações do Google. Quem não as tem, para ele não existe.",
+      src:"BrightLocal 2026 · o uso de IA subiu de 6% para 45% num ano", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
+     {id:"a6", tag:"O vizinho · pica o brio, usar com jeito",
       fala:"O café aqui em baixo não tem clientes melhores que os seus. Tem é alguém a pedir-lhes a avaliação. É só isso que vos separa.",
       src:""}
    ]},
@@ -597,61 +597,61 @@ const PITCH = [
 ];
 
 const EXTRAS = [
-  {id:"g6", fase:"Fecho", t:"Objeções — pergunta primeiro, responde depois", body:`
+  {id:"g6", fase:"Fecho", t:"Objeções: pergunta primeiro, responde depois", body:`
     <p class="dica">Não te atires logo à defesa. A objeção que ele diz muitas vezes não é a verdadeira. Devolve uma pergunta, ouve o que ele responde, e só depois responde <b>àquilo</b>.</p>
     <div class="obj"><b>"É caro."</b><span class="perg">"Caro em relação a quê?"</span>"Isto é uma vez na vida, não é mensalidade. Se lhe trouxer uma mesa a mais, já se pagou."</div>
     <div class="obj"><b>"Já tenho avaliações."</b><span class="perg">"E estão a entrar esta semana?"</span>"É que o que conta é serem recentes. Muita gente nem olha para as antigas."</div>
     <div class="obj"><b>"Um QR code é grátis."</b><span class="perg">"E o seu está a dar quantas por mês?"</span>"O código obriga a abrir a câmara, apontar, esperar. E aquele papelinho plastificado ao pé da caixa ninguém vê. Isto é encostar e já está."</div>
-    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia — passo cá antes de ir embora. Fica nos 45."</div>
-    <div class="obj"><b>"Tenho de falar com o meu sócio / a minha mulher."</b><span class="perg">"Faz todo o sentido. O que é que ele ia querer saber?"</span>Responde a isso já, ali. "Olhe, volto quinta às três e meia e mostro aos dois." — hora exata, e cumpre.</div>
-    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em qualquer telemóvel dos últimos anos. E basta um em cada dez usar — são avaliações que hoje não tem."</div>
+    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia, passo cá antes de ir embora. Fica nos 45."</div>
+    <div class="obj"><b>"Tenho de falar com o meu sócio / a minha mulher."</b><span class="perg">"Faz todo o sentido. O que é que ele ia querer saber?"</span>Responde a isso já, ali. "Olhe, volto quinta às três e meia e mostro aos dois.". Hora exata, e cumpre.</div>
+    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em qualquer telemóvel dos últimos anos. E basta um em cada dez usar. São avaliações que hoje não tem."</div>
     <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"Quem sai zangado escreve à mesma, esse encontra o caminho sozinho. Isto é para os contentes, que são a maioria e são os que se esquecem. Com mais avaliações, a média sobe e uma má dilui-se."</div>
-    <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos — a placa está lá para toda a gente, igual."</div>
+    <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos. A placa está lá para toda a gente, igual."</div>
     <div class="obj"><b>"Agora não tenho tempo."</b><span class="perg">"Dois minutos, cronometrados. Ou diga-me a que horas e eu volto."</span>E voltas à hora que ele disser.</div>
-    <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente — testa antes de pagar."</div>`},
+    <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente, para testar antes de pagar."</div>`},
   {id:"g7", fase:"Depois do sim", t:"Programar a placa (2 a 3 min)", body:`
     <p class="dica">Faz isto à frente dele. Ver o nome da casa dele aparecer no ecrã é metade da confiança.</p>
-    <div class="stop">Atalho: pergunta primeiro se ele tem o negócio no Google no telemóvel. Se tiver — ele pesquisa o próprio negócio, carrega em <b>«Pedir avaliações»</b> e passa-te o link. É o link oficial, zero risco de erro, e põe-no a participar.</div>
+    <div class="stop">Atalho: pergunta primeiro se ele tem o negócio no Google no telemóvel. Se tiver, ele pesquisa o próprio negócio, carrega em <b>«Pedir avaliações»</b> e passa-te o link. É o link oficial, zero risco de erro, e põe-no a participar.</div>
     <ol>
       <li>Se não tiver: Chrome → <b>Place ID Finder</b> → menu ⋮ → <b>Site para computador</b></li>
       <li>Escrever o nome e <b>tocar no resultado</b> da lista (não escrever à mão)</li>
-      <li><b>Confirmar a MORADA</b>, não só o nome — "Café Central" há dezenas</li>
+      <li><b>Confirmar a MORADA</b>, não só o nome. Há dezenas de "Café Central"</li>
       <li>Copiar o código <b>ChIJ…</b> e colar na <a href="r/" style="color:var(--accent);font-weight:700">página de programar</a></li>
-      <li><b>Testar</b> — abre a caixa de avaliação com o nome certo? Se abrir outra casa, pára já</li>
+      <li><b>Testar</b>: abre a caixa de avaliação com o nome certo? Se abrir outra casa, pára já</li>
       <li>NFC Tools → Write → Add a record → <b>URL/URI</b> → colar → Write</li>
       <li>Ler de volta e <b>encostar o telemóvel</b> para testar a sério</li>
-      <li>Dar a placa ao dono para <b>ele</b> testar — é o melhor momento da venda</li>
+      <li>Dar a placa ao dono para <b>ele</b> testar. É o melhor momento da venda</li>
       <li>Só agora: Other → <b>Set password</b> → a tua password mestre. <b>AUTHLIM desligado.</b></li>
     </ol>
-    <div class="stop">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível e o link <b>vai</b> ter de mudar um dia — o próprio Google avisa que estes códigos mudam com o tempo. A password protege na mesma e podes sempre corrigir.</div>
+    <div class="stop">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível e o link <b>vai</b> ter de mudar um dia. O próprio Google avisa que estes códigos mudam com o tempo. A password protege na mesma e podes sempre corrigir.</div>
     <p class="dica">Balcão de aço ou caixa registadora? O metal mata o sinal. Leva sempre umas placas anti-metal no bolso.</p>`},
   {id:"g8", fase:"Depois do sim", t:"Receber + faturar (30 seg)", body:`
     <p class="dica">Logo a seguir ao sim, pede as duas coisas numa frase só. Ele dá-tas sem pensar, porque é para o servir.</p>
     <div class="fala">"Qual é o NIF da empresa? E um número de WhatsApp para lhe mandar a fatura."</div>
-    <p><b>Recebes:</b> MB Way ou dinheiro — trocos preparados de manhã.</p>
+    <p><b>Recebes:</b> MB Way ou dinheiro, com os trocos preparados de manhã.</p>
     <p><b>Emites</b> no Portal das Finanças → Faturas e Recibos → Emitir → <b>Fatura-Recibo</b>:</p>
     <ol>
-      <li>NIF do cliente — o nome aparece sozinho</li>
+      <li>NIF do cliente (o nome aparece sozinho)</li>
       <li>Importância recebida: <b>"Pagamento dos bens ou serviços"</b></li>
-      <li>Descrição: <b>Placa NFC para avaliações Google — 1 un.</b></li>
+      <li>Descrição: <b>Placa NFC para avaliações Google, 1 un.</b></li>
       <li>Valor: 49 / 45 / 40 / 79</li>
-      <li>IVA: <b>Isento — Art. 53.º do CIVA</b></li>
-      <li>Retenção: <b>sem retenção</b> — vendas de bens não têm</li>
+      <li>IVA: <b>Isento, Art. 53.º do CIVA</b></li>
+      <li>Retenção: <b>sem retenção</b>, que vendas de bens não têm</li>
       <li>Emitir → PDF → <b>enviar por WhatsApp à frente dele</b></li>
     </ol>
-    <div class="fala">"Já lhe mandei. E já ficou no seu e-fatura — o seu contabilista vê-a automaticamente, não tem de guardar nada."</div>
-    <p class="dica"><b>Só muda o NIF e o valor.</b> O resto é sempre igual: decora e sais em 30 segundos. Treina 5 vezes em casa antes da primeira porta. Sem rede, regista com nota "fatura por emitir" — tens 5 dias úteis. Fatura sempre, mesmo em dinheiro.</p>`},
+    <div class="fala">"Já lhe mandei. E já ficou no seu e-fatura, o seu contabilista vê-a sozinho, não tem de guardar nada."</div>
+    <p class="dica"><b>Só muda o NIF e o valor.</b> O resto é sempre igual: decora e sais em 30 segundos. Treina 5 vezes em casa antes da primeira porta. Sem rede, regista com nota "fatura por emitir". Tens 5 dias úteis. Fatura sempre, mesmo em dinheiro.</p>`},
   {id:"g9", fase:"Depois do sim", t:"Antes de sair da porta", body:`
     <p>Placa junto à caixa ou ao balcão, onde o cliente pára.</p>
-    <p><b>Deixa o número — como oferta, não como pedido.</b> Ele já o tem por causa da fatura:</p>
+    <p><b>Deixa o número como oferta.</b> Ele já o tem por causa da fatura:</p>
     <div class="fala">"Pronto, e já ficou com o meu número. Qualquer coisa com a placa, ou se precisar de ajuda com outra coisa, é só mandar mensagem."</div>
-    <p class="dica">Não peças referências agora. Acabou de te pagar — pedir mais uma coisa estraga o final. Sais como quem deixou algo, não como quem levou.</p>
-    <p><b>Regista na app antes de sair da porta</b>, com o número dele na nota — se deixares para depois, esqueces.</p>
+    <p class="dica">Não peças referências agora. Acabou de te pagar, e pedir mais uma coisa estraga o final. Sais como quem deixou algo.</p>
+    <p><b>Regista na app antes de sair da porta</b>, com o número dele na nota. Se deixares para depois, esqueces.</p>
     <p><b>Uma semana depois, mensagem:</b></p>
     <div class="fala">"Boa tarde! Então, já apareceram avaliações novas? Ainda bem. Já agora, se conhecer aí algum vizinho a quem isto desse jeito, diga-me que eu passo por lá da sua parte."</div>
     <p class="dica">É aqui que o pedido funciona: já lhe entregaste resultado. É também o momento certo para o combo Instagram (€79).</p>`},
   {id:"g2", fase:"Se houver conversa", t:"A pergunta que o faz pensar", body:`
-    <p class="dica">Não precisas disto em todas as portas. Usa quando ele <b>tiver tempo e vontade de falar</b> — é o que faz o dono chegar sozinho à conclusão de que precisa da placa.<br><br>Faz a pergunta e cala-te. A seguir a uma pergunta destas, quem fala primeiro perde. Deixa-o desabafar — é aí que ele te diz onde lhe dói.</p>
+    <p class="dica">Não precisas disto em todas as portas. Usa quando ele <b>tiver tempo e vontade de falar</b>. É o que faz o dono chegar sozinho à conclusão de que precisa da placa.<br><br>Faz a pergunta e cala-te. A seguir a uma pergunta destas, quem fala primeiro perde. Deixa-o desabafar. É aí que ele te diz onde lhe dói.</p>
     <div class="fala">"Quantas avaliações é que lhe deixam no Google, por semana?"</div>
     <p class="beat">↳ a resposta é quase sempre "poucas", "sei lá" ou "nenhumas".</p>
     <div class="fala">"E clientes contentes tem todos os dias, certo?"</div>
@@ -901,7 +901,7 @@ $("btSessao").onclick = () => {
     state.sessoes.push(Object.assign({}, state.sessao, { fim: new Date().toISOString(), minutos: min }));
     state.sessao = null;
     saveState(); renderTudo();
-    toast("Sessão fechada — " + duracao(min));
+    toast("Sessão fechada · " + duracao(min));
     return;
   }
   const a = state.aqui;
@@ -984,10 +984,10 @@ $("btGPS").onclick = () => {
         if(loc) $("fLocal").value = loc;
         if(rua) $("fRua").value = rua;
         comitarAqui(); guardarCoords();
-        toast(rua ? "📍 "+rua : "Apanhei o sítio — escreve a rua");
+        toast(rua ? "📍 "+rua : "Apanhei o sítio. Escreve a rua");
         repor();
       })
-      .catch(() => { comitarAqui(); guardarCoords(); toast("Sem rede para o nome da rua — escreve à mão"); repor(); });
+      .catch(() => { comitarAqui(); guardarCoords(); toast("Sem rede para o nome da rua. Escreve à mão"); repor(); });
   }, err => {
     repor();
     toast(err && err.code === 1 ? "Tens de dar permissão de localização" : "Não consegui apanhar a localização");
@@ -1244,7 +1244,7 @@ function tentarMapa(){
 document.getElementById("btOndeEstou").onclick = () => {
   toast("A procurar GPS…");
   posicao(p => {
-    if(!p){ toast("Sem GPS — liga a localização"); return; }
+    if(!p){ toast("Sem GPS. Liga a localização"); return; }
     if(!map) tentarMapa();
     if(!map) return;
     if(marcaEu) { try{ map.removeLayer(marcaEu); }catch(e){} }
@@ -1320,28 +1320,28 @@ const TIPOS_PLACA = {
     label: "Link do Maps ou código do negócio",
     ph:    "cola aqui o link do Google Maps",
     dica:  "Serve o link longo, o link de partilha, ou o código <b>ChIJ…</b>. A app tira o resto sozinha.",
-    testar:"Abrir — é o negócio certo?",
+    testar:"Abrir e ver se é o negócio certo",
     nota:  "Tem de abrir a caixa das estrelas com o nome <b>e a morada</b> certos. Se abrir outra casa, pára já."
   },
   ig: {
     label: "@ do Instagram ou link do perfil",
     ph:    "@tascadoze",
     dica:  "Cola o link do perfil (…instagram.com/tascadoze) ou só o <b>@</b>. A placa vai abrir a <b>app</b> do Instagram, sem a janela do login por cima.",
-    testar:"Abrir — é o perfil certo?",
+    testar:"Abrir e ver se é o perfil certo",
     nota:  "Tem de abrir o perfil dele. Testa num telemóvel com o Instagram instalado."
   },
   tt: {
     label: "@ do TikTok ou link do perfil",
     ph:    "@tascadoze",
     dica:  "Cola o link do perfil (…tiktok.com/@tascadoze) ou só o <b>@</b>.",
-    testar:"Abrir — é o perfil certo?",
+    testar:"Abrir e ver se é o perfil certo",
     nota:  "Tem de abrir o perfil dele."
   },
   u: {
     label: "Link para onde a placa vai",
     ph:    "https://…",
     dica:  "Loja online, site, menu, WhatsApp, o que for. Cola o link tal e qual.",
-    testar:"Abrir — é a página certa?",
+    testar:"Abrir e ver se é a página certa",
     nota:  "Confirma que abre a página certa antes de escrever na placa."
   }
 };
@@ -1539,7 +1539,7 @@ function renderArmas(){
   card.style.display = "block";
   $("armasLista").innerHTML = state.args.map(id => {
     const a = argPorId(id);
-    return a ? '<span class="armas-chip">'+esc(a.tag.split("—")[0].trim())+'</span>' : "";
+    return a ? '<span class="armas-chip">'+esc(a.tag.split("·")[0].trim())+'</span>' : "";
   }).join("");
 }
 function renderCompleto(){
