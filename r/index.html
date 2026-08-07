@@ -193,6 +193,11 @@ if(R){
     setTimeout(() => { if(!saltou && !document.hidden) location.replace(R.web); }, 1400);
   }
 }
+
+/* Se esta página já estiver aberta e o telemóvel ler OUTRA placa, o browser
+   troca só o que vem depois do # e não recarrega nada — ficava tudo parado.
+   Recarregar à mão resolve. */
+addEventListener("hashchange", () => location.reload());
 </script>
 
 <!-- ─── Ferramenta de programação (só aparece se não houver nada no endereço) ─── -->
