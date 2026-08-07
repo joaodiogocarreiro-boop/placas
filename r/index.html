@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Avaliar no Google</title>
+<title>A abrir…</title>
 <style>
   :root{--accent:#0B57D0;--accent-soft:#E8F0FE;--ink:#1F2937;--ink-2:#6B7280;--ink-3:#9CA3AF;
-    --line:#E5E7EB;--bg:#F6F7F9;--ok:#188038;--ok-soft:#E6F4EA;--warn:#B45309;--warn-soft:#FEF3C7}
+    --line:#E5E7EB;--bg:#F6F7F9;--ok:#188038;--warn:#B45309;--warn-soft:#FEF3C7}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     max-width:540px;margin:0 auto;padding:18px 16px 40px}
@@ -18,7 +18,8 @@
   input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:1rem;font-family:inherit}
   input:focus{outline:2px solid var(--accent);border-color:transparent}
   .btn{display:block;width:100%;padding:14px;border:0;border-radius:12px;background:var(--accent);color:#fff;
-    font-size:1rem;font-weight:700;cursor:pointer;margin-top:12px;font-family:inherit}
+    font-size:1rem;font-weight:700;cursor:pointer;margin-top:12px;font-family:inherit;text-align:center;
+    text-decoration:none}
   .btn.ghost{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
   .out{display:none;margin-top:14px}
   .out.on{display:block}
@@ -26,7 +27,7 @@
     font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;word-break:break-all;color:var(--ink)}
   .passo{font-size:.8rem;color:var(--ink-2);margin:14px 2px 4px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
   .aviso{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:.82rem;font-weight:600;margin-top:12px}
-  .redir{text-align:center;padding:60px 20px}
+  .redir{text-align:center;padding:54px 20px}
   .redir .p{font-size:1.05rem;font-weight:700;margin-bottom:6px}
   .redir a{color:var(--accent)}
   .spin{width:34px;height:34px;border:3px solid var(--accent-soft);border-top-color:var(--accent);
@@ -42,14 +43,17 @@
      PÁGINA DE REDIRECIONAMENTO DAS PLACAS NFC
      ---------------------------------------------------------------
      O que vai ESCRITO na placa é sempre um endereço destes:
-        https://joaodiogocarreiro-boop.github.io/placas/r/#ChIJ.....
-     e esta página reencaminha para a caixa de avaliação do Google.
+
+        .../placas/r/#ChIJ.....        → avaliação no Google
+        .../placas/r/#ig:nomedoinsta   → perfil no Instagram (ABRE A APP)
+        .../placas/r/#tt:nomedotiktok  → perfil no TikTok
+        .../placas/r/#u:<link>         → qualquer link (loja, site, menu…)
 
      PORQUÊ ESTA VOLTA?  Porque assim o João controla o destino.
-     Se o código de um negócio morrer (o Google avisa que mudam),
-     ou se o Google mudar o endereço das avaliações, corrige-se AQUI
-     e todas as placas já colocadas passam a funcionar outra vez —
-     sem ir buscar nenhuma placa a nenhum balcão.
+     Se o código de um negócio morrer, se o dono mudar de @, ou se o
+     Google mudar o endereço das avaliações, corrige-se AQUI e todas
+     as placas já colocadas voltam a funcionar — sem ir buscar
+     nenhuma placa a nenhum balcão.
 
      PARA CORRIGIR UM CLIENTE: acrescenta uma linha em CORRECOES.
      ═══════════════════════════════════════════════════════════════ -->
@@ -63,71 +67,155 @@
 
    Exemplos (apagar o // para ficarem ativos):
    "ChIJcodigoAntigo":  "ChIJcodigoNovo",                  // mudou de morada
-   "tasca-do-ze":       "ChIJxxxxxxxxxxxxxxxx",            // placa com nome
+   "ig:nome_antigo":    "ig:nome_novo",                    // mudou de @
    "ChIJoutro":         "https://exemplo.pt/qualquer",     // destino à medida
 */
 const CORRECOES = {
 };
 
-/* ─── 2. Para onde vai, por defeito ────────────────────────────── */
-function destino(codigo){
-  return "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(codigo);
-}
-
-/* ─── 3. Motor ─────────────────────────────────────────────────── */
+/* ─── 2. Motor ─────────────────────────────────────────────────── */
 function limpar(v){
   v = String(v || "").trim();
   if(v.charAt(0) === "#") v = v.slice(1);
-  try { v = decodeURIComponent(v); } catch(e){}
   return v.trim();
 }
-function resolver(entrada){
-  let v = limpar(entrada), saltos = 0;
+/* aplica as correções antes de tudo o resto */
+function corrigir(v){
+  let saltos = 0;
   while(Object.prototype.hasOwnProperty.call(CORRECOES, v) && saltos < 5){
-    v = CORRECOES[v]; saltos++;
-    if(/^https?:\/\//i.test(v)) return v;
+    v = String(CORRECOES[v]).trim(); saltos++;
   }
-  if(/^https?:\/\//i.test(v)) return v;
-  return v ? destino(v) : "";
+  return v;
+}
+/* @nome, instagram.com/nome/?igshid=… → nome */
+function utilizador(v){
+  v = String(v || "").trim();
+  try { v = decodeURIComponent(v); } catch(e){}
+  v = v.replace(/^@+/, "").replace(/[?#].*$/, "").replace(/\/+$/, "");
+  const barra = v.lastIndexOf("/");
+  if(barra >= 0) v = v.slice(barra + 1);
+  return v.replace(/[^A-Za-z0-9._]/g, "");
 }
 
-const params = new URLSearchParams(location.search);
-const entrada = location.hash ? location.hash.slice(1) : (params.get("p") || params.get("id") || "");
-const alvo = resolver(entrada);
+const UA = navigator.userAgent || "";
+const IOS = /iPad|iPhone|iPod/.test(UA) || (/Macintosh/.test(UA) && navigator.maxTouchPoints > 1);
+const ANDROID = /Android/.test(UA);
 
-if(alvo){
-  document.write(
-    '<div class="redir"><div class="spin"></div>' +
-    '<div class="p">A abrir as avaliações…</div>' +
-    '<p class="nota">Se não abrir sozinho, <a href="' + alvo.replace(/"/g,"&quot;") + '">toca aqui</a>.</p></div>'
-  );
-  location.replace(alvo);
+/* devolve {tipo, web, app, rotulo} — app="" quando não há salto possível */
+function resolver(entrada){
+  const v = corrigir(limpar(entrada));
+  if(!v) return null;
+
+  /* ── Instagram ── */
+  if(/^ig:/i.test(v)){
+    const u = utilizador(v.slice(3));
+    if(!u) return null;
+    const web = "https://www.instagram.com/" + u + "/";
+    return {
+      tipo: "ig", rotulo: "Instagram", web: web,
+      app: ANDROID
+        ? "intent://instagram.com/_u/" + u + "#Intent;package=com.instagram.android;scheme=https;S.browser_fallback_url=" + encodeURIComponent(web) + ";end"
+        : (IOS ? "instagram://user?username=" + u : "")
+    };
+  }
+
+  /* ── TikTok ── */
+  if(/^tt:/i.test(v)){
+    const u = utilizador(v.slice(3));
+    if(!u) return null;
+    const web = "https://www.tiktok.com/@" + u;
+    return {
+      tipo: "tt", rotulo: "TikTok", web: web,
+      app: ANDROID
+        ? "intent://www.tiktok.com/@" + u + "#Intent;package=com.zhiliaoapp.musically;scheme=https;S.browser_fallback_url=" + encodeURIComponent(web) + ";end"
+        : ""   /* no iPhone o próprio link do TikTok abre a app quando é TOCADO */
+    };
+  }
+
+  /* ── Link livre (loja, site, menu, WhatsApp…) ── */
+  if(/^u:/i.test(v)){
+    let alvo = v.slice(2);
+    try { alvo = decodeURIComponent(alvo); } catch(e){}
+    if(!/^https?:\/\//i.test(alvo)) alvo = "https://" + alvo;
+    return {tipo:"web", rotulo:"a página", web: alvo, app: ""};
+  }
+
+  /* ── link inteiro escrito à mão numa correção ── */
+  if(/^https?:\/\//i.test(v)) return {tipo:"web", rotulo:"a página", web: v, app: ""};
+
+  /* ── por defeito: código do Google (todas as placas já colocadas) ── */
+  return {
+    tipo: "google", rotulo: "as avaliações",
+    web: "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(v),
+    app: ""
+  };
+}
+
+const params  = new URLSearchParams(location.search);
+const entrada = location.hash ? location.hash.slice(1) : (params.get("p") || params.get("id") || "");
+const R = resolver(entrada);
+
+if(R){
+  const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+  /* Sem salto para app: o comportamento de sempre — redireciona já. */
+  if(!R.app){
+    document.write(
+      '<div class="redir"><div class="spin"></div>' +
+      '<div class="p">A abrir ' + esc(R.rotulo) + '…</div>' +
+      '<p class="nota">Se não abrir sozinho, <a href="' + esc(R.web) + '">toca aqui</a>.</p></div>'
+    );
+    location.replace(R.web);
+
+  /* Com salto para app: tenta a app e deixa um botão à vista se falhar.
+     O botão é um link a sério — tocá-lo faz o telemóvel abrir a app
+     (é assim que os "universal links" funcionam; um redirecionamento
+     automático não os dispara, e é por isso que sem esta página o
+     Instagram abria no browser com a janela do login por cima). */
+  } else {
+    document.write(
+      '<div class="redir">' +
+        '<div class="spin"></div>' +
+        '<div class="p">A abrir o ' + esc(R.rotulo) + '…</div>' +
+        '<a class="btn" style="margin-top:20px" href="' + esc(R.web) + '">Abrir o ' + esc(R.rotulo) + '</a>' +
+        '<p class="nota">Se ficares nesta página, toca no botão.</p>' +
+      '</div>'
+    );
+
+    /* tenta a app; se ao fim de 1,4 s ainda cá estivermos, vai para a web */
+    let saltou = false;
+    const parar = () => { saltou = true; };
+    document.addEventListener("visibilitychange", () => { if(document.hidden) parar(); });
+    window.addEventListener("pagehide", parar);
+    window.addEventListener("blur", parar);
+
+    setTimeout(() => { try { location.href = R.app; } catch(e){} }, 30);
+    setTimeout(() => { if(!saltou && !document.hidden) location.replace(R.web); }, 1400);
+  }
 }
 </script>
 
-<!-- ─── Ferramenta de programação (só aparece se não houver código no endereço) ─── -->
+<!-- ─── Ferramenta de programação (só aparece se não houver nada no endereço) ─── -->
 <div id="tool" class="hide">
   <h1>Programar uma placa</h1>
-  <p class="sub">Cola o código do negócio e sai o endereço para escrever na placa.</p>
+  <p class="sub">Isto é o atalho de emergência. O melhor é usar a aba <b>Placa</b> da app.</p>
 
   <div class="card">
-    <label>Código do negócio (Place ID) ou link do Google Maps</label>
-    <input type="text" id="pid" placeholder="ChIJ…" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <label style="margin-top:12px">Nome do negócio (só para ti, opcional)</label>
-    <input type="text" id="nome" placeholder="ex.: Tasca do Zé" autocomplete="off">
-    <button class="btn" id="ir">Gerar endereço da placa</button>
-
-    <div class="aviso hide" id="aviso-curto" style="margin-top:14px">
-      Esse é um <b>link de partilha</b> — abre a ficha do negócio, não a caixa de avaliação. Não serve para a placa.<br><br>
-      Cola-o aqui para ele te devolver o código <b>ChIJ…</b>:<br>
-      <a href="https://www.brightlocal.com/free-local-seo-tools/google-id-and-review-link-generator/" target="_blank" rel="noopener" style="color:var(--warn);font-weight:800;text-decoration:underline">abrir o gerador da BrightLocal ↗</a><br><br>
-      Depois volta aqui e cola o <b>ChIJ…</b> em cima.
+    <label>Escolhe o que a placa vai abrir</label>
+    <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost" style="margin-top:0;flex:1;min-width:120px;padding:10px" data-t="google">Google</button>
+      <button class="btn ghost" style="margin-top:0;flex:1;min-width:120px;padding:10px" data-t="ig">Instagram</button>
+      <button class="btn ghost" style="margin-top:0;flex:1;min-width:120px;padding:10px" data-t="tt">TikTok</button>
+      <button class="btn ghost" style="margin-top:0;flex:1;min-width:120px;padding:10px" data-t="u">Link</button>
     </div>
+
+    <label style="margin-top:14px" id="lbl">Código do negócio (ChIJ…) ou link do Google Maps</label>
+    <input type="text" id="val" placeholder="ChIJ…" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button class="btn" id="ir">Gerar endereço da placa</button>
 
     <div class="out" id="out">
       <div class="passo">1 · Testar primeiro</div>
-      <button class="btn ghost" id="testar">Abrir e ver se é o negócio certo</button>
-      <p class="nota">Tem de abrir a caixa de avaliação <b>com o nome e a morada certos</b>. Se abrir outra casa, pára — o código está errado.</p>
+      <button class="btn ghost" id="testar">Abrir e ver se está certo</button>
 
       <div class="passo">2 · Escrever isto na placa</div>
       <div class="url" id="url"></div>
@@ -140,66 +228,65 @@ if(alvo){
     </div>
   </div>
 
-  <p class="nota">Ferramentas: <a href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder" target="_blank" rel="noopener">Place ID Finder do Google</a> (abre em «Site para computador») · <a href="https://www.brightlocal.com/free-local-seo-tools/google-id-and-review-link-generator/" target="_blank" rel="noopener">Gerador da BrightLocal</a> (segunda opinião)</p>
   <p class="nota"><a href="../">← voltar à app</a></p>
 </div>
 
 <script>
 "use strict";
-if(!alvo){
+if(!R){
   document.getElementById("tool").classList.remove("hide");
-
   const $ = id => document.getElementById(id);
-  let atual = "";
+  let tipo = "google", atual = "";
 
-  function extrair(txt){
-    txt = String(txt||"").trim();
-    // link do Maps com place_id lá dentro
-    const m = txt.match(/(?:place_id[:=]|placeid=)\s*([A-Za-z0-9_\-]{10,})/i);
-    if(m) return m[1];
-    // já é um código
-    const c = txt.match(/^([A-Za-z0-9_\-]{15,})$/);
-    if(c) return c[1];
-    return "";
+  const TEXTOS = {
+    google: ["Código do negócio (ChIJ…) ou link do Google Maps", "ChIJ…"],
+    ig:     ["@ do Instagram ou link do perfil", "@tascadoze"],
+    tt:     ["@ do TikTok ou link do perfil", "@tascadoze"],
+    u:      ["Link para onde a placa vai", "https://…"]
+  };
+
+  document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+    tipo = b.dataset.t;
+    document.querySelectorAll("[data-t]").forEach(x => x.classList.add("ghost"));
+    b.classList.remove("ghost");
+    $("lbl").textContent = TEXTOS[tipo][0];
+    $("val").placeholder = TEXTOS[tipo][1];
+    $("out").classList.remove("on");
+  });
+
+  function hashDe(bruto){
+    if(tipo === "google"){
+      const m = bruto.match(/(?:place_id[:=]|placeid=)\s*([A-Za-z0-9_\-]{10,})/i);
+      if(m) return m[1];
+      const c = bruto.match(/^([A-Za-z0-9_\-]{15,})$/);
+      return c ? c[1] : "";
+    }
+    if(tipo === "ig") { const u = utilizador(bruto); return u ? "ig:" + u : ""; }
+    if(tipo === "tt") { const u = utilizador(bruto); return u ? "tt:" + u : ""; }
+    let a = bruto; if(!/^https?:\/\//i.test(a)) a = "https://" + a;
+    return "u:" + encodeURIComponent(a);
   }
-  const ENCURTADO = /(share\.google|maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)/i;
 
   $("ir").onclick = () => {
-    const bruto = $("pid").value.trim();
-    if(!extrair(bruto) && ENCURTADO.test(bruto)){
-      $("out").classList.remove("on");
-      $("aviso-curto").classList.remove("hide");
-      $("aviso-curto").scrollIntoView({behavior:"smooth", block:"nearest"});
-      return;
-    }
-    $("aviso-curto").classList.add("hide");
-    const codigo = extrair(bruto);
-    if(!codigo){
-      alert("Não reconheci o código.\n\nPrecisas do código que começa por ChIJ.\n\nUsa o Place ID Finder ou o gerador da BrightLocal (links no fim da página).");
-      return;
-    }
-    atual = location.origin + location.pathname.replace(/[^/]*$/, "") + "#" + codigo;
+    const h = hashDe($("val").value.trim());
+    if(!h){ alert("Não percebi isso. Confirma o que colaste."); return; }
+    atual = location.origin + location.pathname.replace(/[^/]*$/, "") + "#" + h;
     $("url").textContent = atual;
     $("out").classList.add("on");
-    $("testar").onclick = () => window.open("https://search.google.com/local/writereview?placeid=" + encodeURIComponent(codigo), "_blank");
+    $("testar").onclick = () => window.open(atual, "_blank");
     $("out").scrollIntoView({behavior:"smooth", block:"nearest"});
   };
 
   $("copiar").onclick = () => {
     const b = $("copiar");
     const ok = () => { b.textContent = "Copiado ✓"; setTimeout(()=>b.textContent="Copiar endereço", 1800); };
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(atual).then(ok).catch(()=>{
-        const t=document.createElement("textarea"); t.value=atual; document.body.appendChild(t);
-        t.select(); try{document.execCommand("copy"); ok();}catch(e){} document.body.removeChild(t);
-      });
-    } else {
-      const t=document.createElement("textarea"); t.value=atual; document.body.appendChild(t);
-      t.select(); try{document.execCommand("copy"); ok();}catch(e){} document.body.removeChild(t);
-    }
+    const fb = () => { const t=document.createElement("textarea"); t.value=atual; document.body.appendChild(t);
+      t.select(); try{document.execCommand("copy"); ok();}catch(e){} document.body.removeChild(t); };
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(atual).then(ok).catch(fb);
+    else fb();
   };
 
-  $("pid").addEventListener("keydown", e => { if(e.key === "Enter") $("ir").click(); });
+  $("val").addEventListener("keydown", e => { if(e.key === "Enter") $("ir").click(); });
 }
 </script>
 
