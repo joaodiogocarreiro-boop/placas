@@ -256,7 +256,7 @@
 <body>
 
 <header>
-  <div class="t">PLACAS <small>· rua</small></div>
+  <div class="t">PLACAS <small id="hSub">· rua</small></div>
   <div id="hZona">—</div>
 </header>
 <div id="aviso">⚠️ Este browser não guarda dados entre sessões. Exporta antes de fechar (Dados → Exportar).</div>
@@ -274,11 +274,12 @@
       <div class="chips" id="fModo" style="margin-bottom:10px">
         <button class="chip on" data-val="rua">🚶 Rua</button>
         <button class="chip" data-val="feira">🎪 Feira</button>
+        <button class="chip" data-val="chamada">📞 Chamada</button>
       </div>
 
       <div class="grid2" style="gap:8px">
         <div>
-          <label>Localidade</label>
+          <label id="lblLocal">Localidade</label>
           <input type="text" id="fLocal" list="dlLocais" placeholder="ex.: Seixal" autocomplete="off">
         </div>
         <div id="wrapRua">
@@ -288,6 +289,10 @@
         <div id="wrapFeira" class="hide">
           <label>Feira</label>
           <input type="text" id="fFeira" list="dlFeiras" placeholder="ex.: Feira da Ladra" autocomplete="off">
+        </div>
+        <div id="wrapTel" class="hide">
+          <label>Telefone</label>
+          <input type="tel" id="fTel" placeholder="ex.: 912345678" autocomplete="off">
         </div>
       </div>
       <datalist id="dlLocais"></datalist>
@@ -323,6 +328,11 @@
 
       <label>Resultado</label>
       <div class="chips" id="fRes"></div>
+
+      <div id="grpVideo" class="hide">
+        <label>Chegou a ver o vídeo?</label>
+        <div class="chips" id="fVideo"></div>
+      </div>
 
       <div id="grpVenda" class="hide">
         <label>Preço</label>
@@ -423,6 +433,126 @@
 
   <!-- ═══════════ GUIÃO ═══════════ -->
   <section id="tab-guiao" class="tab">
+
+    <div class="chips" id="gModo" style="margin-bottom:12px">
+      <button type="button" class="chip on" data-val="rua">🚶 Rua</button>
+      <button type="button" class="chip" data-val="chamada">📞 Chamada</button>
+    </div>
+
+    <div id="guiaoChamada" class="hide">
+
+      <div class="card" style="border-left:3px solid var(--warn)">
+        <h2 style="color:var(--warn)">Antes da primeira chamada</h2>
+        <p class="note" style="color:var(--ink)">
+          <b>O vídeo de 20 segundos</b> pronto no telemóvel — mão a encostar, Instagram a abrir, filmado num balcão a sério.<br>
+          <b>O WhatsApp com o teu nome verdadeiro e uma foto tua.</b> Se aparecer só um número, perdes de graça.<br>
+          <b>A fatura a sair em menos de um minuto.</b> Fatura primeiro, Recibo quando o dinheiro entrar — nunca fatura-recibo antes de receberes.<br>
+          <b>Placas em stock.</b> Se fechares e não tiveres para enviar, queimaste o cliente.<br>
+          <b>O preço decidido.</b> Uma gaguez no preço custa-te a venda.
+        </p>
+      </div>
+
+      <p class="note">O objetivo da chamada é <b>fechar e receber</b>. Não é marcar reunião. O encontro só entra se ele hesitar e for perto de ti.</p>
+
+      <div class="pcard">
+        <div class="phead"><span class="num">1</span><span class="rot">Abrir</span></div>
+        <p class="pnota" style="font-size:1rem;color:var(--ink)">Boa tarde, é da <b>[marca]</b>?<br>
+        Chamo-me João Carreiro. Vi-vos na montra do LX Market. É meio minuto, posso?</p>
+        <p class="pnota">Diz o nome deles. Diz onde os viste. É isso que te separa de um call center.<br>
+        <b>Se não for o dono:</b> «A que horas é que ele costuma estar?» — e desliga. Não gastes o guião com quem não decide.</p>
+      </div>
+
+      <div class="pcard">
+        <div class="phead"><span class="num">2</span><span class="rot">A pergunta</span></div>
+        <p class="pnota" style="font-size:1rem;color:var(--ink)">Só uma pergunta rápida: quando alguém compra na vossa banca e diz «depois vou ver o vosso Instagram» — quantos é que acha que vão mesmo?</p>
+        <p class="pnota"><b>Cala-te.</b> Deixa responder. A resposta é sempre «poucos». Acabaste de o pôr a dizer em voz alta o problema que vais resolver — e quem está a falar não desliga.</p>
+      </div>
+
+      <div class="pcard">
+        <div class="phead"><span class="num">3</span><span class="rot">O que é</span></div>
+        <p class="pnota" style="font-size:1rem;color:var(--ink)">Pois. Eu faço uma placa que fica na banca ou no balcão. A pessoa encosta o telemóvel e abre-lhe logo o vosso Instagram no telemóvel dela. Não procura, não escreve nada.</p>
+        <p class="pnota">Uma frase. Não expliques NFC. Não expliques como funciona por dentro.</p>
+      </div>
+
+      <div class="pcard teste">
+        <div class="phead"><span class="num">4</span><span class="rot">O vídeo</span><span class="tb">GANHAS AQUI</span></div>
+        <p class="pnota" style="font-size:1rem;color:var(--ink)">Isto explica-se mal por telefone. Posso mandar-lhe já um vídeo de vinte segundos pelo WhatsApp, para ver enquanto falamos?<br><br>
+        <i>(mandas ali na hora, com ele em linha, e ficas calado enquanto ele vê)</i><br><br>
+        Está a ver? É só isto. Encosta e abre.</p>
+        <p class="pnota">Faz duas coisas ao mesmo tempo: é a tua demonstração possível, e é ele a dar-te autorização para lhe mandares coisas.</p>
+      </div>
+
+      <div class="pcard">
+        <div class="phead"><span class="num">5</span><span class="rot">Fechar</span></div>
+        <p class="pnota" style="font-size:1rem;color:var(--ink)">São 45 euros, uma vez só, com o envio incluído. Não tem mensalidade nem nada.<br>
+        Se quiser, preciso só de duas coisas: o @ do Instagram e o NIF para a fatura. Programo hoje, mando-lhe a fatura, e amanhã sai no correio.</p>
+        <p class="pnota"><b>Não perguntes se quer.</b><br>
+        Se tiver loja e Google: «Se quiser também a das avaliações, as duas ficam em 79.»<br>
+        Se tiver mais do que um espaço: «Quantos balcões é que tem? Levo-lhe uma para cada.»</p>
+      </div>
+
+      <div class="pcard">
+        <div class="phead"><span class="num">6</span><span class="rot">Receber</span></div>
+        <p class="pnota" style="font-size:1rem;color:var(--ink)">Envio-lhe já a fatura. É MB Way para este número, e assim que entrar eu ponho no correio.</p>
+        <p class="pnota">A fatura é a tua confiança toda. Ele deixa de pagar a um desconhecido e passa a pagar a uma fatura com nome e NIF.</p>
+      </div>
+
+      <details class="loc" style="margin:12px 0">
+        <summary><span class="lnome">O que ele vai dizer</span><span class="lst">▾</span></summary>
+        <div class="lruas">
+          <details class="g" style="margin:8px 0"><summary><span class="stit">«Não o conheço, não vou pagar a alguém que não conheço»</span></summary>
+            <div class="gbody"><p>Compreendo perfeitamente. Por isso é que lhe mando a fatura <b>antes</b> de pagar — com o meu nome completo e o meu NIF. Não está a pagar a um desconhecido, está a pagar a uma fatura. E o vídeo que lhe mandei é uma placa minha, num balcão de um cliente.</p></div></details>
+
+          <details class="g" style="margin:8px 0"><summary><span class="stit">«Mande-me informação por email»</span></summary>
+            <div class="gbody"><p>Mando já. Diga-me só uma coisa: é o preço, ou é ver aquilo a funcionar?</p><p class="note">A resposta dele diz-te qual é a objeção verdadeira. Trata dessa.</p></div></details>
+
+          <details class="g" style="margin:8px 0"><summary><span class="stit">«Quanto custa?» logo no início</span></summary>
+            <div class="gbody"><p>Quarenta e cinco, uma vez só, envio incluído.</p><p class="note"><b>Responde. Não fujas.</b> Ao telefone, fugir ao preço destrói a confiança que ainda não tens.</p></div></details>
+
+          <details class="g" style="margin:8px 0"><summary><span class="stit">«Já tenho um QR code»</span></summary>
+            <div class="gbody"><p>O QR obriga a pessoa a abrir a câmara e a apontar. Isto é só encostar. E um QR impresso nunca mais se muda — esta, se o senhor mudar de @, eu altero à distância e a placa fica onde está.</p></div></details>
+
+          <details class="g" style="margin:8px 0"><summary><span class="stit">«Isso funciona em todos os telemóveis?»</span></summary>
+            <div class="gbody"><p>Nos Android quase todos, e nos iPhone de 2018 para cá. Diga-me só onde tenciona pôr — se for balcão de metal mando-lhe a versão própria para metal, senão o metal corta o sinal.</p></div></details>
+
+          <details class="g" style="margin:8px 0"><summary><span class="stit">«E se não funcionar quando chegar?»</span></summary>
+            <div class="gbody"><p>Liga-me e eu resolvo à distância. O link não está gravado na placa, está do meu lado — mudo eu, sem o senhor mexer em nada.</p></div></details>
+
+          <details class="g" style="margin:8px 0"><summary><span class="stit">«Vou pensar»</span></summary>
+            <div class="gbody"><p>Claro. Posso ligar-lhe na sexta de manhã?</p><p class="note"><b>Nunca deixes um «vou pensar» sem data. Sem data é não.</b></p></div></details>
+        </div>
+      </details>
+
+      <div class="card" style="border-left:3px solid var(--ok)">
+        <h2 style="color:var(--ok)">Depois do sim</h2>
+        <p class="note" style="color:var(--ink)">
+          1 · Pedes o <b>@</b> e o <b>NIF</b>, e confirmas soletrado.<br>
+          2 · Emites a <b>Fatura</b> e mandas por WhatsApp.<br>
+          3 · Ele faz <b>MB Way</b>. Só depois é que se avança.<br>
+          4 · Programas a placa <b>e testas com o teu telemóvel</b> antes de fechar o envelope. Sempre.<br>
+          5 · Envelope almofadado, <b>carta registada</b> — 3,93 € até 50 g.<br>
+          6 · Dentro vai a placa, a fita 3M e um cartão: «Placa programada por João Carreiro · [telefone] · Se mudar de @ ou de morada, ligue-me. Eu altero à distância, não precisa de placa nova.»<br>
+          7 · Mandas o <b>código de seguimento</b> por WhatsApp.<br>
+          8 · Emites o <b>Recibo</b>.<br>
+          9 · No dia em que chegar: «Chegou? Encoste aí o telemóvel e diga-me se abriu certo.»
+        </p>
+        <p class="note">Não vás aos CTT por cada venda. Junta as do dia e vais uma vez.</p>
+      </div>
+
+      <div class="card" style="border-left:3px solid var(--bad)">
+        <h2 style="color:var(--bad)">O que medir</h2>
+        <p class="note" style="color:var(--ink)"><b>Atendeu · Viu o vídeo · Pagou.</b> É o que a aba Registar te pede em cada chamada, e é o funil que aparece nos Dados.</p>
+        <p class="note">Não contes interessados. Interesse é de graça e toda a gente o dá para desligar o telefone. <b>Só conta o MB Way.</b></p>
+      </div>
+
+      <div class="card" style="border-left:3px solid var(--warn)">
+        <h2 style="color:var(--warn)">Se ele não pagar</h2>
+        <p class="note" style="color:var(--ink)">Anula a fatura no Portal das Finanças: <b>Faturas e Recibos → Consultar → Ver → Anular</b>. Só dá se a fatura tiver o <b>NIF</b> do cliente — por isso é que o pedes logo. Uma vez por semana abre a lista e anula as que não foram pagas.</p>
+      </div>
+
+    </div>
+
+    <div id="guiaoRua">
     <div class="card" id="armasCard" style="display:none">
       <h2 style="margin-bottom:8px">Os teus argumentos escolhidos</h2>
       <div id="armasLista"></div>
@@ -459,6 +589,7 @@
       <h2 style="color:var(--bad)">Regras fixas</h2>
       <p class="note" style="color:var(--ink)">Pedir avaliações é permitido. <b>PROIBIDO:</b> pagar ou oferecer seja o que for por avaliações, e pedir só aos clientes contentes (review gating). O Google exige que peças a toda a gente da mesma maneira. Prometes tirar a chatice do caminho, nunca as estrelas. Fatura sempre, mesmo em dinheiro.</p>
     </div>
+    </div>
   </section>
 
   <!-- ═══════════ DADOS ═══════════ -->
@@ -492,6 +623,15 @@
     <div class="card">
       <h2>Retornos pendentes («Voltar»)</h2>
       <div id="listaVoltar"><p class="note">Nenhum pendente. 👌</p></div>
+    </div>
+
+    <div class="card">
+      <h2>Rua vs telefone</h2>
+      <table>
+        <thead><tr><th>Canal</th><th>Contactos</th><th>Vendas</th><th>Conv.</th><th>€</th></tr></thead>
+        <tbody id="tbodyCanal"></tbody>
+      </table>
+      <p class="note" id="notaFunil"></p>
     </div>
 
     <div class="card">
@@ -542,7 +682,16 @@ const RES = [
   {id:"porta", txt:"🚫 Nem me ouviu", cls:"bad"},
   {id:"fech", txt:"🚪 Fechado/Férias", cls:"off"}
 ];
-const PRECOS = [45,80];
+/* Mesmos ids da rua, outras palavras — o funil ao telefone é outro. */
+const RES_CHAMADA = [
+  {id:"venda",  txt:"✅ Pagou", cls:"ok"},
+  {id:"voltar", txt:"🔁 Ficou de pensar", cls:"warn"},
+  {id:"nao",    txt:"❌ Ouviu e disse não", cls:"bad"},
+  {id:"porta",  txt:"🚫 Desligou logo", cls:"bad"},
+  {id:"fech",   txt:"📵 Não atendeu", cls:"off"}
+];
+const VIDEO = [{id:"sim", txt:"📹 Viu", cls:"ok"}, {id:"nao", txt:"Não chegou a ver"}];
+const PRECOS = [49,45,40,79];
 const PAGS = ["MB Way","Dinheiro"];
 
 /* Feiras já mapeadas — só para sugerir enquanto escreve. Pode escrever qualquer outra. */
@@ -560,8 +709,8 @@ const PITCH = [
   {id:"p2", rot:"Direto ao assunto", txt:"Vou ser direto, que não lhe quero tirar muito tempo. Queria mostrar-lhe estas placas que facilitam os clientes deixarem a avaliação no Google. Vai ver, não dá trabalho nenhum.",
    nota:`Nunca digas <b>«venho vender»</b>. E não expliques mais nada. Vai já à placa.`},
 
-  {id:"p3", rot:"A demo", txt:"Toque aqui com o topo do telemóvel… está a ver? Abriu logo a avaliação.",
-   nota:`A placa na <b>mão dele</b>, com o telemóvel <b>dele</b>. Dois segundos calado. É aqui que ele compra.<br><br><b>Não peças a placa de volta.</b> Deixa-a na mão dele o resto da conversa. Se a pousar, empurra-a devagar na direção dele outra vez. Quanto mais tempo a segura, mais ela vale aos olhos dele.<br><br><b>O topo do telemóvel, não o meio.</b> A antena está no topo. A maior parte das primeiras tentativas falha por a pessoa pousar o meio do telemóvel em cima da placa, e uma falha logo à partida estraga a demo.<br><br><b>Se houver um cliente na loja, pede a ele e não ao dono:</b> «Desculpe, importa-se de tocar aqui com o telemóvel? É um segundo.» O dono acredita mais no que vê acontecer a um cliente do que em tudo o que tu lhe disseres.`},
+  {id:"p3", rot:"A demo", txt:"Toque aqui com o telemóvel… está a ver? Abriu logo a avaliação.",
+   nota:`A placa na <b>mão dele</b>, com o telemóvel <b>dele</b>. Dois segundos calado. É aqui que ele compra.`},
 
   {id:"p4", rot:"A pergunta", txt:"Diga-me uma coisa: quantas avaliações é que lhe deixam por semana?",
    nota:`<b>Cala-te e deixa-o responder.</b> Quem diz o problema em voz alta passa a ser ele. E a resposta diz-te que número usar a seguir.`},
@@ -592,8 +741,8 @@ const PITCH = [
   {id:"p6", rot:"O interesse", txt:"Está interessado?",
    nota:`E cala-te outra vez. Se disser que sim, o preço sai a seguir sem pausa nenhuma.`},
 
-  {id:"p7", rot:"O preço", txt:"São 45 euros, uma vez. Se levar duas, ficam em 80. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada.",
-   nota:`Hesita? <b>Não baixes o preço.</b> Baixar à primeira resistência ensina-o a empurrar. A segunda placa (as duas por €80) só depois do sim à primeira, e com um sítio concreto na cabeça: «uma no balcão e outra na mesa do fundo».`}
+  {id:"p7", rot:"O preço", txt:"São 49 euros, uma vez. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada.",
+   nota:`Hesita? <b>«€45 se fecharmos já»</b>. Chão: <b>€40</b>, nunca abaixo. Combo Instagram (€79) só depois do sim.`}
 ];
 
 const EXTRAS = [
@@ -602,10 +751,10 @@ const EXTRAS = [
     <div class="obj"><b>"É caro."</b><span class="perg">"Caro em relação a quê?"</span>"Isto é uma vez na vida, não é mensalidade. Se lhe trouxer uma mesa a mais, já se pagou."</div>
     <div class="obj"><b>"Já tenho avaliações."</b><span class="perg">"E estão a entrar esta semana?"</span>"É que o que conta é serem recentes. Muita gente nem olha para as antigas."</div>
     <div class="obj"><b>"Um QR code é grátis."</b><span class="perg">"E o seu está a dar quantas por mês?"</span>"O código obriga a abrir a câmara, apontar, esperar. E aquele papelinho plastificado ao pé da caixa ninguém vê. Isto é encostar e já está."</div>
-    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia, passo cá antes de ir embora."</div>
+    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia, passo cá antes de ir embora. Fica nos 45."</div>
     <div class="obj"><b>"Tenho de falar com o meu sócio / a minha mulher."</b><span class="perg">"Faz todo o sentido. O que é que ele ia querer saber?"</span>Responde a isso já, ali. "Olhe, volto quinta às três e meia e mostro aos dois.". Hora exata, e cumpre.</div>
-    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em telemóveis de 2018 para cá; nos mais antigos ativa-se no Centro de Controlo. E basta um em cada dez usar. São avaliações que hoje não tem."</div>
-    <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"A placa não escolhe quem avalia, nem podia: o Google proíbe filtrar. O que ela faz é dar voz aos contentes, que são a maioria e são os que se esquecem. Um 4,6 com 120 avaliações recentes vale mais do que um 5,0 com 11 antigas."</div>
+    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em qualquer telemóvel dos últimos anos. E basta um em cada dez usar. São avaliações que hoje não tem."</div>
+    <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"Quem sai zangado escreve à mesma, esse encontra o caminho sozinho. Isto é para os contentes, que são a maioria e são os que se esquecem. Com mais avaliações, a média sobe e uma má dilui-se."</div>
     <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos. A placa está lá para toda a gente, igual."</div>
     <div class="obj"><b>"Agora não tenho tempo."</b><span class="perg">"Dois minutos, cronometrados. Ou diga-me a que horas e eu volto."</span>E voltas à hora que ele disser.</div>
     <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente, para testar antes de pagar."</div>`},
@@ -634,7 +783,7 @@ const EXTRAS = [
       <li>NIF do cliente (o nome aparece sozinho)</li>
       <li>Importância recebida: <b>"Pagamento dos bens ou serviços"</b></li>
       <li>Descrição: <b>Placa NFC para avaliações Google, 1 un.</b></li>
-      <li>Valor: <b>45</b> (uma placa) ou <b>80</b> (duas)</li>
+      <li>Valor: 49 / 45 / 40 / 79</li>
       <li>IVA: <b>Isento, Art. 53.º do CIVA</b></li>
       <li>Retenção: <b>sem retenção</b>, que vendas de bens não têm</li>
       <li>Emitir → PDF → <b>enviar por WhatsApp à frente dele</b></li>
@@ -687,7 +836,7 @@ if(!persist) document.getElementById("aviso").style.display = "block";
 if(!state.sitios || typeof state.sitios !== "object") state.sitios = {};
 if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"", feira:"", modo:"rua" };
 if(typeof state.aqui.feira !== "string") state.aqui.feira = "";
-if(state.aqui.modo !== "feira") state.aqui.modo = "rua";
+if(state.aqui.modo !== "feira" && state.aqui.modo !== "chamada") state.aqui.modo = "rua";
 if(!Array.isArray(state.args)) state.args = [];
 if(!Array.isArray(state.placas)) state.placas = [];
 if(!Array.isArray(state.sessoes)) state.sessoes = [];
@@ -697,7 +846,8 @@ state.registos.forEach(r => {
   if(!r.local) r.local = "";
   if(!r.rua) r.rua = "";
   if(typeof r.feira !== "string") r.feira = "";      /* registos antigos são todos de rua */
-  if(r.modo !== "feira") r.modo = "rua";
+  if(r.modo !== "feira" && r.modo !== "chamada") r.modo = "rua";
+  if(typeof r.tel !== "string") r.tel = "";
 });
 
 /* ───────── helpers ───────── */
@@ -707,6 +857,7 @@ const eur = n => "€" + (n||0);
 const slug = v => String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
   .toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 const zCurta = r => {
+  if(r && r.modo === "chamada") return "📞 " + ((r.local||"").trim() || "sem lista");
   if(r && r.modo === "feira") return "🎪 " + ((r.feira||"").trim() || "feira sem nome");
   const l=(r&&r.local)||"", u=(r&&r.rua)||"";
   if(!l && !u) return "—"; return u ? (l ? l+" · "+u : u) : l; };
@@ -794,7 +945,7 @@ function makeChips(elId, items){
         $("grpVenda").classList.toggle("hide", c.dataset.val !== "venda");
         $("grpVoltar").classList.toggle("hide", c.dataset.val !== "voltar");
         if(c.dataset.val === "venda" && !sel("fPreco")){
-          const first = $("fPreco").querySelector('[data-val="45"]'); if(first) first.classList.add("on");
+          const first = $("fPreco").querySelector('[data-val="49"]'); if(first) first.classList.add("on");
         }
       }
     };
@@ -806,6 +957,7 @@ makeChips("fTipo", TIPOS);
 makeChips("fRes", RES);
 makeChips("fPreco", PRECOS);
 makeChips("fPag", PAGS);
+makeChips("fVideo", VIDEO);
 
 function renderAqui(){
   const fl = $("fLocal"), fr = $("fRua");
@@ -831,21 +983,34 @@ function comitarAqui(){
   state.aqui.rua   = $("fRua").value.trim();
   state.aqui.feira = $("fFeira").value.trim();
   if(state.aqui.local) sitio(state.aqui.local);
-  if(state.aqui.modo !== "feira" && state.aqui.local && state.aqui.rua) ruaObj(state.aqui.local, state.aqui.rua, true);
+  if(state.aqui.modo === "rua" && state.aqui.local && state.aqui.rua) ruaObj(state.aqui.local, state.aqui.rua, true);
   saveState();
 }
 
 /* ─── rua ou feira ─── */
 function renderModo(){
-  const f = state.aqui.modo === "feira";
-  $("fModo").querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.val === state.aqui.modo));
-  $("wrapRua").classList.toggle("hide", f);
+  const m = state.aqui.modo, f = m === "feira", c = m === "chamada";
+  $("fModo").querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x.dataset.val === m));
+  $("wrapRua").classList.toggle("hide", f || c);
   $("wrapFeira").classList.toggle("hide", !f);
-  $("rowRua").classList.toggle("hide", f);
-  $("hRegistar").textContent = f ? "Registar banca" : "Registar porta";
-  $("lblNome").textContent   = f ? "Banca / marca" : "Negócio";
-  $("fNome").placeholder     = f ? "ex.: Cerâmica da Rita" : "ex.: Tasca do Zé";
-  $("btGuardar").textContent = f ? "Guardar banca" : "Guardar porta";
+  $("wrapTel").classList.toggle("hide", !c);
+  $("rowRua").classList.toggle("hide", f || c);
+  $("grpVideo").classList.toggle("hide", !c);
+  $("lblLocal").textContent  = c ? "De que lista veio" : "Localidade";
+  $("fLocal").placeholder    = c ? "ex.: LX Market" : "ex.: Seixal";
+  $("hRegistar").textContent = c ? "Registar chamada" : (f ? "Registar banca" : "Registar porta");
+  $("lblNome").textContent   = c ? "Marca / negócio"  : (f ? "Banca / marca"  : "Negócio");
+  $("fNome").placeholder     = c ? "ex.: Clayey Ceramics" : (f ? "ex.: Cerâmica da Rita" : "ex.: Tasca do Zé");
+  $("btGuardar").textContent = c ? "Guardar chamada" : (f ? "Guardar banca" : "Guardar porta");
+  $("hSub").textContent      = c ? "· telefone" : (f ? "· feira" : "· rua");
+  /* ao telefone os resultados são outros — troca os botões sem perder o que estava escolhido */
+  const querido = c ? "chamada" : "presencial";
+  if($("fRes").dataset.set !== querido){
+    const antes = sel("fRes");
+    makeChips("fRes", c ? RES_CHAMADA : RES);
+    $("fRes").dataset.set = querido;
+    if(antes){ const b = $("fRes").querySelector('[data-val="'+antes+'"]'); if(b) b.classList.add("on"); }
+  }
 }
 $("fModo").querySelectorAll(".chip").forEach(c => c.onclick = () => {
   if(state.sessao){ toast("Acaba a sessão antes de mudares"); return; }
@@ -873,7 +1038,9 @@ function renderAvisoFeira(){
 }
 
 /* ─── sessão: comecei / acabei ─── */
-const chaveSitio = a => a.modo === "feira" ? "feira|"+slug(a.feira) : "rua|"+slug(a.local)+"|"+slug(a.rua);
+const chaveSitio = a => a.modo === "feira"   ? "feira|"+slug(a.feira)
+                      : a.modo === "chamada" ? "chamada|"+slug(a.local)
+                      : "rua|"+slug(a.local)+"|"+slug(a.rua);
 const nomeSitio  = a => zCurta(a);
 function duracao(min){
   if(min < 60) return min + " min";
@@ -889,9 +1056,12 @@ function renderSessao(){
     n.innerHTML = "A contar desde as <b>" + new Date(state.sessao.inicio)
       .toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"}) + "</b> em " + esc(state.sessao.nome) + ".";
   } else {
-    b.textContent = "▶ Comecei aqui";
+    const ch = state.aqui.modo === "chamada";
+    b.textContent = ch ? "▶ Comecei a ligar" : "▶ Comecei aqui";
     b.style.background = "";
-    n.innerHTML = "Carrega ao chegar e ao sair. Sem isto não há <b>euros por hora</b>, e é por aí que decides onde voltar.";
+    n.innerHTML = ch
+      ? "Carrega ao começares a ligar e ao parares. Sem isto não sabes <b>quantas chamadas por hora</b> fazes, nem quanto vale uma hora ao telefone."
+      : "Carrega ao chegar e ao sair. Sem isto não há <b>euros por hora</b>, e é por aí que decides onde voltar.";
   }
 }
 $("btSessao").onclick = () => {
@@ -1005,22 +1175,28 @@ $("btGuardar").onclick = () => {
     id: Date.now() + "" + Math.floor(Math.random()*999),
     ts: new Date().toISOString(),
     dia: hojeISO(),
-    local: state.aqui.local, rua: state.aqui.modo === "feira" ? "" : state.aqui.rua, zona: "",
+    local: state.aqui.local,
+    rua: state.aqui.modo === "rua" ? state.aqui.rua : "", zona: "",
     modo: state.aqui.modo, feira: state.aqui.modo === "feira" ? state.aqui.feira : "",
+    tel: state.aqui.modo === "chamada" ? $("fTel").value.trim() : "",
+    video: state.aqui.modo === "chamada" ? (sel("fVideo") === "sim") : null,
     nome, tipo: tipo || "📦 Outro", res,
-    preco: res === "venda" ? Number(sel("fPreco") || 45) : 0,
+    preco: res === "venda" ? Number(sel("fPreco") || 49) : 0,
     pag: res === "venda" ? (sel("fPag") || "") : "",
     quando: res === "voltar" ? $("fQuando").value.trim() : "",
     nota: $("fNota").value.trim(),
     resolvido: false
   });
   saveState();
-  ["fNome","fQuando","fNota"].forEach(i => $(i).value = "");
+  ["fNome","fQuando","fNota","fTel"].forEach(i => $(i).value = "");
+  document.querySelectorAll("#fVideo .chip").forEach(c => c.classList.remove("on"));
   $("avisoRepetido").classList.add("hide");
   document.querySelectorAll("#fRes .chip, #fPreco .chip, #fPag .chip").forEach(c => c.classList.remove("on"));
   $("grpVenda").classList.add("hide"); $("grpVoltar").classList.add("hide");
-  toast(res === "venda" ? "💰 Venda registada!" : (state.aqui.modo === "feira" ? "Banca registada" : "Porta registada"));
-  geoMarcar(state.registos[state.registos.length-1]);
+  toast(res === "venda" ? "💰 Venda registada!"
+      : state.aqui.modo === "chamada" ? "Chamada registada"
+      : state.aqui.modo === "feira"   ? "Banca registada" : "Porta registada");
+  if(state.aqui.modo !== "chamada") geoMarcar(state.registos[state.registos.length-1]);
   renderTudo();
 };
 
@@ -1037,7 +1213,9 @@ function renderHoje(){
   if(!hoje.length){ el.innerHTML = '<p class="note">Ainda sem registos hoje.</p>'; return; }
   el.innerHTML = hoje.map(r => {
     const h = new Date(r.ts); const hh = String(h.getHours()).padStart(2,"0")+":"+String(h.getMinutes()).padStart(2,"0");
-    const [cls, txt] = BADGE[r.res] || ["fech", r.res];
+    const BADGE_CH = { venda:["venda","PAGOU"], voltar:["voltar","PENSAR"], nao:["nao","NÃO"],
+                       porta:["nao","DESLIGOU"], fech:["fech","NÃO ATENDEU"] };
+    const [cls, txt] = (r.modo === "chamada" ? BADGE_CH[r.res] : BADGE[r.res]) || ["fech", r.res];
     const extra = r.res === "venda" ? " · "+eur(r.preco)+(r.pag ? " "+r.pag : "") : (r.quando ? " · "+esc(r.quando) : "");
     return '<div class="reg"><span class="h">'+hh+'</span><span class="n"><b>'+esc(r.nome)+'</b><small>'+esc(r.tipo)+extra+'</small></span><span class="badge '+cls+'">'+txt+'</span><button class="x" data-del="'+r.id+'">✕</button></div>';
   }).join("");
@@ -1596,6 +1774,14 @@ function renderGuiao(){
   renderCompleto(); renderArmas();
 }
 $("btLimparArgs").onclick = () => { state.args = []; saveState(); renderGuiao(); };
+
+/* ─── guião da rua / guião da chamada ─── */
+$("gModo").querySelectorAll(".chip").forEach(c => c.onclick = () => {
+  const ch = c.dataset.val === "chamada";
+  $("gModo").querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === c));
+  $("guiaoRua").classList.toggle("hide", ch);
+  $("guiaoChamada").classList.toggle("hide", !ch);
+});
 $("btCopiarGuiao").onclick = () => {
   const txt = PITCH.map(p => frase(p.id)).join("\n\n");
   const b = $("btCopiarGuiao");
@@ -1698,8 +1884,9 @@ function renderDados(){
     if(!r) return;
     r.resolvido = true;
     if(!state.sessao){
-      state.aqui.modo = r.modo === "feira" ? "feira" : "rua";
+      state.aqui.modo = (r.modo === "feira" || r.modo === "chamada") ? r.modo : "rua";
       if(r.modo === "feira") state.aqui.feira = r.feira || "";
+      else if(r.modo === "chamada") state.aqui.local = r.local || "";
       else if(r.local){ state.aqui.local = r.local; state.aqui.rua = r.rua || ""; }
     }
     saveState();
@@ -1709,6 +1896,31 @@ function renderDados(){
     renderTudo();
     toast("Retorno: regista o resultado");
   });
+
+  /* rua vs telefone */
+  const canais = [
+    {nome:"🚶 Rua e feira", rs: rs.filter(r => r.modo !== "chamada")},
+    {nome:"📞 Chamadas",    rs: rs.filter(r => r.modo === "chamada")}
+  ].filter(c => c.rs.length);
+  $("tbodyCanal").innerHTML = canais.map(c => {
+    const st = contas(c.rs);
+    return "<tr><td>"+c.nome+"</td><td>"+st.abordadas+"</td><td>"+st.vendas+"</td><td>"+
+      (st.conv === null ? "—" : st.conv+"%")+"</td><td>"+eur(st.euros)+"</td></tr>";
+  }).join("") || '<tr><td colspan="5" class="note">Sem registos ainda.</td></tr>';
+
+  const ch = rs.filter(r => r.modo === "chamada");
+  if(ch.length){
+    const atend = ch.filter(r => r.res !== "fech").length;
+    const viu   = ch.filter(r => r.video === true).length;
+    const pag   = ch.filter(r => r.res === "venda").length;
+    const pl = (n,a,b) => "<b>"+n+"</b> "+(n===1?a:b);
+    $("notaFunil").innerHTML = pl(ch.length,"ligação","ligações")+" → "+pl(atend,"atendeu","atenderam")+
+      " → "+pl(viu,"viu o vídeo","viram o vídeo")+" → "+pl(pag,"pagou","pagaram")+"." +
+      (viu ? " Dos que viram o vídeo, fecharam <b>"+Math.round(100*pag/viu)+"%</b>." : "") +
+      (ch.length < 20 ? " <i>Faltam "+(20-ch.length)+" para o número começar a querer dizer alguma coisa.</i>" : "");
+  } else {
+    $("notaFunil").textContent = "Ainda não registaste nenhuma chamada.";
+  }
 
   const cs = Object.keys(state.sitios).sort((a,b) => statsLocal(b).portas - statsLocal(a).portas);
   $("tbodyZonas").innerHTML = cs.map(lk => {
