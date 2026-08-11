@@ -1,110 +1,68 @@
-/* ══════════════════════════════════════════════════════
-   Placas · Rua — service worker
-   VERSÃO v4 · 11 de agosto de 2026
+/* Placas · Rua — service worker
+   Objetivo: a app abrir sempre, mesmo sem rede (a rua não tem sempre 4G).
+   Os dados ficam no localStorage do telemóvel, não passam por aqui. */
 
-   COMO ATUALIZAR NO FUTURO:
-   muda só a linha VERSAO aqui em baixo. Mais nada.
-   ══════════════════════════════════════════════════════ */
-
-const VERSAO = 'v4-2026-08-11';
-const CACHE  = 'placas-' + VERSAO;
-
+const CACHE = "placas-v24";
 const ESSENCIAIS = [
-  './',
-  './index.html'
+  "./",
+  "./index.html",
+  "./r/",
+  "./r/index.html",
+  "./manifest.webmanifest",
+  "./icon-192.png",
+  "./icon-512.png",
+  "./icon-180.png",
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css",
+  "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"
 ];
 
-/* ── instalar ──
-   Guarda o essencial e entra em serviço já, sem esperar
-   que feches todos os separadores. */
-self.addEventListener('install', evento => {
-  evento.waitUntil((async () => {
-    const cache = await caches.open(CACHE);
-    // um a um, para que um ficheiro em falta não estrague a instalação toda
-    await Promise.all(
-      ESSENCIAIS.map(url => cache.add(url).catch(() => {}))
-    );
-    await self.skipWaiting();
-  })());
+self.addEventListener("install", e => {
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => Promise.allSettled(ESSENCIAIS.map(u => c.add(u))))
+      .then(() => self.skipWaiting())
+  );
 });
 
-/* ── ativar ──
-   Apaga as caches das versões antigas e assume o controlo
-   dos separadores já abertos. */
-self.addEventListener('activate', evento => {
-  evento.waitUntil((async () => {
-    const nomes = await caches.keys();
-    await Promise.all(
-      nomes
-        .filter(n => n.startsWith('placas-') && n !== CACHE)
-        .map(n => caches.delete(n))
-    );
-    await self.clients.claim();
-  })());
+self.addEventListener("activate", e => {
+  e.waitUntil(
+    caches.keys()
+      .then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
 
-/* ── pedidos ── */
-self.addEventListener('fetch', evento => {
-  const pedido = evento.request;
+self.addEventListener("fetch", e => {
+  const req = e.request;
+  if (req.method !== "GET") return;
 
-  if (pedido.method !== 'GET') return;
+  const url = new URL(req.url);
 
-  const url = new URL(pedido.url);
-  const mesmaOrigem = url.origin === self.location.origin;
+  // Mosaicos do mapa: só rede. Sem rede, a app mostra o aviso e as zonas em lista.
+  if (url.hostname.endsWith("tile.openstreetmap.org")) return;
 
-  /* A PÁGINA: rede primeiro.
-     É isto que faz com que uma versão nova apareça no telemóvel
-     mal a publiques. Sem rede, serve o que está guardado. */
-  if (pedido.mode === 'navigate' ||
-      (mesmaOrigem && url.pathname.endsWith('.html'))) {
-    evento.respondWith((async () => {
-      try {
-        const resposta = await fetch(pedido, { cache: 'no-store' });
-        const cache = await caches.open(CACHE);
-        cache.put('./index.html', resposta.clone());
-        return resposta;
-      } catch (_) {
-        const cache = await caches.open(CACHE);
-        return (await cache.match(pedido)) ||
-               (await cache.match('./index.html')) ||
-               Response.error();
-      }
-    })());
+  // Páginas: tenta a rede (para apanhar versões novas), cai na cópia guardada.
+  if (req.mode === "navigate") {
+    e.respondWith(
+      fetch(req)
+        .then(r => {
+          const copia = r.clone();
+          caches.open(CACHE).then(c => c.put("./index.html", copia));
+          return r;
+        })
+        .catch(() => caches.match("./index.html").then(r => r || caches.match("./")))
+    );
     return;
   }
 
-  /* RESTO DO SITE: serve o guardado e atualiza por trás. */
-  if (mesmaOrigem) {
-    evento.respondWith((async () => {
-      const cache = await caches.open(CACHE);
-      const guardado = await cache.match(pedido);
-      const daRede = fetch(pedido)
-        .then(r => { if (r && r.ok) cache.put(pedido, r.clone()); return r; })
-        .catch(() => null);
-      return guardado || (await daRede) || Response.error();
-    })());
-    return;
-  }
-
-  /* LEAFLET E OUTROS CDN: guardado primeiro, para o mapa
-     funcionar com rede fraca. */
-  evento.respondWith((async () => {
-    const cache = await caches.open(CACHE);
-    const guardado = await cache.match(pedido);
-    if (guardado) return guardado;
-    try {
-      const resposta = await fetch(pedido);
-      if (resposta && (resposta.ok || resposta.type === 'opaque')) {
-        cache.put(pedido, resposta.clone());
+  // Restante: cópia guardada primeiro, rede a seguir.
+  e.respondWith(
+    caches.match(req).then(hit => hit || fetch(req).then(r => {
+      if (r && r.status === 200 && (r.type === "basic" || r.type === "cors")) {
+        const copia = r.clone();
+        caches.open(CACHE).then(c => c.put(req, copia));
       }
-      return resposta;
-    } catch (_) {
-      return Response.error();
-    }
-  })());
-});
-
-/* ── permite forçar a atualização a partir da página ── */
-self.addEventListener('message', evento => {
-  if (evento.data === 'atualizar-ja') self.skipWaiting();
+      return r;
+    }).catch(() => new Response("", { status: 504, statusText: "sem rede" })))
+  );
 });

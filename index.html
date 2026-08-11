@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0B57D0">
 <title>Placas · Rua</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Placas">
+<meta name="application-name" content="Placas">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
@@ -80,6 +88,9 @@
   #mapFallback{padding:22px 16px; text-align:center; color:var(--ink-2); font-size:.85rem; display:none}
   .legenda{position:absolute; z-index:900; left:10px; bottom:10px; background:rgba(255,255,255,.94);
     border:1px solid var(--line); border-radius:10px; padding:6px 10px; font-size:.68rem; display:flex; gap:10px}
+  .btnmapa{position:absolute; z-index:900; right:10px; top:10px; background:rgba(255,255,255,.95);
+    border:1px solid var(--line); border-radius:10px; padding:7px 11px; font-size:.78rem;
+    font-weight:700; color:var(--accent); cursor:pointer; font-family:inherit; display:none}
   .legenda i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:4px; vertical-align:-1px}
 
   /* zonas */
@@ -108,34 +119,118 @@
   details.g summary::-webkit-details-marker{display:none}
   summary .num{background:var(--accent-soft); color:var(--accent); border-radius:8px; min-width:26px; height:26px;
     display:inline-flex; align-items:center; justify-content:center; font-size:.8rem; flex:none}
-  summary .teste-badge{margin-left:auto; font-size:.62rem; background:var(--warn-soft); color:var(--warn);
-    padding:3px 8px; border-radius:999px; font-weight:800; letter-spacing:.4px}
+  summary .stit{flex:1; min-width:0}
+  summary .fase{display:block; font-size:.6rem; font-weight:800; letter-spacing:.7px; color:var(--ink-3); text-transform:uppercase}
+  summary .teste-badge{font-size:.62rem; background:var(--warn-soft); color:var(--warn);
+    padding:3px 8px; border-radius:999px; font-weight:800; letter-spacing:.4px; flex:none}
   .gbody{padding:0 14px 14px; font-size:.92rem; line-height:1.5; color:var(--ink)}
-  .gbody .fala{background:var(--accent-soft); border-left:3px solid var(--accent); padding:9px 11px; border-radius:0 10px 10px 0; margin:8px 0}
-  .gbody .fala .tg{display:block; font-size:.62rem; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--accent); margin-bottom:4px}
-  .gbody .num-stat{background:var(--bg); border-radius:10px; padding:8px 11px; margin:6px 0; font-size:.86rem}
-  .gbody .num-stat b{color:var(--accent)}
-  .gbody .num-stat small{color:var(--ink-3)}
-  .gbody .obj{margin:10px 0; padding:10px 12px; background:var(--bg); border-radius:10px; border-left:3px solid var(--bad); font-size:.88rem}
-  .gbody .obj b.oq{color:var(--bad); display:block; margin-bottom:2px; font-size:.92rem}
-  .gbody .obj .osub{display:block; color:var(--ink-2); font-size:.78rem; margin-bottom:7px}
-  .gbody .obj .fala{margin:6px 0 0; background:#fff}
-  .gbody ol,.gbody ul{margin:6px 0; padding-left:20px}
+  .gbody .fala{background:var(--accent-soft); border-left:3px solid var(--accent); padding:9px 11px; border-radius:0 10px 10px 0; margin:8px 0; font-style:italic}
+  .gbody .beat{font-size:.78rem; color:var(--ink-3); margin:-2px 0 8px 3px}
+  .gbody .obj{margin:8px 0; padding:9px 11px; background:var(--bg); border-radius:10px; font-size:.86rem}
+  .gbody .obj b{color:var(--bad); display:block; margin-bottom:3px}
+  .gbody .obj .perg{color:var(--accent); font-weight:600; display:block; margin-bottom:3px}
+  .gbody ol{margin:6px 0; padding-left:20px}
   .gbody li{margin:5px 0}
   .gbody .dica{font-size:.8rem; color:var(--ink-2)}
-  .gbody .stop{background:var(--warn-soft); color:var(--warn); border-radius:10px; padding:9px 11px; margin:9px 0; font-size:.84rem}
-  .gbody .stop b{display:block; margin-bottom:2px}
-  .gbody .nao{background:var(--bad-soft); color:#7A1A15; border-radius:10px; padding:9px 11px; margin:9px 0; font-size:.84rem}
-  .gbody .nao b{display:block; margin-bottom:2px}
-  .gbody .sim{background:var(--ok-soft); color:#0B5C25; border-radius:10px; padding:9px 11px; margin:9px 0; font-size:.84rem}
-  .gbody .sim b{display:block; margin-bottom:2px}
-  .gbody table{width:100%; border-collapse:collapse; font-size:.84rem; margin-top:6px}
-  .gbody th{text-align:left; font-size:.66rem; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-2); padding:5px 3px; border-bottom:1px solid var(--line)}
-  .gbody td{padding:7px 3px; border-bottom:1px solid var(--line); vertical-align:top; text-align:left}
-  .gbody td:first-child{font-weight:700; width:46%}
-  .gbody td b{color:var(--accent)}
-  .tbtn{border:1px solid var(--warn); color:var(--warn); background:#fff; border-radius:999px; padding:6px 12px; font-size:.74rem; font-weight:700; cursor:pointer; margin-top:8px}
+  .gbody .stop{background:var(--warn-soft); color:var(--warn); border-radius:10px; padding:8px 11px; font-size:.82rem; font-weight:600; margin:8px 0}
+  .tbtn{border:1px solid var(--warn); color:var(--warn); background:#fff; border-radius:999px; padding:6px 12px; font-size:.74rem; font-weight:700; cursor:pointer; margin-top:10px}
   .tbtn.on{background:var(--warn); color:#fff}
+
+  /* guião em peças */
+  .pcard{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:13px 14px; margin-bottom:10px}
+  .pcard.teste{border:1.5px solid var(--warn)}
+  .phead{display:flex; align-items:center; gap:9px; margin-bottom:9px}
+  .phead .num{background:var(--accent-soft); color:var(--accent); border-radius:8px; min-width:26px; height:26px;
+    display:inline-flex; align-items:center; justify-content:center; font-size:.8rem; flex:none; font-weight:700}
+  .phead .rot{font-weight:800; font-size:.95rem; flex:1; min-width:0}
+  .phead .tb{font-size:.62rem; background:var(--warn-soft); color:var(--warn); padding:3px 8px;
+    border-radius:999px; font-weight:800; letter-spacing:.4px; flex:none}
+  .fbox{width:100%; display:block; background:var(--accent-soft); border:1px solid var(--accent);
+    border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:10px 12px;
+    font-family:inherit; font-size:.95rem; line-height:1.45; font-style:italic; color:var(--ink);
+    resize:none; overflow:hidden}
+  .fbox:focus{outline:2px solid var(--accent); font-style:normal; background:#fff}
+  .pnota{font-size:.8rem; color:var(--ink-2); margin:9px 2px 0; line-height:1.45}
+  .pfoot{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center}
+  .mini2{border:1px solid var(--line); background:#fff; color:var(--ink-2); border-radius:999px;
+    padding:6px 11px; font-size:.72rem; font-weight:700; cursor:pointer; font-family:inherit}
+  .mini2.on{background:var(--warn); border-color:var(--warn); color:#fff}
+  .mini2.rep{color:var(--accent); border-color:var(--accent)}
+  .completo p{margin:0 0 11px; font-size:.95rem; line-height:1.5; font-style:italic; color:var(--ink)}
+  .completo .b{font-style:normal; color:var(--ink-3); font-size:.76rem; margin:-6px 0 12px 2px}
+
+  /* argumentos escolhíveis */
+  .argw{margin:12px 0 2px; border-top:1px dashed var(--line); padding-top:11px}
+  .argt{font-size:.74rem; color:var(--ink-2); font-weight:700; margin-bottom:9px}
+  .argc{border:1.5px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:8px; cursor:pointer; background:#fff}
+  .argc.on{border-color:var(--accent); background:var(--accent-soft)}
+  .argh{display:flex; align-items:center; gap:8px; font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--ink-2)}
+  .argc.on .argh{color:var(--accent)}
+  .argp{margin-left:auto; font-size:.6rem; font-weight:700; background:var(--off-soft); color:var(--off);
+    padding:3px 9px; border-radius:999px; text-transform:none; letter-spacing:0; flex:none}
+  .argc.on .argp{background:var(--accent); color:#fff}
+  .argf{font-style:italic; margin-top:7px; font-size:.9rem; line-height:1.45}
+  .argq{margin-top:6px; font-size:.78rem; color:var(--ink-2)}
+  .argsrc{margin-top:7px; font-size:.68rem; color:var(--ink-3); line-height:1.5}
+  .vfonte{display:inline-block; margin-top:3px; color:var(--accent); font-weight:700;
+    text-decoration:underline; white-space:nowrap}
+  .armas-chip{display:inline-block; background:var(--accent-soft); color:var(--accent); font-size:.76rem;
+    font-weight:700; padding:6px 11px; border-radius:999px; margin:0 6px 6px 0}
+
+  /* onde estás */
+  .card.aqui{border:1.5px solid var(--accent); background:linear-gradient(#fff,#FBFCFF)}
+  .card.aqui label{margin-top:6px}
+  #btGPS.a{background:var(--accent); color:#fff}
+
+  /* sítios e ruas */
+  .loc{background:var(--card); border:1px solid var(--line); border-radius:var(--r); margin-bottom:10px; overflow:hidden}
+  .loc > summary{list-style:none; cursor:pointer; padding:12px 14px; display:flex; align-items:center; gap:10px}
+  .loc > summary::-webkit-details-marker{display:none}
+  .loc .lnome{font-weight:800; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .loc .lst{font-size:.72rem; color:var(--ink-2); white-space:nowrap}
+  .lruas{padding:0 14px 10px}
+  .rr{display:flex; align-items:center; gap:9px; padding:9px 0; border-top:1px solid var(--line)}
+  .rr .rn{flex:1; min-width:0}
+  .rr .rn b{display:block; font-size:.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:600}
+  .rr .rn small{color:var(--ink-2); font-size:.72rem}
+  .rr.feita .rn b{color:var(--ink-3); text-decoration:line-through}
+  .est{font-size:.62rem; font-weight:800; padding:4px 8px; border-radius:999px; white-space:nowrap; border:0; cursor:pointer; font-family:inherit}
+  .est.feita{background:var(--ok-soft); color:var(--ok)}
+  .est.meio{background:var(--warn-soft); color:var(--warn)}
+  .est.nada{background:var(--off-soft); color:var(--off)}
+  .est.aqui{background:var(--accent); color:#fff}
+
+  /* placa */
+  .passo{font-size:.72rem; color:var(--ink-2); font-weight:800; text-transform:uppercase;
+    letter-spacing:.5px; margin:16px 2px 6px}
+  .urlbox{background:var(--accent-soft); border:1px solid var(--accent); border-radius:10px; padding:11px;
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.74rem; word-break:break-all; color:var(--ink)}
+  .aviso{background:var(--warn-soft); color:var(--warn); border-radius:10px; padding:11px 12px;
+    font-size:.82rem; font-weight:600; margin-top:12px; line-height:1.5}
+  .aviso a{color:var(--warn)}
+  /* gráfico das semanas */
+  .sem{display:flex; align-items:flex-end; gap:6px; height:120px; margin:10px 2px 4px}
+  .sem .col{flex:1; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; height:100%}
+  .sem .bar{width:100%; border-radius:5px 5px 0 0; background:var(--accent); min-height:3px;
+    display:flex; align-items:flex-start; justify-content:center}
+  .sem .bar.demo{background:var(--accent-soft); border:1px solid var(--accent); border-bottom:0}
+  .sem .col small{font-size:.6rem; color:var(--ink-3); margin-top:4px; text-align:center; line-height:1.2}
+  .sem .col .pc{font-size:.66rem; font-weight:800; color:var(--ink-2); margin-bottom:3px}
+  .semleg{display:flex; gap:12px; font-size:.68rem; color:var(--ink-2); margin:2px 2px 0}
+  .semleg i{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:4px; vertical-align:-1px}
+  .fr{display:flex; align-items:center; gap:9px; padding:10px 2px; border-top:1px solid var(--line)}
+  .fr:first-child{border-top:0}
+  .fr .n{flex:1; min-width:0}
+  .fr .n b{display:block; font-size:.9rem}
+  .fr .n small{color:var(--ink-3); font-size:.7rem; display:block; line-height:1.4}
+  .fr .dias{font-size:.68rem; font-weight:800; padding:4px 8px; border-radius:999px; white-space:nowrap;
+    background:var(--accent-soft); color:var(--accent)}
+  .fr .dias.velho{background:var(--warn-soft); color:var(--warn)}
+  .pl{display:flex; align-items:center; gap:9px; padding:10px 2px; border-top:1px solid var(--line)}
+  .pl:first-child{border-top:0}
+  .pl .n{flex:1; min-width:0}
+  .pl .n b{display:block; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .pl .n small{color:var(--ink-3); font-size:.7rem; font-family:ui-monospace,Menlo,monospace}
 
   /* dados */
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
@@ -149,7 +244,7 @@
 
   nav{position:fixed; bottom:0; left:0; right:0; z-index:1100; background:var(--card); border-top:1px solid var(--line);
     display:flex; max-width:540px; margin:0 auto; padding-bottom:env(safe-area-inset-bottom)}
-  nav button{flex:1; border:0; background:none; padding:9px 4px 7px; font-size:.68rem; color:var(--ink-2); cursor:pointer; font-weight:600}
+  nav button{flex:1; border:0; background:none; padding:9px 2px 7px; font-size:.62rem; color:var(--ink-2); cursor:pointer; font-weight:600}
   nav button .i{display:block; font-size:1.25rem; margin-bottom:2px}
   nav button.on{color:var(--accent)}
 
@@ -164,12 +259,52 @@
   <div class="t">PLACAS <small>· rua</small></div>
   <div id="hZona">—</div>
 </header>
-<div id="aviso">⚠️ Este browser não guarda dados entre sessões — exporta antes de fechar (Dados → Exportar).</div>
+<div id="aviso">⚠️ Este browser não guarda dados entre sessões. Exporta antes de fechar (Dados → Exportar).</div>
 
 <main>
 
   <!-- ═══════════ REGISTAR ═══════════ -->
   <section id="tab-registar" class="tab on">
+    <div class="card aqui">
+      <div class="row spread" style="margin-bottom:6px">
+        <h2 style="margin:0">Onde estás agora</h2>
+        <button class="btn ghost mini" id="btGPS">📍 Detetar</button>
+      </div>
+
+      <div class="chips" id="fModo" style="margin-bottom:10px">
+        <button class="chip on" data-val="rua">🚶 Rua</button>
+        <button class="chip" data-val="feira">🎪 Feira</button>
+      </div>
+
+      <div class="grid2" style="gap:8px">
+        <div>
+          <label>Localidade</label>
+          <input type="text" id="fLocal" list="dlLocais" placeholder="ex.: Seixal" autocomplete="off">
+        </div>
+        <div id="wrapRua">
+          <label>Rua</label>
+          <input type="text" id="fRua" list="dlRuas" placeholder="ex.: R. da Cordoaria" autocomplete="off">
+        </div>
+        <div id="wrapFeira" class="hide">
+          <label>Feira</label>
+          <input type="text" id="fFeira" list="dlFeiras" placeholder="ex.: Feira da Ladra" autocomplete="off">
+        </div>
+      </div>
+      <datalist id="dlLocais"></datalist>
+      <datalist id="dlRuas"></datalist>
+      <datalist id="dlFeiras"></datalist>
+
+      <div class="aviso hide" id="avisoFeira" style="margin-top:10px"></div>
+
+      <button class="btn" id="btSessao" style="margin-top:10px">▶ Comecei aqui</button>
+      <p class="note" id="notaSessao" style="margin:6px 2px 0">Carrega ao chegar e ao sair. Sem isto não há <b>euros por hora</b>, e é por aí que decides onde voltar.</p>
+
+      <div class="row" style="margin-top:10px" id="rowRua">
+        <button class="btn ghost mini" id="btRuaFeita" style="color:var(--ok);border-color:var(--ok)">Rua varrida ✓</button>
+        <button class="btn ghost mini" id="btRuaMeio" style="color:var(--warn);border-color:var(--warn)">Deixei a meio</button>
+      </div>
+    </div>
+
     <div class="today">
       <div class="tile"><div class="v" id="tHoje">0</div><div class="l">Portas hoje</div></div>
       <div class="tile"><div class="v" id="tVendas">0</div><div class="l">Vendas hoje</div></div>
@@ -177,13 +312,11 @@
     </div>
 
     <div class="card">
-      <div class="row spread">
-        <h2 style="margin:0">Registar porta</h2>
-        <select id="selZona" style="border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:.8rem; max-width:52%; color:var(--ink); background:#fff"></select>
-      </div>
+      <h2 style="margin:0 2px 10px" id="hRegistar">Registar porta</h2>
 
-      <label>Negócio</label>
+      <label id="lblNome">Negócio</label>
       <input type="text" id="fNome" placeholder="ex.: Tasca do Zé" autocomplete="off">
+      <div class="aviso hide" id="avisoRepetido" style="margin-top:8px"></div>
 
       <label>Tipo</label>
       <div class="chips" id="fTipo"></div>
@@ -219,20 +352,112 @@
   <section id="tab-zonas" class="tab">
     <div class="card" id="mapCard">
       <div id="map"></div>
-      <div id="mapFallback">🗺️ O mapa precisa de internet.<br>As zonas continuam todas em baixo.<br><button class="btn ghost mini" style="margin-top:8px" onclick="tentarMapa()">Tentar de novo</button></div>
-      <div class="legenda"><span><i style="background:#188038"></i>Feita</span><span><i style="background:#0B57D0"></i>Em curso</span><span><i style="background:#9CA3AF"></i>Por fazer</span></div>
+      <div id="mapFallback">🗺️ Ainda não há pontos no mapa.<br>Usa o <b>📍 Detetar</b> ao registar uma porta<br>e as ruas aparecem aqui.<br><button class="btn ghost mini" style="margin-top:8px" onclick="tentarMapa()">Tentar de novo</button></div>
+      <button class="btnmapa" id="btOndeEstou">Onde estou</button>
+      <div class="legenda"><span><i style="background:#188038"></i>Vendeu</span><span><i style="background:#B45309"></i>Voltar</span><span><i style="background:#B3261E"></i>Não</span><span><i style="background:#5F6368"></i>Fechado</span></div>
     </div>
-    <p class="note"><b>Regra:</b> uma zona de cada vez, o tempo que for preciso. Varres TUDO, rua a rua. Só mudas quando estiver feita; repetes apenas os «Voltar».</p>
-    <div id="listaZonas"></div>
+
+    <div class="card" id="pendCard" style="display:none">
+      <h2 style="color:var(--warn)">Ruas que deixaste a meio</h2>
+      <div id="listaPend"></div>
+    </div>
+
+    <div class="card" id="feirasCard" style="display:none">
+      <h2>Feiras</h2>
+      <p class="note" style="margin-top:0">Ordenadas pela que está há mais tempo sem ires. As feiras repetem-se todas as semanas, por isso o que conta é <b>há quantos dias</b> lá foste e <b>quantas bancas ainda te faltam</b>.</p>
+      <div id="listaFeiras"></div>
+    </div>
+
+    <p class="note">Cada rua que fazes fica guardada aqui sozinha. Marca <b>varrida</b> quando acabares uma, ou <b>a meio</b> se tiveres de sair antes do fim. Depois sabes onde voltar.</p>
+    <div id="listaSitios"><p class="note">Ainda não registaste nenhuma porta. Começa na aba Registar.</p></div>
+  </section>
+
+  <!-- ═══════════ PLACA ═══════════ -->
+  <section id="tab-placa" class="tab">
+    <div class="card">
+      <h2 style="margin-bottom:4px">Programar uma placa</h2>
+
+      <label>O que é que a placa vai abrir?</label>
+      <div class="chips" id="pTipo">
+        <button class="chip on" data-val="google">⭐ Avaliação Google</button>
+        <button class="chip" data-val="ig">📷 Instagram</button>
+      </div>
+
+      <label style="margin-top:14px">Nome do negócio</label>
+      <input type="text" id="pNome" placeholder="ex.: Tasca do Zé" autocomplete="off">
+      <div class="row" style="margin-top:8px" id="pRowGoogle">
+        <button class="btn ghost mini" id="pBuscar">🔍 Procurar no Maps</button>
+        <button class="btn ghost mini" id="pFinder">Ajuda com o código</button>
+      </div>
+
+      <label style="margin-top:14px" id="pLabel">Link do Maps ou código do negócio</label>
+      <input type="text" id="pCod" placeholder="cola aqui o link do Google Maps" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <p class="note" style="margin:6px 2px 0" id="pDica">Serve o link longo, o link de partilha, ou o código <b>ChIJ…</b>. A app tira o resto sozinha.</p>
+      <div class="aviso hide" id="pAviso"></div>
+
+      <button class="btn" id="pGerar">Gerar endereço da placa</button>
+
+      <div class="hide" id="pOut">
+        <div class="passo">1 · Testar primeiro</div>
+        <button class="btn ghost" id="pTestar">Abrir e ver se é o negócio certo</button>
+        <p class="note" id="pTestarNota">Tem de abrir a caixa das estrelas com o nome <b>e a morada</b> certos. Se abrir outra casa, pára já.</p>
+
+        <div class="passo">2 · Escrever na placa</div>
+        <div class="urlbox" id="pUrl"></div>
+        <button class="btn ghost" id="pCopiar" style="margin-top:8px">Copiar endereço</button>
+        <p class="note">NFC Tools → <b>WRITE</b> → Add a record → <b>URL/URI</b> → gaveta em <b>https://</b> (ou <b>None</b> se colares o link todo) → OK → botão <b>Write</b> → <b>só então</b> encostas a placa.</p>
+
+        <div class="passo">3 · Proteger</div>
+        <p class="note">Depois de encostares e veres abrir: Other → <b>Set password</b> → password mestre, AUTHLIM desligado.</p>
+        <div class="aviso">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível, e o link vai ter de mudar um dia.</div>
+
+        <button class="btn" id="pGuardar">Guardar esta placa ✓</button>
+      </div>
+    </div>
+
+    <div class="card" id="pListaCard" style="display:none">
+      <h2>Placas que já programaste</h2>
+      <div id="pLista"></div>
+    </div>
   </section>
 
   <!-- ═══════════ GUIÃO ═══════════ -->
   <section id="tab-guiao" class="tab">
-    <p class="note">Testa <b>UMA secção de cada vez</b> — marca-a EM TESTE e compara os números ao fim de uns dias.</p>
-    <div id="listaGuiao"></div>
+    <div class="card" id="armasCard" style="display:none">
+      <h2 style="margin-bottom:8px">Os teus argumentos escolhidos</h2>
+      <div id="armasLista"></div>
+      <button class="btn ghost mini" id="btLimparArgs" style="margin-top:10px">Limpar</button>
+    </div>
+
+    <p class="note">Cada frase é tua. Toca no texto e escreve por cima. Marca <b>EM TESTE</b> a que estiveres a experimentar e ao fim de uns dias vê nos Dados se subiu.</p>
+
+    <div id="listaPitch"></div>
+
+    <div class="card completo">
+      <h2>O guião completo</h2>
+      <div id="guiaoCompleto"></div>
+      <button class="btn ghost mini" id="btCopiarGuiao">Copiar</button>
+    </div>
+
+    <details class="loc" style="margin-bottom:12px">
+      <summary><span class="lnome">O resto: objeções, programar, faturar</span><span class="lst">▾</span></summary>
+      <div class="lruas" id="listaExtras"></div>
+    </details>
+
+    <div class="card" style="border-left:3px solid var(--ok)">
+      <h2 style="color:var(--ok)">O que faz mesmo diferença</h2>
+      <p class="note" style="color:var(--ink)">
+        <b>Apareceres.</b> Porta a porta move +8,7 pontos percentuais; ao telefone, zero. O que vende é <b>tu estares ali</b>.<br><br>
+        <b>Pô-lo a falar.</b> Nos estudos de campo, as conversas feitas só de argumentos não tiveram efeito nenhum. Só as que faziam a pessoa falar da experiência dela funcionaram. É por isso que a pergunta vem logo a seguir à demo.<br><br>
+        <b>Ouvir sem julgar.</b> Mesmo quando ele diz que não precisa. Quem se sente ouvido não se fecha, e é a mesma porta daqui a três meses.<br><br>
+        <b>Volume.</b> Os efeitos reais de todas estas técnicas são pequenos. Ninguém fecha por ser esperto: fecha por bater a muitas portas e não desistir à quinta.
+      </p>
+      <p class="note">Desconfia de qualquer formação que te venda «escada de sins» ou percentagens grandes de Cialdini. Fui procurar e não encontrei um único estudo credível por trás da escada de sins.</p>
+    </div>
+
     <div class="card" style="border-left:3px solid var(--bad)">
       <h2 style="color:var(--bad)">Regras fixas</h2>
-      <p class="note" style="color:var(--ink)">Pedir avaliações é permitido. <b>PROIBIDO:</b> oferecer o que quer que seja em troca · filtrar quem está insatisfeito · pedir só a clientes contentes · pedir que a avaliação mencione algo específico · mandar a equipa conseguir um número de avaliações. Nunca prometer estrelas — prometes tirar a fricção. Fatura sempre, mesmo em dinheiro.</p>
+      <p class="note" style="color:var(--ink)">Pedir avaliações é permitido. <b>PROIBIDO:</b> pagar ou oferecer seja o que for por avaliações, e pedir só aos clientes contentes (review gating). O Google exige que peças a toda a gente da mesma maneira. Prometes tirar a chatice do caminho, nunca as estrelas. Fatura sempre, mesmo em dinheiro.</p>
     </div>
   </section>
 
@@ -243,6 +468,25 @@
       <div class="tile"><div class="v" id="dVendas">0</div><div class="l">Vendas</div></div>
       <div class="tile"><div class="v" id="dEuros">€0</div><div class="l">Faturado</div></div>
       <div class="tile"><div class="v" id="dConv">—</div><div class="l">Conversão</div></div>
+    </div>
+
+    <div class="card" id="domingoCard">
+      <h2>Domingo · 10 minutos</h2>
+      <p class="note" style="margin-top:0">A conversão não conta os fechados. Uma porta fechada não foi uma oportunidade que perdeste.</p>
+
+      <div class="passo">Estás a melhorar?</div>
+      <div id="graficoSemanas"></div>
+      <p class="note" id="lidoSemanas"></p>
+
+      <div class="passo">Onde é que rende mais</div>
+      <table>
+        <thead><tr><th>Sítio</th><th>Portas</th><th>Vendas</th><th>€/hora</th></tr></thead>
+        <tbody id="tbodyRende"></tbody>
+      </table>
+      <p class="note">O €/hora só aparece nos sítios onde carregaste em <b>Comecei</b> e <b>Acabei</b>.</p>
+
+      <div class="passo">A decisão da semana</div>
+      <p class="note" id="decisaoSemana"></p>
     </div>
 
     <div class="card">
@@ -260,9 +504,7 @@
 
     <div class="card">
       <h2>Backup</h2>
-      <p class="note"><b>Versão 4 · 11 de agosto de 2026</b> — guião novo (12 passos + 12 objeções), preços 45/80.<br>
-      Compara com a versão que o Claude te mandar: se for diferente, tens a app desatualizada.</p>
-      <p class="note">Domingo à noite: exporta e guarda o ficheiro. É o teu seguro. <b>Exporta também antes de instalares uma versão nova.</b></p>
+      <p class="note">Domingo à noite: exporta e guarda o ficheiro. Se o telemóvel se perder, é o que te sobra.</p>
       <div class="row">
         <button class="btn ghost mini" id="btExport">⬇ Exportar dados</button>
         <button class="btn ghost mini" id="btImport">⬆ Importar</button>
@@ -275,7 +517,8 @@
 
 <nav>
   <button data-tab="registar" class="on"><span class="i">✍️</span>Registar</button>
-  <button data-tab="zonas"><span class="i">🗺️</span>Zonas</button>
+  <button data-tab="zonas"><span class="i">🗺️</span>Ruas</button>
+  <button data-tab="placa"><span class="i">📡</span>Placa</button>
   <button data-tab="guiao"><span class="i">💬</span>Guião</button>
   <button data-tab="dados"><span class="i">📊</span>Dados</button>
 </nav>
@@ -285,290 +528,144 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 "use strict";
-/* ───────── zonas (ids z1–z8 iguais à v1 — os teus registos antigos continuam válidos) ───────── */
-const ZONAS = [
-  {id:"z1", n:1, nome:"Arroios + Anjos + Intendente",
-    ruas:["Av. Almirante Reis — lado par (Intendente→Chile)","Av. Almirante Reis — lado ímpar","Largo do Intendente","R. dos Anjos","R. Maria da Fonte","R. do Forno do Tijolo","R. de Arroios","Praça do Chile + Mercado de Arroios"],
-    poly:[[38.7196,-9.1378],[38.7196,-9.1327],[38.7252,-9.1305],[38.7312,-9.1308],[38.7316,-9.1356],[38.7250,-9.1382]]},
-  {id:"z2", n:2, nome:"Baixa + Rossio",
-    ruas:["R. dos Fanqueiros","R. da Prata","R. dos Correeiros","R. de S. Nicolau","R. da Conceição","R. de Santa Justa","Praça da Figueira","R. das Portas de Santo Antão"],
-    poly:[[38.7076,-9.1418],[38.7078,-9.1352],[38.7148,-9.1352],[38.7180,-9.1408],[38.7148,-9.1432]]},
-  {id:"z3", n:3, nome:"Martim Moniz + Mouraria",
-    ruas:["Praça Martim Moniz","R. da Palma","R. do Benformoso","R. dos Cavaleiros","R. da Mouraria","R. Barros Queirós"],
-    poly:[[38.7150,-9.1382],[38.7150,-9.1330],[38.7186,-9.1305],[38.7208,-9.1332],[38.7186,-9.1378]]},
-  {id:"z4", n:4, nome:"Areeiro + Av. de Roma (sul)",
-    ruas:["Praça Sá Carneiro (Areeiro)","Av. Guerra Junqueiro","Av. de Roma — troço sul","Av. João XXI","Praça de Londres"],
-    poly:[[38.7352,-9.1362],[38.7356,-9.1308],[38.7432,-9.1310],[38.7430,-9.1445],[38.7392,-9.1445],[38.7378,-9.1362]]},
-  {id:"z5", n:5, nome:"Alvalade",
-    ruas:["Av. da Igreja","Av. de Roma — troço norte","Praça de Alvalade","Mercado de Alvalade + à volta"],
-    poly:[[38.7440,-9.1382],[38.7442,-9.1330],[38.7540,-9.1332],[38.7546,-9.1492],[38.7502,-9.1492],[38.7488,-9.1382]]},
-  {id:"z6", n:6, nome:"Campo de Ourique",
-    ruas:["R. Ferreira Borges","R. Coelho da Rocha","R. Tomás da Anunciação","R. 4 de Infantaria","R. Saraiva de Carvalho","Mercado de Campo de Ourique + à volta"],
-    poly:[[38.7152,-9.1692],[38.7155,-9.1598],[38.7218,-9.1598],[38.7215,-9.1692]]},
-  {id:"z7", n:7, nome:"São Bento + Estrela",
-    ruas:["R. de S. Bento (toda)","Praça das Flores","R. dos Poiais de S. Bento","Calçada da Estrela"],
-    poly:[[38.7085,-9.1562],[38.7092,-9.1492],[38.7152,-9.1505],[38.7156,-9.1562],[38.7140,-9.1652],[38.7104,-9.1650]]},
-  {id:"z8", n:8, nome:"Santos + Cais do Sodré",
-    ruas:["R. da Esperança","R. do Poço dos Negros","R. de S. Paulo","R. da Boavista","Av. D. Carlos I","Mercado da Ribeira (à volta)"],
-    poly:[[38.7040,-9.1582],[38.7046,-9.1428],[38.7086,-9.1420],[38.7092,-9.1562]]},
-  {id:"z9", n:9, nome:"Bairro Alto + Chiado", nota:"Portas abrem tarde — varrer só 17h–18h30",
-    ruas:["R. Garrett","R. do Carmo","R. da Misericórdia","R. da Atalaia","R. do Norte","R. do Diário de Notícias"],
-    poly:[[38.7096,-9.1452],[38.7100,-9.1404],[38.7126,-9.1404],[38.7150,-9.1440],[38.7146,-9.1476],[38.7110,-9.1476]]},
-  {id:"z10", n:10, nome:"Graça",
-    ruas:["R. da Graça","Largo da Graça","R. dos Sapadores"],
-    poly:[[38.7158,-9.1310],[38.7162,-9.1248],[38.7218,-9.1252],[38.7222,-9.1312]]},
-  {id:"z11", n:11, nome:"Saldanha",
-    ruas:["Av. da República (sul)","Av. Duque de Ávila","Av. Defensores de Chaves"],
-    poly:[[38.7308,-9.1482],[38.7310,-9.1418],[38.7376,-9.1420],[38.7376,-9.1482]]},
-  {id:"z12", n:12, nome:"Alcântara",
-    ruas:["Largo do Calvário","R. 1.º de Maio","R. dos Lusíadas"],
-    poly:[[38.7012,-9.1818],[38.7018,-9.1752],[38.7072,-9.1752],[38.7072,-9.1818]]},
-  {id:"z13", n:13, nome:"Benfica",
-    ruas:["Estrada de Benfica — Fonte Nova → Portas de Benfica","Estrada de Benfica — resto"],
-    poly:[[38.7418,-9.1885],[38.7440,-9.1875],[38.7518,-9.2035],[38.7495,-9.2062]]}
-];
+/* ───────── nomes das zonas antigas (só para registos feitos nas versões anteriores) ───────── */
+const ZONAS_ANTIGAS = {
+  z1:"Arroios", z2:"Baixa", z3:"Martim Moniz", z4:"Areeiro", z5:"Alvalade", z6:"Campo de Ourique",
+  z7:"São Bento", z8:"Santos", z9:"Bairro Alto", z10:"Graça", z11:"Saldanha", z12:"Alcântara", z13:"Benfica"
+};
+
 const TIPOS = ["🍽 Restauração","☕ Café/Pastelaria","💈 Salão/Barbearia","🛍 Loja","🔧 Serviços","📦 Outro"];
 const RES = [
   {id:"venda", txt:"✅ Vendeu", cls:"ok"},
   {id:"voltar", txt:"🔁 Voltar", cls:"warn"},
-  {id:"nao", txt:"❌ Não", cls:"bad"},
+  {id:"nao", txt:"❌ Não (viu a demo)", cls:"bad"},
+  {id:"porta", txt:"🚫 Nem me ouviu", cls:"bad"},
   {id:"fech", txt:"🚪 Fechado/Férias", cls:"off"}
 ];
-const PRECOS = [45,80];
+const PRECOS = [49,45,40,79];
 const PAGS = ["MB Way","Dinheiro"];
 
-/* ═══════════ GUIÃO v4 · 11 de agosto de 2026 ═══════════ */
-const GUIAO = [
+/* Feiras já mapeadas — só para sugerir enquanto escreve. Pode escrever qualquer outra. */
+const FEIRAS = ["LX Market (LX Factory)","Feira da Ladra","Feira da Avenida","FIARTIL (Estoril)",
+  "Mercado da Baixa","Mercado de Santa Clara","Feira de Belém","FeirAlegria","Feira do Príncipe Real",
+  "Feira do Relógio","Anjos70","Crafts & Design (Estrela)","Bazar Bombarda","Com.Tradição","Mercado CCB"];
 
-/* ── PARTE 1 · O GUIÃO ── */
+/* ───────── GUIÃO v3 — falado, pela ordem da conversa ─────────
+   Argumentos integrados no momento em que se dizem (não numa lista à parte).
+   Números verificados: BrightLocal 2026, Uberall (64 mil negócios), política do Google. */
+const PITCH = [
+  {id:"p1", rot:"Entrada", txt:"Boa tarde. Chamo-me João. É o senhor o responsável?",
+   nota:`Nome primeiro, pergunta a seguir. <b>Não é ele?</b> Não gastes o pitch. "A que horas é que ele costuma cá estar?" → «Voltar» com a hora → e volta à hora certa.`},
 
-{id:"g1", t:"Antes de entrar", body:`
-  <p class="dica">Três segundos. Não dizes nada.</p>
-  <ul>
-    <li>Empurras a porta em <b>3 segundos</b>. Não paras, não vês o telemóvel.</li>
-    <li>Ombros para trás, mochila ao lado do corpo, mãos fora dos bolsos.</li>
-    <li>Placa de demonstração <b>já na mão</b>, sem película.</li>
-    <li>Entras a <b>1,2–1,4 m</b>. Chegas-te mais perto só depois de a conversa aquecer.</li>
-  </ul>
-  <div class="sim"><b>Tratamento</b>Terceira pessoa, sempre. "O senhor", "quer ver", "diga-me você". Passas a tu só se ele passar primeiro.</div>`},
+  {id:"p2", rot:"Direto ao assunto", txt:"Vou ser direto, que não lhe quero tirar muito tempo. Queria mostrar-lhe estas placas que facilitam os clientes deixarem a avaliação no Google. Vai ver, não dá trabalho nenhum.",
+   nota:`Nunca digas <b>«venho vender»</b>. E não expliques mais nada. Vai já à placa.`},
 
-{id:"g2", t:"Introdução", body:`
-  <p class="dica">A primeira frase. Escolhes qual antes de entrares.</p>
-  <div class="fala"><span class="tg">A · Já tens cliente nesta rua</span>"Boa tarde. Estive agora ali no <b>[nome]</b> a montar uma destas. É uma placa que abre a caixa de avaliação do Google do negócio. Posso mostrar-lhe em vinte segundos?"</div>
-  <div class="fala"><span class="tg">B · Ainda não tens ninguém nesta rua</span>"Boa tarde. Isto é uma visita a frio, e eu sei que ninguém gosta. Dá-me trinta segundos para dizer ao que venho, e depois diz-me você se faz sentido?"</div>
-  <div class="fala"><span class="tg">C · Ele fala primeiro ("diga, faz favor")</span>"Pode, sim. Boa tarde. Venho de fora, <b>não sou cliente</b>. Trago uma coisa para o negócio, de trinta segundos. Quer ver ou apanhei-o mesmo em cima da hora?"</div>
-  <div class="stop"><b>A regra da abertura A</b>Usa-a só quando for verdade. Sem cliente na rua, usas a B. Um dono descobre num minuto que o vizinho não te comprou nada, e a partir daí a rua fecha-se toda.</div>`},
+  {id:"p3", rot:"A demo", txt:"Toque aqui com o telemóvel… está a ver? Abriu logo a avaliação.",
+   nota:`A placa na <b>mão dele</b>, com o telemóvel <b>dele</b>. Dois segundos calado. É aqui que ele compra.`},
 
-{id:"g3", t:"Qualificar", body:`
-  <p class="dica">Logo a seguir, antes de explicares seja o que for.</p>
-  <div class="fala">"Só uma coisa antes: é o senhor que decide estas coisas cá na loja?"</div>
-  <div class="nao"><b>Se não for ele, pára aqui</b>Não faças o pitch a quem não decide. Mudas de objetivo e sais com informação.</div>
-  <div class="fala">"Ah, sem problema. Só uma ajuda então: <b>como é que ele se chama?</b> … E <b>qual é o melhor dia e hora</b> para o apanhar mais calmo? … E <b>o seu nome</b>, desculpe?"</div>
-  <div class="fala"><span class="tg">Se houver resistência</span>"Compreendo, não levo mais de dois minutos. Pode dizer-lhe que passou cá o João, por causa das avaliações do Google?"</div>
-  <p class="dica">Na 2ª visita entras com "o senhor [nome] disse-me para passar a esta hora" e já não és um estranho.</p>`},
+  {id:"p4", rot:"A pergunta", txt:"Diga-me uma coisa: quantas avaliações é que lhe deixam por semana?",
+   nota:`<b>Cala-te e deixa-o responder.</b> Quem diz o problema em voz alta passa a ser ele. E a resposta diz-te que número usar a seguir.`},
 
-{id:"g4", t:"Demonstração", body:`
-  <p class="dica">Antes de explicares. Mostras primeiro, explicas depois.</p>
-  <div class="fala">"Pegue nisto um segundo."</div>
-  <ul>
-    <li><b>Cala-te.</b> Cada segundo que ele segura em silêncio acrescenta valor à placa.</li>
-    <li><b>Não peças de volta.</b> Fica na mão dele o resto da conversa. Se a pousar, empurra-a devagar na direção dele.</li>
-    <li>Testas no telemóvel <b>dele</b>, nunca no teu.</li>
-  </ul>
-  <div class="fala">"Encoste o <b>topo</b> do telemóvel aqui. O topo, não o meio."</div>
-  <div class="sim"><b>Se houver um cliente na loja, pede a ele</b>"Desculpe, importa-se de tocar aqui com o telemóvel? É um segundo."<br>O dono acredita mais no que vê acontecer a um cliente do que em tudo o que tu disseres.</div>
-  <div class="fala"><span class="tg">Se o telemóvel dele não ler</span>"Esse é anterior a 2018. A partir do iPhone XS lê sozinho; nos mais antigos ativa-se no Centro de Controlo. Nos Android, o NFC costuma vir desligado de origem."</div>
-  <p class="dica">Depois ativas tu, à frente dele, e testas outra vez. Uma falha que explicas bem dá-te crédito. Uma falha que disfarças tira-to.</p>`},
+  {id:"p5", rot:"A dimensão", txt:"E para lhe dar a dimensão: um estudo com 64 mil negócios viu que subir uma décima na média das estrelas dava até 25% mais visitas. Uma décima.",
+   nota:`Um número <b>só</b>. Escolhe em baixo o que encaixa na resposta dele.<br><br><b>Se ele duvidar</b> ("onde é que viu isso?"), não te justifiques: <b>"Quer ver? Está aqui."</b> e abres a fonte no telemóvel à frente dele. É aí que deixas de ser vendedor.`,
+   args:[
+     {id:"a1", tag:"Ninguém pede · serve para quase toda a gente",
+      fala:"A maior parte das pessoas até deixa avaliação, se lhe pedirem. O problema é que ninguém pede. E estar a pedir na cara do cliente, a meio do serviço, é chato para os dois. A placa pede por si, sem incomodar ninguém.",
+      src:"BrightLocal 2026 · 83% de quem foi convidado a avaliar acabou por avaliar", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
+     {id:"a2", tag:"As estrelas decidem antes de entrar",
+      fala:"Hoje as pessoas escolhem pelas estrelas antes sequer de entrar na porta. Quem está abaixo das quatro, a maioria nem considera. É duro, mas é o que é.",
+      src:"BrightLocal 2026 · 68% só usam negócios com 4 estrelas ou mais (eram 55% em 2025)", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
+     {id:"a3", tag:"Uma décima já dá dinheiro · para quem já tem boa nota",
+      fala:"O senhor já tem boa nota, o que lhe falta é volume. Só de subir uma décima na média, houve um estudo com 64 mil negócios que viu as visitas subirem até 25%. Uma décima. Isso são duas ou três mesas por semana.",
+      src:"Uberall 2019 · 64 mil localizações; de 3,5 para 3,7 estrelas: +120%", url:"https://uberall.com/en-us/company/press-releases/study-brick-and-mortar-businesses-small-increase-in-online-ratings-boosts-conversion-by-25-percent"},
+     {id:"a4", tag:"As antigas não contam · para quem diz que já tem",
+      fala:"Repare no que o senhor faz quando vê um sítio: olha logo para a data da última avaliação. Três em cada quatro pessoas só ligam às que foram escritas nos últimos três meses. Ter duzentas de 2019 não o safa. O que conta é entrarem sempre.",
+      src:"BrightLocal 2026 · 74% procuram avaliações escritas nos últimos 3 meses", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
+     {id:"a5", tag:"Agora também é a IA que lê · donos mais novos",
+      fala:"E já nem é só o Google. Muita gente pergunta ao ChatGPT onde é que se come bem aqui perto, e ele vai buscar as avaliações do Google. Quem não as tem, para ele não existe.",
+      src:"BrightLocal 2026 · o uso de IA subiu de 6% para 45% num ano", url:"https://www.brightlocal.com/research/local-consumer-review-survey/"},
+     {id:"a6", tag:"O vizinho · pica o brio, usar com jeito",
+      fala:"O café aqui em baixo não tem clientes melhores que os seus. Tem é alguém a pedir-lhes a avaliação. É só isso que vos separa.",
+      src:""}
+   ]},
 
-{id:"g5", t:"A ficha dele", body:`
-  <p class="dica">Antes de explicares o que é. Primeiro o buraco, só depois a coisa que o tapa.</p>
-  <div class="fala">"Posso ver aqui a sua ficha no Google? … Repare: a última avaliação que tem é de <b>[mês]</b>."</div>
-  <ul>
-    <li>Vira-lhe o ecrã e <b>cala-te</b>. Deixa-o olhar.</li>
-    <li>Deixa-o reagir primeiro. Quase sempre diz alguma coisa, e o que ele disser dá-te o ângulo para o resto.</li>
-    <li>A placa continua na mão dele enquanto isto acontece.</li>
-  </ul>
-  <div class="sim"><b>Porque é aqui e não depois</b>Explicar a placa antes disto é oferecer solução a um problema que ele ainda não viu. Vinte segundos a olhar para a própria ficha parada fazem mais do que qualquer argumento teu.</div>`},
+  {id:"p6", rot:"O interesse", txt:"Está interessado?",
+   nota:`E cala-te outra vez. Se disser que sim, o preço sai a seguir sem pausa nenhuma.`},
 
-{id:"g6", t:"Explicação", body:`
-  <p class="dica">O que é e para que serve, na mesma respiração. Três blocos, e paras.</p>
-  <div class="fala"><span class="tg">1 · O que é</span>"Isto é uma placa de acrílico com um chip lá dentro. Programo-a com o link do seu negócio. O cliente encosta o telemóvel e abre-lhe a caixa de avaliação <b>desta casa</b>, pronta a escrever. Não instala nada, não procura nada, não escreve o nome da casa."</div>
-  <div class="fala"><span class="tg">2 · Para que serve</span>"Não cria avaliações. Faz com que <b>o pedido aconteça sempre</b>, mesmo quando o senhor não está cá e o empregado é novo. Num estudo americano, <b>83%</b> das pessoas a quem pediram uma avaliação deixaram-na. A vontade do cliente nunca é o problema. O problema é o pedido não acontecer num sábado cheio."</div>
-  <div class="fala"><span class="tg">3 · Porque é que mexe no Google</span>"E o Google conta muito ter avaliações <b>recentes</b> e a entrar de forma <b>contínua</b>. Uma placa fixa ao balcão faz isso. Um pedido de vez em quando não faz."</div>
-  <div class="stop"><b>Paras aqui</b>Três blocos e cala-te. A partir deste ponto quem fala é ele. Se continuares a explicar, estás a dar uma aula, e ninguém compra a meio de uma aula.</div>
-  <div class="sim"><b>Só se ele perguntar</b>
-    <b style="display:inline">Onde fica?</b> "Onde o cliente paga. É aí que ele ainda se lembra do que achou."<br>
-    <b style="display:inline">Tem mensalidade?</b> "Nenhuma. Paga uma vez e é sua. Se mudar de nome ou de morada, volto cá e reprogramo."<br>
-    <b style="display:inline">E os dados dos meus clientes?</b> "Não recolho nada. Vão direitos ao Google. Não tem RGPD para gerir, ao contrário das plataformas que mandam SMS."
-  </div>`},
+  {id:"p7", rot:"O preço", txt:"São 49 euros, uma vez. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada.",
+   nota:`Hesita? <b>«€45 se fecharmos já»</b>. Chão: <b>€40</b>, nunca abaixo. Combo Instagram (€79) só depois do sim.`}
+];
 
-{id:"g7", t:"Perguntas", body:`
-  <p class="dica">Cinco a sete. Daqui para a frente a conversa é dele.</p>
-  <ul>
-    <li>"Como é que pedem avaliações hoje?"</li>
-    <li>"E funciona? Quantas é que entraram no último mês?"</li>
-    <li>"Quem é que pede, o senhor ou a equipa?"</li>
-    <li>"Há quanto tempo é assim?"</li>
-    <li>"Já tentaram mudar alguma coisa? E resultou?"</li>
-    <li><b>"Quanto é que acha que isso lhe custa?"</b> ← esta faz o trabalho todo</li>
-  </ul>
-  <div class="stop"><b>Como falas</b>Cético: fala <b>depressa</b>. Já a concordar: fala <b>devagar</b>.<br>Fecha as frases com a entoação a descer. Olha três segundos e quebra.</div>`},
-
-{id:"g8", t:"Preço", body:`
-  <p class="dica">Nesta conversa, no último terço. Nunca à porta.</p>
-  <div class="fala">"São <b>45 euros</b>, montada e testada. Se levar <b>duas</b>, ficam em <b>80</b>."</div>
-  <ul>
-    <li><b>Sorriso ligeiro</b> neste momento. Guarda o sorrisão para a entrada.</li>
-    <li>Se perguntar porquê 45: "é a placa, a programação, a deslocação e a instalação."</li>
-    <li>Nunca dizes <b>desconto</b>. Nem <b>contrato</b>: dizes acordo.</li>
-  </ul>
-  <div class="sim"><b>A segunda placa</b>Duas a 80 não é desconto, é preço de conjunto. Oferece-a só depois do sim à primeira, e com um sítio concreto: "uma no balcão e outra na mesa do fundo" ou "uma cá dentro e outra na montra".</div>`},
-
-{id:"g9", t:"Fecho", body:`
-  <p class="dica">Assumptivo. A este preço, fechar com firmeza ajuda.</p>
-  <div class="fala"><span class="tg">Assumptivo</span>"Então ponho-a já ali no balcão e testamos. São cinco minutos."</div>
-  <div class="fala"><span class="tg">Com data, se não fechar hoje</span>"Passo na terça às onze e deixo-a montada. Alguma razão para não dar jeito nesse dia?"</div>
-  <div class="fala"><span class="tg">Garantia</span>"Levo-a de volta em 60 dias se não gostar, sem discussão."</div>
-  <div class="fala"><span class="tg">Escassez, só quando for verdade</span>"Esta semana só consigo instalar mais três."</div>
-  <div class="nao"><b>Nunca prometas</b>"Devolvo o dinheiro se as suas avaliações não duplicarem." Estarias a garantir um resultado que depende só do comportamento dele e da equipa.</div>`},
-
-/* ── PARTE 2 · OBJEÇÕES ── */
-
-{id:"g10", t:"OBJEÇÕES — as 12", body:`
-  <div class="sim"><b>A regra que vale para todas</b>Abranda em vez de acelerar. Alivia o olhar em vez de o cravar nele. Responde com uma pergunta, não com um discurso.<br><br>
-  "É uma preocupação válida."<br>
-  "Ajuda-me a perceber o que está a causar essa preocupação?"<br>
-  "Isso resolve-lhe a questão, ou ainda há alguma coisa a travá-lo?"<br><br>
-  Nunca perguntes <b style="display:inline">"porquê?"</b>. Soa a acusação.</div>
-
-  <div class="obj"><b class="oq">1 · "Vou pensar"</b><span class="osub">A mais cara de todas. Quase sempre é medo de errar, e a pressão piora tudo. Quatro passos, por esta ordem.</span>
-    <div class="fala"><span class="tg">Diagnostica</span>"Totalmente justo. O que é exatamente que precisa de pensar?"</div>
-    <div class="fala"><span class="tg">Recomenda, não dês menu</span>"Para si é uma só, no balcão. A segunda só faz sentido se tiver esplanada ou uma segunda sala."</div>
-    <div class="fala"><span class="tg">Limita o que ele tem de decidir</span>"O tipo de chip e essas coisas não interessam nada para o que quer fazer. A única decisão é onde a pomos."</div>
-    <div class="fala"><span class="tg">Tira o risco</span>"Faço assim: deixo-a montada hoje, não paga nada agora. Passo na quinta. Se nessa altura não estiver a gostar, levo-a e não se fala mais nisto."</div>
-    <div class="nao"><b>Aqui não fazes</b>Desconto. Prazo. "Só até às 18h30." Empurrar alguém que tem medo é a maneira mais certa de perder o negócio.</div>
-  </div>
-
-  <div class="obj"><b class="oq">2 · "E quem não tiver NFC no telemóvel?"</b><span class="osub">A tua placa não tem QR. Diz a verdade.</span>
-    <div class="fala">"Fica de fora, e não lhe vou dizer o contrário. A placa lê em telemóveis de 2018 para cá, que hoje são a esmagadora maioria. Quem tiver mais antigo, ou um Android sem chip, não consegue tocar. Nesses casos o seu empregado diz o nome da casa e a pessoa procura no Google, como já fazia. <b>A placa apanha os que hoje se esquecem, não apanha toda a gente.</b> Se quiser, ponho-lhe também um autocolante com código ao lado, para esses."</div>
-  </div>
-
-  <div class="obj"><b class="oq">3 · "Os meus clientes não aderem a isso"</b><span class="osub">A mais honesta que vais ouvir. Concorda primeiro, a sério.</span>
-    <div class="fala">"Tem razão, e é por isso que a maior parte destas placas não dá nada. Ela não funciona sozinha. Funciona porque o empregado tem uma frase de cinco segundos e aponta para ela. Eu deixo-lhe a frase escrita num cartão e mostro-a à equipa. <b>Sem isso, não compre.</b> Está a deitar quarenta e cinco euros fora."</div>
-  </div>
-
-  <div class="obj"><b class="oq">4 · "Eu já peço aos meus clientes"</b><span class="osub">Verdade quase sempre. Não discutas: muda o eixo para recência.</span>
-    <div class="fala">"Acredito. A pergunta não é se pede. É se o pedido <b>sobrevive a um sábado cheio e a um empregado que entrou o mês passado</b>. E há outra coisa: 74% das pessoas procuram avaliações escritas nos últimos três meses. Ter 200 antigas conta menos do que ter 20 recentes."</div>
-  </div>
-
-  <div class="obj"><b class="oq">5 · "E se eu apanhar uma má avaliação?"</b><span class="osub">Legítima. A placa é neutra por desenho e por lei.</span>
-    <div class="fala">"Pode apanhar, e a placa não escolhe. Nem podia: o Google proíbe filtrar. Mas repare, 68% das pessoas só usam negócios com 4 ou mais estrelas. Um <b>4,6 com 120 recentes</b> ganha a um <b>5,0 com 11 antigas</b>. A defesa contra uma má avaliação é volume e recência, e é isso que lhe estou a vender."</div>
-    <div class="nao"><b>Se ele tiver menos de 3,5 estrelas, não vendas</b>"Sendo sincero: com a nota que tem hoje, isto empurra mais gente para o Google e pode piorar. Prefiro voltar quando isso estiver resolvido."</div>
-  </div>
-
-  <div class="obj"><b class="oq">6 · "Isso é só um chip, faço sozinho" / "O Google não dá de graça?"</b><span class="osub">Dá mesmo. Nunca finjas que não.</span>
-    <div class="fala">"Dá. O Google dá-lhe o link e um código de graça na ficha do negócio, mas só o gera no computador, e depois tem de o desenhar, imprimir e montar.<br><br>E há uma coisa que quase toda a gente erra: a maior parte de quem faz sozinho aponta para <b>o perfil</b> em vez de apontar para <b>a caixa de avaliação</b>, e o cliente fica à procura do botão. Eu ponho o link direto e testo à sua frente. <b>Se preferir fazer sozinho, digo-lhe já como se faz.</b>"</div>
-  </div>
-
-  <div class="obj"><b class="oq">7 · "É caro para um bocado de acrílico"</b><span class="osub">Concede o acrílico. Ele tem razão sobre o acrílico.</span>
-    <div class="fala">"O acrílico custa três euros, tem toda a razão. O que está a pagar é a hora em que eu venho cá, ponho o link certo, escolho a superfície onde o NFC funciona, testo num iPhone e num Android e deixo a frase escrita para a sua equipa. Se comprar online, o acrílico é igual e a hora é sua.<br><br>E para comparar: as plataformas que fazem isto por SMS são <b>vinte e cinco dólares por mês</b>, trezentos por ano, todos os anos. Isto paga-se uma vez."</div>
-  </div>
-
-  <div class="obj"><b class="oq">8 · "Não quero avaliações falsas"</b><span class="osub">A tua melhor objeção. É o que te separa das plataformas de subscrição.</span>
-    <div class="fala">"Ainda bem que diz isso. A minha placa vai <b>direta ao Google</b>. Não filtro nada, não escondo nada. As plataformas de trezentos euros por mês muitas vezes têm um formulário privado para desviar quem está insatisfeito antes de chegar ao Google. O Google proíbe isso e está escrito na política deles. <b>Quer ver? Tenho aqui.</b>"</div>
-    <p class="dica">Abres a política no telemóvel. É o teu melhor argumento porque ele pode confirmar ali mesmo.</p>
-  </div>
-
-  <div class="obj"><b class="oq">9 · "Agora não tenho tempo"</b><span class="osub">Dá-lhe duas saídas e deixa-o escolher.</span>
-    <div class="fala">"Compreendo. Ou me dá dois minutos cronometrados agora, ou diz-me uma hora e eu volto em ponto. Qual prefere?"</div>
-    <p class="dica">Se marcar hora, cumpre-a ao minuto. É metade do valor da segunda visita.</p>
-  </div>
-
-  <div class="obj"><b class="oq">10 · "Tenho de falar com o sócio / a minha mulher"</b><span class="osub">Não insistas. Descobre o que falta e marca com os dois.</span>
-    <div class="fala">"Faz sentido. O que é que ele ia querer saber?"</div>
-    <div class="fala">"Respondo já a isso… E combinamos assim: volto quinta às três e meia e mostro aos dois."</div>
-  </div>
-
-  <div class="obj"><b class="oq">11 · "Já cá vieram vender disso"</b><span class="osub">Ouro puro. Descobre porque é que não avançou.</span>
-    <div class="fala">"E porque é que não avançou?"</div>
-    <div class="fala">"A diferença aqui: não há mensalidade, a placa fica sua, programo-a à sua frente e testa antes de pagar."</div>
-  </div>
-
-  <div class="obj"><b class="oq">12 · "Deixe cá o cartão e depois falamos"</b><span class="osub">Deixa. Mas não saias sem a informação.</span>
-    <div class="fala">"Deixo. Só uma coisa antes de sair: <b>qual é o melhor dia e a que horas</b> para o apanhar mais desafogado? Passo cá nessa altura."</div>
-  </div>`},
-
-/* ── PARTE 3 · OPERAÇÃO (inalterado) ── */
-
-{id:"g11", t:"Programar (2–3 min)", body:`
-  <ol>
-    <li>Place ID Finder → nome do negócio</li>
-    <li>Colar o ID em <b>…writereview?placeid=</b></li>
-    <li><b>Testar no browser</b> — é o negócio certo? Confirmar com o dono</li>
-    <li>NFC Tools → Escrever</li>
-    <li>Tocar 2× a confirmar</li>
-    <li><b>SÓ DEPOIS bloquear o chip (irreversível)</b></li>
-  </ol>`},
-
-{id:"g12", t:"Pagamento + fatura (30 seg)", body:`
-  <p class="dica">Logo a seguir ao sim, pede as duas coisas numa frase só. Ele dá-tas sem pensar, porque é para o servir.</p>
-  <div class="fala">"Qual é o NIF da empresa? E um número de WhatsApp para lhe mandar a fatura."</div>
-  <p><b>Recebes:</b> MB Way ou dinheiro (trocos prontos).</p>
-  <p><b>Emites</b> no ícone do Portal das Finanças (ecrã inicial) → Faturas e Recibos → Emitir → <b>Fatura-Recibo</b>:</p>
-  <ol>
-    <li>NIF do cliente — o nome aparece sozinho</li>
-    <li>Importância recebida: <b>"Pagamento dos bens ou serviços"</b></li>
-    <li>Descrição: <b>Placa NFC para avaliações Google — 1 un.</b> (ou 2 un.)</li>
-    <li>Valor: <b>45</b> ou <b>80</b></li>
-    <li>IVA: <b>Isento — Art. 53.º do CIVA</b></li>
-    <li>Retenção: <b>sem retenção</b> (vendas de bens não têm)</li>
-    <li>Emitir → descarregar PDF → <b>enviar por WhatsApp à frente dele</b></li>
-  </ol>
-  <div class="fala">"Já lhe mandei. E já ficou no seu e-fatura — o seu contabilista vê-a automaticamente, não tem de guardar nada."</div>
-  <p class="dica"><b>Só muda o NIF e o valor.</b> Tudo o resto é sempre igual: decora e sais em 30 segundos. Treina 5 vezes em casa antes da primeira porta. Sem rede? Regista na app com nota "fatura por emitir" — tens 5 dias úteis.</p>
-  <p class="dica">Fatura <b>sempre</b>, mesmo em dinheiro. E o WhatsApp que ganhaste é o canal para as referências — mete-o na nota do registo.</p>`},
-
-{id:"g13", t:"Colocar + deixar o número + registar", body:`
-  <p>Placa junto à caixa/balcão, onde o cliente paga.</p>
-  <div class="nao"><b>O aviso que te protege — diz isto sempre</b>"Nunca dê o telemóvel ou o tablet da casa ao cliente para deixar a avaliação. O Google filtra avaliações feitas de postos no local e do mesmo wi-fi, e depois parece que desapareceram. O cliente usa o telemóvel dele, com os dados dele."</div>
-  <p><b>Deixa o número — como oferta, não como pedido.</b> Ele já o tem por causa da fatura, portanto é só dizer:</p>
-  <div class="fala">"Pronto, e já ficou com o meu número. Qualquer coisa com a placa, ou se precisar de ajuda com outra coisa qualquer, é só mandar mensagem."</div>
-  <p class="dica">Não peças referências agora. Acabou de te pagar — pedir mais uma coisa estraga o final. Sais como quem deixou algo, não como quem levou.</p>
-  <p><b>Registar na app ANTES de sair da porta</b>, com o número dele na nota.</p>
-  <p><b>Uma semana depois, mensagem:</b></p>
-  <div class="fala">"Boa tarde! Então, já apareceram avaliações novas? … Ainda bem. Já agora, se conhecer aí algum vizinho a quem isto desse jeito, diga-me que eu passo por lá da sua parte."</div>
-  <p class="dica">É aqui que o pedido funciona: já lhe entregaste resultado, e a referência sai natural.</p>
-  <div class="stop"><b>Voltar às portas que não fecharam</b>2ª passagem uma semana depois, à mesma hora. 3ª três semanas depois. Depois, mensal.<br><br>"Boa tarde. Passei cá na semana passada por causa das avaliações do Google. <b>Não venho insistir.</b> Venho só dizer que entretanto montei uma no [negócio da mesma rua], e se quiser ver como ficou é ali."<br><br>Por mensagem, nunca pressão. Só informação e disponibilidade.</div>`},
-
-/* ── PARTE 4 · ANEXOS ── */
-
-{id:"g14", t:"Quando ir", body:`
-  <table>
-    <thead><tr><th>Negócio</th><th>Janela</th></tr></thead>
-    <tbody>
-      <tr><td>Barbearias e cabeleireiros</td><td><b>Terça, 9h–10h</b><br><span class="dica">Foge de 4ª a 6ª, e das 11h, que é o pico da semana</span></td></tr>
-      <tr><td>Restaurantes e cafés</td><td><b>13h–16h</b><br><span class="dica">Foge do almoço 11h30–13h30, do jantar a partir das 18h e dos fins de semana</span></td></tr>
-      <tr><td>Bares</td><td><b>14h–17h</b></td></tr>
-      <tr><td>Lojas tradicionais, retrosarias, ourivesarias, óticas</td><td><b>10h–12h, 3ª a 5ª</b><br><span class="dica">Abertas e vazias</span></td></tr>
-      <tr><td>Alojamento pequeno</td><td><b>13h–14h</b><br><span class="dica">Foge do check-out 11h–12h e do check-in 15h–18h</span></td></tr>
-    </tbody>
-  </table>`},
-
-{id:"g15", t:"Nunca dizer", body:`
-  <div class="obj"><b class="oq">"Funciona em qualquer telemóvel"</b><span class="osub">Diz 2018 para cá. Antes disso pede ativação manual, e o iPhone 6 não lê de todo.</span></div>
-  <div class="obj"><b class="oq">"Sem QR" como vantagem</b><span class="osub">A tua placa não tem QR, e isso é uma limitação, não uma característica. Quem não tem NFC fica sem alternativa.</span></div>
-  <div class="obj"><b class="oq">"As avaliações são o fator n.º 1 do ranking"</b><span class="osub">Diz antes: um dos que mais pesa, e o que mais cresceu em 2026.</span></div>
-  <div class="obj"><b class="oq">"Aparece em primeiro no Google Maps"</b><span class="osub">O Google escreve que não há forma de pedir nem de pagar por posicionamento.</span></div>
-  <div class="obj"><b class="oq">"Devolvo o dinheiro se as avaliações não duplicarem"</b><span class="osub">Garantias assim dependem do comportamento dele, não do teu.</span></div>
-  <div class="obj"><b class="oq">"Desconto"</b><span class="osub">Baixar à primeira resistência ensina-o a empurrar. E diz "acordo", não "contrato".</span></div>
-  <div class="obj"><b class="oq">"Apanhei-o em má altura?" como abertura</b><span class="osub">É a pior abertura já medida. Usa-la só quando é ele que fala primeiro.</span></div>`}
-
+const EXTRAS = [
+  {id:"g6", fase:"Fecho", t:"Objeções: pergunta primeiro, responde depois", body:`
+    <p class="dica">Não te atires logo à defesa. A objeção que ele diz muitas vezes não é a verdadeira. Devolve uma pergunta, ouve o que ele responde, e só depois responde <b>àquilo</b>.</p>
+    <div class="obj"><b>"É caro."</b><span class="perg">"Caro em relação a quê?"</span>"Isto é uma vez na vida, não é mensalidade. Se lhe trouxer uma mesa a mais, já se pagou."</div>
+    <div class="obj"><b>"Já tenho avaliações."</b><span class="perg">"E estão a entrar esta semana?"</span>"É que o que conta é serem recentes. Muita gente nem olha para as antigas."</div>
+    <div class="obj"><b>"Um QR code é grátis."</b><span class="perg">"E o seu está a dar quantas por mês?"</span>"O código obriga a abrir a câmara, apontar, esperar. E aquele papelinho plastificado ao pé da caixa ninguém vê. Isto é encostar e já está."</div>
+    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia, passo cá antes de ir embora. Fica nos 45."</div>
+    <div class="obj"><b>"Tenho de falar com o meu sócio / a minha mulher."</b><span class="perg">"Faz todo o sentido. O que é que ele ia querer saber?"</span>Responde a isso já, ali. "Olhe, volto quinta às três e meia e mostro aos dois.". Hora exata, e cumpre.</div>
+    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em qualquer telemóvel dos últimos anos. E basta um em cada dez usar. São avaliações que hoje não tem."</div>
+    <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"Quem sai zangado escreve à mesma, esse encontra o caminho sozinho. Isto é para os contentes, que são a maioria e são os que se esquecem. Com mais avaliações, a média sobe e uma má dilui-se."</div>
+    <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos. A placa está lá para toda a gente, igual."</div>
+    <div class="obj"><b>"Agora não tenho tempo."</b><span class="perg">"Dois minutos, cronometrados. Ou diga-me a que horas e eu volto."</span>E voltas à hora que ele disser.</div>
+    <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente, para testar antes de pagar."</div>`},
+  {id:"g7", fase:"Depois do sim", t:"Programar a placa (2 a 3 min)", body:`
+    <p class="dica">Faz isto à frente dele. Ver o nome da casa dele aparecer no ecrã é metade da confiança.</p>
+    <div class="stop">Atalho: pergunta primeiro se ele tem o negócio no Google no telemóvel. Se tiver, ele pesquisa o próprio negócio, carrega em <b>«Pedir avaliações»</b> e passa-te o link. É o link oficial, zero risco de erro, e põe-no a participar.</div>
+    <ol>
+      <li>Se não tiver: Chrome → <b>Place ID Finder</b> → menu ⋮ → <b>Site para computador</b></li>
+      <li>Escrever o nome e <b>tocar no resultado</b> da lista (não escrever à mão)</li>
+      <li><b>Confirmar a MORADA</b>, não só o nome. Há dezenas de "Café Central"</li>
+      <li>Copiar o código <b>ChIJ…</b> e colar na <a href="r/" style="color:var(--accent);font-weight:700">página de programar</a></li>
+      <li><b>Testar</b>: abre a caixa de avaliação com o nome certo? Se abrir outra casa, pára já</li>
+      <li>NFC Tools → Write → Add a record → <b>URL/URI</b> → colar → Write</li>
+      <li>Ler de volta e <b>encostar o telemóvel</b> para testar a sério</li>
+      <li>Dar a placa ao dono para <b>ele</b> testar. É o melhor momento da venda</li>
+      <li>Só agora: Other → <b>Set password</b> → a tua password mestre. <b>AUTHLIM desligado.</b></li>
+    </ol>
+    <div class="stop">Nunca carregues em «Lock tag» ou «Make read-only». É irreversível e o link <b>vai</b> ter de mudar um dia. O próprio Google avisa que estes códigos mudam com o tempo. A password protege na mesma e podes sempre corrigir.</div>
+    <p class="dica">Balcão de aço ou caixa registadora? O metal mata o sinal. Leva sempre umas placas anti-metal no bolso.</p>`},
+  {id:"g8", fase:"Depois do sim", t:"Receber + faturar (30 seg)", body:`
+    <p class="dica">Logo a seguir ao sim, pede as duas coisas numa frase só. Ele dá-tas sem pensar, porque é para o servir.</p>
+    <div class="fala">"Qual é o NIF da empresa? E um número de WhatsApp para lhe mandar a fatura."</div>
+    <p><b>Recebes:</b> MB Way ou dinheiro, com os trocos preparados de manhã.</p>
+    <p><b>Emites</b> no Portal das Finanças → Faturas e Recibos → Emitir → <b>Fatura-Recibo</b>:</p>
+    <ol>
+      <li>NIF do cliente (o nome aparece sozinho)</li>
+      <li>Importância recebida: <b>"Pagamento dos bens ou serviços"</b></li>
+      <li>Descrição: <b>Placa NFC para avaliações Google, 1 un.</b></li>
+      <li>Valor: 49 / 45 / 40 / 79</li>
+      <li>IVA: <b>Isento, Art. 53.º do CIVA</b></li>
+      <li>Retenção: <b>sem retenção</b>, que vendas de bens não têm</li>
+      <li>Emitir → PDF → <b>enviar por WhatsApp à frente dele</b></li>
+    </ol>
+    <div class="fala">"Já lhe mandei. E já ficou no seu e-fatura, o seu contabilista vê-a sozinho, não tem de guardar nada."</div>
+    <p class="dica"><b>Só muda o NIF e o valor.</b> O resto é sempre igual: decora e sais em 30 segundos. Treina 5 vezes em casa antes da primeira porta. Sem rede, regista com nota "fatura por emitir". Tens 5 dias úteis. Fatura sempre, mesmo em dinheiro.</p>`},
+  {id:"g9", fase:"Depois do sim", t:"Antes de sair da porta", body:`
+    <p>Placa junto à caixa ou ao balcão, onde o cliente pára.</p>
+    <p><b>Deixa o número como oferta.</b> Ele já o tem por causa da fatura:</p>
+    <div class="fala">"Pronto, e já ficou com o meu número. Qualquer coisa com a placa, ou se precisar de ajuda com outra coisa, é só mandar mensagem."</div>
+    <p class="dica">Não peças referências agora. Acabou de te pagar, e pedir mais uma coisa estraga o final. Sais como quem deixou algo.</p>
+    <p><b>Regista na app antes de sair da porta</b>, com o número dele na nota. Se deixares para depois, esqueces.</p>
+    <p><b>Uma semana depois, mensagem:</b></p>
+    <div class="fala">"Boa tarde! Então, já apareceram avaliações novas? Ainda bem. Já agora, se conhecer aí algum vizinho a quem isto desse jeito, diga-me que eu passo por lá da sua parte."</div>
+    <p class="dica">É aqui que o pedido funciona: já lhe entregaste resultado. É também o momento certo para o combo Instagram (€79).</p>`},
+  {id:"g2", fase:"Se houver conversa", t:"A pergunta que o faz pensar", body:`
+    <p class="dica">Não precisas disto em todas as portas. Usa quando ele <b>tiver tempo e vontade de falar</b>. É o que faz o dono chegar sozinho à conclusão de que precisa da placa.<br><br>Faz a pergunta e cala-te. A seguir a uma pergunta destas, quem fala primeiro perde. Deixa-o desabafar. É aí que ele te diz onde lhe dói.</p>
+    <div class="fala">"Quantas avaliações é que lhe deixam no Google, por semana?"</div>
+    <p class="beat">↳ a resposta é quase sempre "poucas", "sei lá" ou "nenhumas".</p>
+    <div class="fala">"E clientes contentes tem todos os dias, certo?"</div>
+    <p class="beat">↳ deixa-o dizer que sim. A partir daqui é ele que está a concordar contigo.</p>
+    <div class="fala">"Pois. Então o problema não é o serviço que faz. É que a pessoa sai satisfeita, vai à vida dela e nunca mais se lembra."</div>
+    <p class="dica">É aqui, e só aqui, que entra o argumento. Escolhe em baixo.</p>`}
 ];
 
 /* ───────── storage (mesma chave da v1 — dados antigos preservados) ───────── */
 let persist = true;
 const KEY = "placas-rua-v1";
-const DEFAULTS = { v:4, registos:[], feitas:{}, zonaAtiva:null, teste:null, ruas:{} };
+const DEFAULTS = { v:8, registos:[], teste:null, args:[], frases:{}, placas:[], sitios:{},
+  aqui:{local:"",rua:"",feira:"",modo:"rua"}, sessao:null, sessoes:[],
+  feitas:{}, ruas:{}, zonaAtiva:null };
 function loadState(){
   try{
     const raw = localStorage.getItem(KEY);
@@ -586,16 +683,95 @@ try{ localStorage.setItem("__t","1"); localStorage.removeItem("__t"); }
 catch(e){ persist = false; }
 if(!persist) document.getElementById("aviso").style.display = "block";
 
-function zonaDefault(){ return (ZONAS.find(z => !state.feitas[z.id]) || ZONAS[0]).id; }
-if(!state.zonaAtiva) state.zonaAtiva = zonaDefault();
-if(!state.ruas) state.ruas = {};
+/* migração: registos antigos passam a ter localidade */
+if(!state.sitios || typeof state.sitios !== "object") state.sitios = {};
+if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"", feira:"", modo:"rua" };
+if(typeof state.aqui.feira !== "string") state.aqui.feira = "";
+if(state.aqui.modo !== "feira") state.aqui.modo = "rua";
+if(!Array.isArray(state.args)) state.args = [];
+if(!Array.isArray(state.placas)) state.placas = [];
+if(!Array.isArray(state.sessoes)) state.sessoes = [];
+if(!state.frases || typeof state.frases !== "object") state.frases = {};
+state.registos.forEach(r => {
+  if(!r.local && r.zona && ZONAS_ANTIGAS[r.zona]) r.local = ZONAS_ANTIGAS[r.zona];
+  if(!r.local) r.local = "";
+  if(!r.rua) r.rua = "";
+  if(typeof r.feira !== "string") r.feira = "";      /* registos antigos são todos de rua */
+  if(r.modo !== "feira") r.modo = "rua";
+});
 
 /* ───────── helpers ───────── */
 const $ = id => document.getElementById(id);
 const esc = s => String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const eur = n => "€" + (n||0);
-const zPor = id => ZONAS.find(z => z.id === id);
-const zCurta = id => { const z = zPor(id); return z ? ("Z"+z.n+" · "+z.nome.split("+")[0].trim()) : "—"; };
+const slug = v => String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+const zCurta = r => {
+  if(r && r.modo === "feira") return "🎪 " + ((r.feira||"").trim() || "feira sem nome");
+  const l=(r&&r.local)||"", u=(r&&r.rua)||"";
+  if(!l && !u) return "—"; return u ? (l ? l+" · "+u : u) : l; };
+
+/* ─── datas ─── */
+const diaParaData = d => { const p = String(d||"").split("-"); return new Date(+p[0], (+p[1]||1)-1, +p[2]||1); };
+function diasDesde(dia){
+  if(!dia) return null;
+  const ms = diaParaData(hojeISO()) - diaParaData(dia);
+  return Math.max(0, Math.round(ms / 86400000));
+}
+const haQuanto = d => { const n = diasDesde(d);
+  return n === null ? "" : n === 0 ? "hoje" : n === 1 ? "ontem" : "há " + n + " dias"; };
+/* segunda-feira da semana de uma data, em ISO */
+function semanaDe(dia){
+  const d = diaParaData(dia);
+  const off = (d.getDay() + 6) % 7;           /* 0 = segunda */
+  d.setDate(d.getDate() - off);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+const ddmm = dia => { const p = String(dia||"").split("-"); return p.length===3 ? p[2]+"/"+p[1] : dia; };
+
+/* ─── contas honestas ─────────────────────────────────────────────
+   Fechado não entra em lado nenhum: não foi uma oportunidade.
+   «Nem me ouviu» entra nas abordadas mas não nas que viram a demo. */
+const ABORDADAS = r => r.res !== "fech";
+const VIU_DEMO  = r => r.res === "venda" || r.res === "voltar" || r.res === "nao";
+function contas(rs){
+  const ab = rs.filter(ABORDADAS), demo = ab.filter(VIU_DEMO), v = ab.filter(r => r.res === "venda");
+  return {
+    portas: rs.length, abordadas: ab.length, demos: demo.length, vendas: v.length,
+    euros: v.reduce((a,r)=>a+(r.preco||0),0),
+    conv: ab.length ? Math.round(100*v.length/ab.length) : null,
+    taxaDemo: ab.length ? Math.round(100*demo.length/ab.length) : null
+  };
+}
+
+/* ─── sítios e ruas ─── */
+function sitio(local){
+  const k = slug(local); if(!k) return null;
+  if(!state.sitios[k]) state.sitios[k] = { nome: local, ruas:{} };
+  if(!state.sitios[k].nome) state.sitios[k].nome = local;
+  return state.sitios[k];
+}
+function ruaObj(local, rua, criar){
+  const s = criar ? sitio(local) : state.sitios[slug(local)];
+  if(!s) return null;
+  const k = slug(rua); if(!k) return null;
+  if(!s.ruas[k]){ if(!criar) return null; s.ruas[k] = { nome: rua, estado:null }; }
+  if(!s.ruas[k].nome && rua) s.ruas[k].nome = rua;
+  return s.ruas[k];
+}
+function statsFiltro(fn){
+  const rs = state.registos.filter(fn), v = rs.filter(r=>r.res==="venda");
+  return { portas: rs.length, vendas: v.length, euros: v.reduce((a,r)=>a+r.preco,0),
+           voltar: rs.filter(r=>r.res==="voltar" && !r.resolvido).length };
+}
+const daRua = r => r.modo !== "feira";
+/* «há quantos dias» do último registo que passa no filtro */
+function ultimaVez(fn){
+  const ds = state.registos.filter(fn).map(r => r.dia).filter(Boolean).sort();
+  return ds.length ? haQuanto(ds[ds.length-1]) : "";
+}
+const statsLocal = lk => statsFiltro(r => daRua(r) && slug(r.local) === lk);
+const statsRua = (lk,rk) => statsFiltro(r => daRua(r) && slug(r.local) === lk && slug(r.rua) === rk);
 let toastT = null;
 function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("on");
   clearTimeout(toastT); toastT = setTimeout(()=>t.classList.remove("on"), 1800); }
@@ -618,7 +794,7 @@ function makeChips(elId, items){
         $("grpVenda").classList.toggle("hide", c.dataset.val !== "venda");
         $("grpVoltar").classList.toggle("hide", c.dataset.val !== "voltar");
         if(c.dataset.val === "venda" && !sel("fPreco")){
-          const first = $("fPreco").querySelector('[data-val="45"]'); if(first) first.classList.add("on");
+          const first = $("fPreco").querySelector('[data-val="49"]'); if(first) first.classList.add("on");
         }
       }
     };
@@ -631,17 +807,192 @@ makeChips("fRes", RES);
 makeChips("fPreco", PRECOS);
 makeChips("fPag", PAGS);
 
-function renderSelZona(){
-  const s = $("selZona"); s.innerHTML = "";
-  ZONAS.forEach(z => {
-    const o = document.createElement("option");
-    o.value = z.id; o.textContent = "Z"+z.n+" · "+z.nome + (state.feitas[z.id] ? " ✓" : "");
-    if(z.id === state.zonaAtiva) o.selected = true;
-    s.appendChild(o);
-  });
-  $("hZona").textContent = zCurta(state.zonaAtiva);
+function renderAqui(){
+  const fl = $("fLocal"), fr = $("fRua");
+  if(document.activeElement !== fl && fl.value !== (state.aqui.local||"")) fl.value = state.aqui.local||"";
+  if(document.activeElement !== fr && fr.value !== (state.aqui.rua||"")) fr.value = state.aqui.rua||"";
+  $("hZona").textContent = zCurta(state.aqui);
+  const locais = Object.keys(state.sitios).map(k => state.sitios[k].nome).filter(Boolean).sort();
+  $("dlLocais").innerHTML = locais.map(n => '<option value="'+esc(n)+'">').join("");
+  const sl = state.sitios[slug(state.aqui.local)];
+  const ruas = sl ? Object.keys(sl.ruas).map(k => sl.ruas[k].nome).filter(Boolean).sort() : [];
+  $("dlRuas").innerHTML = ruas.map(n => '<option value="'+esc(n)+'">').join("");
+
+  const ff = $("fFeira");
+  if(document.activeElement !== ff && ff.value !== (state.aqui.feira||"")) ff.value = state.aqui.feira||"";
+  const jaFeitas = [...new Set(state.registos.filter(r=>r.modo==="feira").map(r=>r.feira).filter(Boolean))];
+  $("dlFeiras").innerHTML = [...new Set(jaFeitas.concat(FEIRAS))]
+    .map(n => '<option value="'+esc(n)+'">').join("");
+
+  renderModo(); renderSessao(); renderAvisoFeira();
 }
-$("selZona").onchange = e => { state.zonaAtiva = e.target.value; saveState(); renderTudo(); };
+function comitarAqui(){
+  state.aqui.local = $("fLocal").value.trim();
+  state.aqui.rua   = $("fRua").value.trim();
+  state.aqui.feira = $("fFeira").value.trim();
+  if(state.aqui.local) sitio(state.aqui.local);
+  if(state.aqui.modo !== "feira" && state.aqui.local && state.aqui.rua) ruaObj(state.aqui.local, state.aqui.rua, true);
+  saveState();
+}
+
+/* ─── rua ou feira ─── */
+function renderModo(){
+  const f = state.aqui.modo === "feira";
+  $("fModo").querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.dataset.val === state.aqui.modo));
+  $("wrapRua").classList.toggle("hide", f);
+  $("wrapFeira").classList.toggle("hide", !f);
+  $("rowRua").classList.toggle("hide", f);
+  $("hRegistar").textContent = f ? "Registar banca" : "Registar porta";
+  $("lblNome").textContent   = f ? "Banca / marca" : "Negócio";
+  $("fNome").placeholder     = f ? "ex.: Cerâmica da Rita" : "ex.: Tasca do Zé";
+  $("btGuardar").textContent = f ? "Guardar banca" : "Guardar porta";
+}
+$("fModo").querySelectorAll(".chip").forEach(c => c.onclick = () => {
+  if(state.sessao){ toast("Acaba a sessão antes de mudares"); return; }
+  state.aqui.modo = c.dataset.val;
+  saveState(); renderTudo();
+});
+$("fFeira").addEventListener("input", () => {
+  state.aqui.feira = $("fFeira").value.trim();
+  $("hZona").textContent = zCurta(state.aqui);
+  saveState(); renderAvisoFeira();
+});
+
+/* quando foi a última vez nesta feira, e quanto já lá fizeste */
+function renderAvisoFeira(){
+  const a = $("avisoFeira"), nome = (state.aqui.feira||"").trim();
+  if(state.aqui.modo !== "feira" || !nome){ a.classList.add("hide"); return; }
+  const rs = state.registos.filter(r => r.modo === "feira" && slug(r.feira) === slug(nome));
+  if(!rs.length){ a.classList.add("hide"); return; }
+  const dias = [...new Set(rs.map(r => r.dia))].sort();
+  const c = contas(rs);
+  a.innerHTML = "Já cá estiveste <b>"+dias.length+(dias.length===1?" vez":" vezes")+"</b>, a última <b>"+
+    haQuanto(dias[dias.length-1])+"</b>. Falaste com <b>"+rs.length+"</b> bancas ao todo"+
+    (c.vendas ? " e vendeste <b>"+c.vendas+"</b>." : ".");
+  a.classList.remove("hide");
+}
+
+/* ─── sessão: comecei / acabei ─── */
+const chaveSitio = a => a.modo === "feira" ? "feira|"+slug(a.feira) : "rua|"+slug(a.local)+"|"+slug(a.rua);
+const nomeSitio  = a => zCurta(a);
+function duracao(min){
+  if(min < 60) return min + " min";
+  const h = Math.floor(min/60), m = min%60;
+  return h + "h" + (m ? String(m).padStart(2,"0") : "");
+}
+function renderSessao(){
+  const b = $("btSessao"), n = $("notaSessao");
+  if(state.sessao){
+    const min = Math.max(1, Math.round((Date.now() - new Date(state.sessao.inicio).getTime())/60000));
+    b.textContent = "⏹ Acabei · " + duracao(min);
+    b.style.background = "var(--warn)";
+    n.innerHTML = "A contar desde as <b>" + new Date(state.sessao.inicio)
+      .toLocaleTimeString("pt-PT",{hour:"2-digit",minute:"2-digit"}) + "</b> em " + esc(state.sessao.nome) + ".";
+  } else {
+    b.textContent = "▶ Comecei aqui";
+    b.style.background = "";
+    n.innerHTML = "Carrega ao chegar e ao sair. Sem isto não há <b>euros por hora</b>, e é por aí que decides onde voltar.";
+  }
+}
+$("btSessao").onclick = () => {
+  comitarAqui();
+  if(state.sessao){
+    const min = Math.max(1, Math.round((Date.now() - new Date(state.sessao.inicio).getTime())/60000));
+    state.sessoes.push(Object.assign({}, state.sessao, { fim: new Date().toISOString(), minutos: min }));
+    state.sessao = null;
+    saveState(); renderTudo();
+    toast("Sessão fechada · " + duracao(min));
+    return;
+  }
+  const a = state.aqui;
+  if(a.modo === "feira" ? !a.feira : (!a.local || !a.rua)){
+    toast(a.modo === "feira" ? "Escreve o nome da feira" : "Escreve a localidade e a rua");
+    return;
+  }
+  state.sessao = { inicio: new Date().toISOString(), dia: hojeISO(), modo: a.modo,
+                   local: a.local, rua: a.rua, feira: a.feira,
+                   chave: chaveSitio(a), nome: nomeSitio(a) };
+  saveState(); renderTudo();
+  toast("A contar. Bom trabalho 💪");
+};
+setInterval(() => { if(state.sessao) renderSessao(); }, 30000);
+
+/* ─── já falaste com este? ─── */
+$("fNome").addEventListener("input", () => {
+  const a = $("avisoRepetido"), nome = $("fNome").value.trim();
+  if(nome.length < 3){ a.classList.add("hide"); return; }
+  const k = slug(nome);
+  const antes = state.registos.filter(r => slug(r.nome) === k).sort((x,y)=>y.ts.localeCompare(x.ts));
+  if(!antes.length){ a.classList.add("hide"); return; }
+  const u = antes[0];
+  const COMO = { venda:"Comprou", voltar:"Pediu para voltares", nao:"Viu a demo e disse que não",
+                 porta:"Nem te ouviu", fech:"Estava fechado" };
+  a.innerHTML = "⚠️ <b>Já falaste com este.</b> " + haQuanto(u.dia).replace(/^h/,"H") +
+    ", em " + esc(zCurta(u)) + ". " + (COMO[u.res] || u.res) + "." +
+    (u.nota ? "<br><i>«" + esc(u.nota) + "»</i>" : "") +
+    (antes.length > 1 ? "<br>São <b>" + antes.length + "</b> abordagens ao todo." : "");
+  a.classList.remove("hide");
+});
+let localAnterior = state.aqui.local || "";
+["fLocal","fRua"].forEach(id => {
+  $(id).addEventListener("input", () => {
+    state.aqui.local = $("fLocal").value.trim();
+    state.aqui.rua   = $("fRua").value.trim();
+    $("hZona").textContent = zCurta(state.aqui);
+    saveState();
+  });
+  $(id).addEventListener("change", () => {
+    /* mudou de localidade? a rua anterior é de outra terra — limpa */
+    if(id === "fLocal" && slug($("fLocal").value) !== slug(localAnterior)){
+      $("fRua").value = ""; state.aqui.rua = "";
+    }
+    localAnterior = $("fLocal").value.trim();
+    comitarAqui(); renderTudo();
+  });
+});
+function marcarRua(estado){
+  comitarAqui();
+  if(!state.aqui.local || !state.aqui.rua){ toast("Escreve a localidade e a rua primeiro"); return; }
+  const r = ruaObj(state.aqui.local, state.aqui.rua, true);
+  r.estado = (r.estado === estado) ? null : estado;
+  saveState(); renderTudo();
+  toast(r.estado === "feita" ? "Rua varrida ✓" : (r.estado === "meio" ? "Fica marcada para voltares" : "Marca retirada"));
+}
+$("btRuaFeita").onclick = () => marcarRua("feita");
+$("btRuaMeio").onclick  = () => marcarRua("meio");
+
+$("btGPS").onclick = () => {
+  if(!navigator.geolocation){ toast("Este telemóvel não dá localização"); return; }
+  const b = $("btGPS");
+  const repor = () => { b.classList.remove("a"); b.textContent = "📍 Detetar"; };
+  b.classList.add("a"); b.textContent = "📍 A localizar…";
+  navigator.geolocation.getCurrentPosition(pos => {
+    const la = pos.coords.latitude, lo = pos.coords.longitude;
+    const guardarCoords = () => {
+      if(state.aqui.local && state.aqui.rua){
+        const ro = ruaObj(state.aqui.local, state.aqui.rua, true);
+        if(ro){ ro.lat = la; ro.lon = lo; }
+      }
+      saveState(); renderTudo();
+    };
+    fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=17&addressdetails=1&accept-language=pt&lat="+la+"&lon="+lo)
+      .then(r => r.json())
+      .then(d => {
+        const a = (d && d.address) || {};
+        const rua = a.road || a.pedestrian || a.footway || a.square || "";
+        const loc = a.town || a.village || a.city || a.suburb || a.municipality || a.county || "";
+        if(loc) $("fLocal").value = loc;
+        if(rua) $("fRua").value = rua;
+        comitarAqui(); guardarCoords();
+        toast(rua ? "📍 "+rua : "Apanhei o sítio. Escreve a rua");
+        repor();
+      })
+      .catch(() => { comitarAqui(); guardarCoords(); toast("Sem rede para o nome da rua. Escreve à mão"); repor(); });
+  }, err => {
+    repor();
+    toast(err && err.code === 1 ? "Tens de dar permissão de localização" : "Não consegui apanhar a localização");
+  }, { enableHighAccuracy:true, timeout:12000, maximumAge:30000 });
+};
 
 /* ───────── guardar registo ───────── */
 $("btGuardar").onclick = () => {
@@ -649,13 +1000,15 @@ $("btGuardar").onclick = () => {
   const tipo = sel("fTipo"), res = sel("fRes");
   if(!nome){ toast("Falta o nome do negócio"); $("fNome").focus(); return; }
   if(!res){ toast("Escolhe o resultado"); return; }
+  comitarAqui();
   state.registos.push({
     id: Date.now() + "" + Math.floor(Math.random()*999),
     ts: new Date().toISOString(),
     dia: hojeISO(),
-    zona: state.zonaAtiva,
+    local: state.aqui.local, rua: state.aqui.modo === "feira" ? "" : state.aqui.rua, zona: "",
+    modo: state.aqui.modo, feira: state.aqui.modo === "feira" ? state.aqui.feira : "",
     nome, tipo: tipo || "📦 Outro", res,
-    preco: res === "venda" ? Number(sel("fPreco") || 45) : 0,
+    preco: res === "venda" ? Number(sel("fPreco") || 49) : 0,
     pag: res === "venda" ? (sel("fPag") || "") : "",
     quando: res === "voltar" ? $("fQuando").value.trim() : "",
     nota: $("fNota").value.trim(),
@@ -663,14 +1016,17 @@ $("btGuardar").onclick = () => {
   });
   saveState();
   ["fNome","fQuando","fNota"].forEach(i => $(i).value = "");
+  $("avisoRepetido").classList.add("hide");
   document.querySelectorAll("#fRes .chip, #fPreco .chip, #fPag .chip").forEach(c => c.classList.remove("on"));
   $("grpVenda").classList.add("hide"); $("grpVoltar").classList.add("hide");
-  toast(res === "venda" ? "💰 Venda registada!" : "Porta registada");
+  toast(res === "venda" ? "💰 Venda registada!" : (state.aqui.modo === "feira" ? "Banca registada" : "Porta registada"));
+  geoMarcar(state.registos[state.registos.length-1]);
   renderTudo();
 };
 
 /* ───────── hoje ───────── */
-const BADGE = { venda:["venda","VENDA"], voltar:["voltar","VOLTAR"], nao:["nao","NÃO"], fech:["fech","FECHADO"] };
+const BADGE = { venda:["venda","VENDA"], voltar:["voltar","VOLTAR"], nao:["nao","NÃO"],
+                porta:["nao","NEM OUVIU"], fech:["fech","FECHADO"] };
 function renderHoje(){
   const hoje = state.registos.filter(r => r.dia === hojeISO()).sort((a,b) => b.ts.localeCompare(a.ts));
   $("tHoje").textContent = hoje.length;
@@ -693,130 +1049,660 @@ function renderHoje(){
   });
 }
 
-/* ───────── zonas ───────── */
-function statsZona(id){
-  const rs = state.registos.filter(r => r.zona === id);
-  return { portas: rs.length, vendas: rs.filter(r=>r.res==="venda").length,
-    euros: rs.filter(r=>r.res==="venda").reduce((s,r)=>s+r.preco,0),
-    voltar: rs.filter(r=>r.res==="voltar" && !r.resolvido).length };
+/* ───────── ruas ───────── */
+function irPara(lk, rk){
+  const sl = state.sitios[lk]; if(!sl) return;
+  state.aqui.local = sl.nome;
+  state.aqui.rua = (sl.ruas[rk] && sl.ruas[rk].nome) || "";
+  saveState(); showTab("registar"); renderTudo();
+  toast("Estás em " + zCurta(state.aqui));
 }
-function ruasFeitas(z){
-  const m = state.ruas[z.id] || {};
-  return z.ruas.reduce((s,_,i) => s + (m[i] ? 1 : 0), 0);
-}
-function renderZonas(){
-  const abertas = {};
-  document.querySelectorAll("#listaZonas details.ruas").forEach(d => { if(d.open) abertas[d.dataset.z] = true; });
-  const el = $("listaZonas");
-  el.innerHTML = ZONAS.map(z => {
-    const st = statsZona(z.id);
-    const feita = !!state.feitas[z.id], ativa = z.id === state.zonaAtiva;
-    const rf = ruasFeitas(z), rt = z.ruas.length;
-    const estado = feita ? '<span class="estado done">FEITA ✓</span>' : (ativa ? '<span class="estado curso">EM CURSO</span>' : '<span class="estado futuro">POR FAZER</span>');
-    const ruasHtml = z.ruas.map((rua,i) => {
-      const on = !!(state.ruas[z.id] && state.ruas[z.id][i]);
-      return '<label class="rua'+(on?' done':'')+'"><input type="checkbox" data-z="'+z.id+'" data-i="'+i+'"'+(on?' checked':'')+'><span>'+esc(rua)+'</span></label>';
-    }).join("");
-    return '<div class="zcard'+(ativa?' ativa':'')+(feita?' feita':'')+'">'+estado+
-      '<div class="sem">Zona '+z.n+'</div>'+
-      '<div class="nome">'+esc(z.nome)+'</div>'+
-      (z.nota ? '<div class="nota">⏰ '+esc(z.nota)+'</div>' : '')+
-      '<div class="st">'+st.portas+' portas · '+st.vendas+' vendas ('+eur(st.euros)+') · '+st.voltar+' «Voltar»'+(rf===rt && rt>0 ? ' · <b style="color:var(--ok)">ruas todas varridas ✓</b>' : '')+'</div>'+
-      '<details class="ruas" data-z="'+z.id+'"'+(abertas[z.id]?' open':'')+'><summary>Ruas '+rf+'/'+rt+' ▾</summary>'+ruasHtml+'</details>'+
-      '<div class="zbtns">'+
-        (ativa ? '' : '<button class="btn ghost mini" data-ativar="'+z.id+'">Ativar</button>')+
-        '<button class="btn ghost mini" data-feita="'+z.id+'" style="color:var(--ok);border-color:var(--ok)">'+(feita?'Reabrir':'Marcar feita ✓')+'</button>'+
-      '</div></div>';
-  }).join("");
-  el.querySelectorAll("[data-ativar]").forEach(b => b.onclick = () => { state.zonaAtiva = b.dataset.ativar; saveState(); renderTudo(); toast("Zona ativa: "+zCurta(state.zonaAtiva)); });
-  el.querySelectorAll("[data-feita]").forEach(b => b.onclick = () => {
-    const id = b.dataset.feita;
-    if(state.feitas[id]) delete state.feitas[id]; else state.feitas[id] = true;
-    if(state.zonaAtiva === id && state.feitas[id]) state.zonaAtiva = zonaDefault();
-    saveState(); renderTudo();
+const ESTADOS = { feita:["feita","VARRIDA ✓"], meio:["meio","A MEIO"] };
+function renderSitios(){
+  const abertos = {};
+  document.querySelectorAll("#listaSitios details.loc").forEach(d => { if(d.open) abertos[d.dataset.l] = true; });
+  const aquiL = slug(state.aqui.local), aquiR = slug(state.aqui.rua);
+  const chaves = Object.keys(state.sitios).sort((a,b) => statsLocal(b).portas - statsLocal(a).portas);
+
+  const pend = [];
+  chaves.forEach(lk => { const sl = state.sitios[lk];
+    Object.keys(sl.ruas).forEach(rk => { if(sl.ruas[rk].estado === "meio") pend.push({lk,rk,sl,r:sl.ruas[rk]}); });
   });
-  el.querySelectorAll('.rua input').forEach(c => c.onchange = () => {
-    const z = c.dataset.z, i = c.dataset.i;
-    if(!state.ruas[z]) state.ruas[z] = {};
-    if(c.checked) state.ruas[z][i] = true; else delete state.ruas[z][i];
-    saveState(); renderZonas(); pintarMapa();
+  $("pendCard").style.display = pend.length ? "block" : "none";
+  $("listaPend").innerHTML = pend.map(p => {
+    const st = statsRua(p.lk,p.rk);
+    return '<div class="rr"><span class="rn"><b>'+esc(p.r.nome)+'</b><small>'+esc(p.sl.nome)+' · '+st.portas+' portas · '+st.vendas+' vendas</small></span>'+
+      '<button class="est aqui" data-ir="'+p.lk+'|'+p.rk+'">Voltar</button></div>';
+  }).join("");
+
+  const el = $("listaSitios");
+  if(!chaves.length){
+    el.innerHTML = '<p class="note">Ainda não registaste nenhuma porta. Escreve onde estás na aba Registar e começa.</p>';
+    return;
+  }
+  el.innerHTML = chaves.map(lk => {
+    const sl = state.sitios[lk], st = statsLocal(lk);
+    const rks = Object.keys(sl.ruas).sort((a,b) => statsRua(lk,b).portas - statsRua(lk,a).portas);
+    const feitas = rks.filter(rk => sl.ruas[rk].estado === "feita").length;
+    const linhas = rks.map(rk => {
+      const r = sl.ruas[rk], rs = statsRua(lk,rk), atual = (lk===aquiL && rk===aquiR);
+      const e = ESTADOS[r.estado] || ["nada","POR ACABAR"];
+      const q = ultimaVez(x => daRua(x) && slug(x.local)===lk && slug(x.rua)===rk);
+      return '<div class="rr'+(r.estado==="feita"?" feita":"")+'">'+
+        '<span class="rn" data-ir="'+lk+'|'+rk+'"><b>'+(atual?"📍 ":"")+esc(r.nome)+'</b>'+
+        '<small>'+rs.portas+' portas · '+rs.vendas+' vendas · '+eur(rs.euros)+(rs.voltar?' · '+rs.voltar+' «Voltar»':'')+
+        (q?' · <b>'+q+'</b>':'')+'</small></span>'+
+        '<button class="est '+e[0]+'" data-est="'+lk+'|'+rk+'">'+e[1]+'</button></div>';
+    }).join("") || '<p class="note">Sem ruas ainda.</p>';
+    return '<details class="loc" data-l="'+lk+'"'+((abertos[lk]||lk===aquiL)?' open':'')+'>'+
+      '<summary><span class="lnome">'+(lk===aquiL?"📍 ":"")+esc(sl.nome)+'</span>'+
+      '<span class="lst">'+rks.length+' ruas · '+feitas+' varridas · '+st.vendas+' vendas</span></summary>'+
+      '<div class="lruas">'+linhas+'</div></details>';
+  }).join("");
+
+  document.querySelectorAll("[data-ir]").forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const p = b.dataset.ir.split("|"); irPara(p[0], p[1]);
+  });
+  document.querySelectorAll("[data-est]").forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    const p = b.dataset.est.split("|"), sl = state.sitios[p[0]];
+    if(!sl || !sl.ruas[p[1]]) return;
+    const r = sl.ruas[p[1]];
+    r.estado = r.estado === "feita" ? "meio" : (r.estado === "meio" ? null : "feita");
+    saveState(); renderSitios(); pintarMapa();
+  });
+}
+
+/* ───────── feiras ─────────
+   Não há estrutura à parte: tudo se calcula dos próprios registos.
+   Uma feira repete-se — o que interessa é há quanto tempo lá foste. */
+function feirasResumo(){
+  const m = {};
+  state.registos.filter(r => r.modo === "feira" && r.feira).forEach(r => {
+    const k = slug(r.feira);
+    if(!m[k]) m[k] = { nome: r.feira, rs: [], dias: {} };
+    m[k].rs.push(r); m[k].dias[r.dia] = true;
+  });
+  return Object.keys(m).map(k => {
+    const f = m[k], dias = Object.keys(f.dias).sort(), ult = dias[dias.length-1];
+    const min = state.sessoes.filter(s => s.modo === "feira" && slug(s.feira) === k)
+                             .reduce((a,s)=>a+(s.minutos||0), 0);
+    return Object.assign({ k, nome: f.nome, dias, ult, idas: dias.length, minutos: min }, contas(f.rs));
+  }).sort((a,b) => (diasDesde(b.ult)||0) - (diasDesde(a.ult)||0));
+}
+function renderFeiras(){
+  const fs = feirasResumo();
+  $("feirasCard").style.display = fs.length ? "block" : "none";
+  if(!fs.length) return;
+  $("listaFeiras").innerHTML = fs.map(f => {
+    const n = diasDesde(f.ult);
+    const eh = f.minutos ? " · " + eur(Math.round(f.euros/(f.minutos/60))) + "/h" : "";
+    return '<div class="fr"><span class="n" data-feira="'+esc(f.nome)+'"><b>'+esc(f.nome)+'</b>'+
+      '<small>'+f.idas+(f.idas===1?" ida":" idas")+' · '+f.portas+(f.portas===1?" banca":" bancas")+
+      ' · '+f.vendas+(f.vendas===1?" venda":" vendas")+' · '+eur(f.euros)+eh+'</small>'+
+      '<small>'+(f.conv===null?"—":f.conv+"% conversão")+(f.taxaDemo===null?"":" · "+f.taxaDemo+"% viram a demo")+'</small></span>'+
+      '<span class="dias'+(n>=21?" velho":"")+'">'+haQuanto(f.ult)+'</span></div>';
+  }).join("");
+  $("listaFeiras").querySelectorAll("[data-feira]").forEach(b => b.onclick = () => {
+    if(state.sessao){ toast("Acaba a sessão primeiro"); return; }
+    state.aqui.modo = "feira"; state.aqui.feira = b.dataset.feira;
+    saveState(); showTab("registar"); renderTudo();
+    toast("Estás na " + b.dataset.feira);
   });
 }
 
 /* ───────── mapa ───────── */
-let map = null, polys = {};
-function corZona(z){
-  if(state.feitas[z.id]) return "#188038";
-  if(z.id === state.zonaAtiva) return "#0B57D0";
-  return "#9CA3AF";
+let map = null, camada = null, marcaEu = null;
+const CORPIN = { venda:"#188038", voltar:"#B45309", nao:"#B3261E", porta:"#7F1D1D", fech:"#5F6368" };
+
+function posicao(cb){
+  if(!navigator.geolocation){ cb(null); return; }
+  navigator.geolocation.getCurrentPosition(
+    p => cb({ lat:p.coords.latitude, lon:p.coords.longitude, acc:Math.round(p.coords.accuracy) }),
+    () => cb(null),
+    { enableHighAccuracy:true, timeout:15000, maximumAge:60000 }
+  );
 }
-function pintarMapa(){
-  if(!map) return;
-  ZONAS.forEach(z => {
-    const p = polys[z.id]; if(!p) return;
-    const c = corZona(z);
-    p.setStyle({ color:c, fillColor:c, fillOpacity: state.feitas[z.id] ? .40 : (z.id === state.zonaAtiva ? .35 : .18), weight:2 });
-    const st = statsZona(z.id);
-    const estado = state.feitas[z.id] ? "FEITA ✓" : (z.id === state.zonaAtiva ? "EM CURSO" : "por fazer");
-    p.bindPopup("<b>Zona "+z.n+" — "+esc(z.nome)+"</b><br>"+estado+" · "+st.portas+" portas · "+st.vendas+" vendas<br><small>Ruas: "+ruasFeitas(z)+"/"+z.ruas.length+" · ativa no cartão em baixo</small>");
+/* cada porta registada fica com a posição — vira pino no mapa */
+function geoMarcar(rec){
+  if(!rec || rec.lat) return;
+  posicao(p => {
+    if(!p) return;
+    rec.lat = p.lat; rec.lon = p.lon; rec.acc = p.acc;
+    if(rec.local && rec.rua){
+      const ro = ruaObj(rec.local, rec.rua, true);
+      if(ro && typeof ro.lat !== "number"){ ro.lat = p.lat; ro.lon = p.lon; }
+    }
+    saveState(); tentarMapa();
   });
 }
+function portasNoMapa(){ return state.registos.filter(r => typeof r.lat === "number" && typeof r.lon === "number"); }
+function pontos(){
+  const out = [];
+  Object.keys(state.sitios).forEach(lk => { const sl = state.sitios[lk];
+    Object.keys(sl.ruas).forEach(rk => { const r = sl.ruas[rk];
+      if(typeof r.lat === "number" && typeof r.lon === "number") out.push({lk,rk,sl,r});
+    });
+  });
+  return out;
+}
+function pintarMapa(){
+  if(!map || !camada) return;
+  camada.clearLayers();
+  const grupo = [];
+  portasNoMapa().forEach(r => {
+    const c = CORPIN[r.res] || "#5F6368";
+    const m = L.circleMarker([r.lat, r.lon],
+      { radius:7, weight:2, color:"#fff", fillColor:c, fillOpacity:1 });
+    m.bindPopup("<b>"+esc(r.nome)+"</b><br>"+esc(r.tipo||"")+
+      (r.res === "venda" ? " · "+eur(r.preco) : "")+"<br><small>"+esc(zCurta(r))+" · "+r.dia+"</small>");
+    camada.addLayer(m); grupo.push(m);
+  });
+  /* ruas sem nenhuma porta com posição — marca discreta, só para não desaparecerem */
+  pontos().forEach(p => {
+    const jaTem = grupo.length && portasNoMapa().some(r => slug(r.local)===p.lk && slug(r.rua)===p.rk);
+    if(jaTem) return;
+    const m = L.circleMarker([p.r.lat, p.r.lon],
+      { radius:6, weight:2, color:"#9CA3AF", fillColor:"#fff", fillOpacity:.9, dashArray:"2,3" });
+    m.bindPopup("<b>"+esc(p.r.nome)+"</b><br>"+esc(p.sl.nome));
+    camada.addLayer(m); grupo.push(m);
+  });
+  if(grupo.length) map.fitBounds(L.featureGroup(grupo).getBounds().pad(0.3), { maxZoom:17 });
+}
+function legenda(mostrar){
+  const el = document.querySelector(".legenda"); if(el) el.style.display = mostrar ? "flex" : "none";
+  const b = $("btOndeEstou"); if(b) b.style.display = mostrar ? "block" : "none";
+}
 function tentarMapa(){
-  if(map || typeof L === "undefined"){
-    $("mapFallback").style.display = (typeof L === "undefined") ? "block" : "none";
-    $("map").style.display = (typeof L === "undefined") ? "none" : "block";
-    if(map) setTimeout(()=>map.invalidateSize(), 60);
+  const temL = (typeof L !== "undefined");
+  const nPontos = portasNoMapa().length + pontos().length;
+  if(!temL || !nPontos){
+    $("map").style.display = "none";
+    $("mapFallback").style.display = "block";
+    legenda(false);
+    $("mapFallback").innerHTML = !temL
+      ? '🗺️ O mapa precisa de internet.<br>As ruas continuam todas em baixo.<br><button class="btn ghost mini" style="margin-top:8px" onclick="tentarMapa()">Tentar de novo</button>'
+      : '🗺️ Ainda não há nada no mapa.<br>Cada porta que registas com o GPS ligado<br>fica aqui marcada.';
     return;
   }
   try{
-    map = L.map("map", { scrollWheelZoom:false });
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      { attribution:"© OpenStreetMap", maxZoom:19 }).addTo(map);
-    const grupo = [];
-    ZONAS.forEach(z => {
-      polys[z.id] = L.polygon(z.poly, { weight:2 }).addTo(map);
-      grupo.push(polys[z.id]);
-    });
-    map.fitBounds(L.featureGroup(grupo).getBounds().pad(0.08));
-    pintarMapa();
-    $("mapFallback").style.display = "none"; $("map").style.display = "block";
+    if(!map){
+      map = L.map("map", { scrollWheelZoom:false });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        { attribution:"© OpenStreetMap", maxZoom:19 }).addTo(map);
+      camada = L.layerGroup().addTo(map);
+    }
+    $("mapFallback").style.display = "none";
+    $("map").style.display = "block";
+    legenda(true);
+    setTimeout(() => { map.invalidateSize(); pintarMapa(); }, 60);
   }catch(e){
-    $("map").style.display = "none"; $("mapFallback").style.display = "block";
+    $("map").style.display = "none"; $("mapFallback").style.display = "block"; legenda(false);
   }
 }
+document.getElementById("btOndeEstou").onclick = () => {
+  toast("A procurar GPS…");
+  posicao(p => {
+    if(!p){ toast("Sem GPS. Liga a localização"); return; }
+    if(!map) tentarMapa();
+    if(!map) return;
+    if(marcaEu) { try{ map.removeLayer(marcaEu); }catch(e){} }
+    marcaEu = L.circleMarker([p.lat, p.lon],
+      { radius:9, weight:3, color:"#0B57D0", fillColor:"#0B57D0", fillOpacity:.25 }).addTo(map);
+    map.setView([p.lat, p.lon], 17);
+    toast("Estás aqui (±"+p.acc+" m)");
+  });
+};
 
-/* ───────── guião ───────── */
-function renderGuiao(){
-  const el = $("listaGuiao");
-  el.innerHTML = GUIAO.map((g,i) => '<details class="g"'+(i===0?' open':'')+'><summary><span class="num">'+(i+1)+'</span>'+g.t+
-    (state.teste===g.id?'<span class="teste-badge">EM TESTE</span>':'')+'</summary><div class="gbody">'+g.body+
-    '<button class="tbtn'+(state.teste===g.id?' on':'')+'" data-teste="'+g.id+'">'+(state.teste===g.id?'Tirar de teste':'Pôr EM TESTE')+'</button></div></details>').join("");
-  el.querySelectorAll("[data-teste]").forEach(b => b.onclick = () => {
-    state.teste = state.teste === b.dataset.teste ? null : b.dataset.teste;
-    saveState(); renderGuiao();
+/* ───────── placa NFC ───────── */
+const ENCURTADO = /(share\.google|maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)/i;
+const BASE_R = location.origin + location.pathname.replace(/[^/]*$/, "") + "r/";
+/* O código ChIJ… não é nenhum segredo: é o "Feature ID" (0x…:0x…) que vem
+   dentro do link do Google Maps, escrito noutro alfabeto. Converte-se aqui
+   mesmo, sem internet e sem chave nenhuma. */
+function leHexLE(buf, off, hex){
+  hex = String(hex).replace(/^0x/i,"").toLowerCase();
+  if(hex.length > 16) hex = hex.slice(-16);
+  while(hex.length < 16) hex = "0" + hex;
+  for(let i = 0; i < 8; i++) buf[off+i] = parseInt(hex.substr(16-(i+1)*2, 2), 16);
+}
+function fidParaPlaceId(h1, h2){
+  const b = new Uint8Array(20);
+  b[0]=0x0a; b[1]=0x12; b[2]=0x09; leHexLE(b,3,h1); b[11]=0x11; leHexLE(b,12,h2);
+  let bin = ""; for(let i=0;i<20;i++) bin += String.fromCharCode(b[i]);
+  return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function extrairPID(txt){
+  txt = String(txt||"").trim();
+  /* 1. já vem o código, sozinho ou dentro de um link */
+  let m = txt.match(/(?:place_id[:=]|placeid=|!1s)(ChIJ[A-Za-z0-9_\-]{10,})/i);
+  if(m) return m[1];
+  if(/^ChIJ[A-Za-z0-9_\-]{10,}$/.test(txt)) return txt;
+  m = txt.match(/(?:place_id[:=]|placeid=)\s*([A-Za-z0-9_\-]{15,})/i);
+  if(m) return m[1];
+  /* 2. Feature ID dentro do link longo do Maps — converte-se */
+  m = txt.match(/!1s0x([0-9a-f]{1,16}):0x([0-9a-f]{1,16})/i)
+   || txt.match(/0x([0-9a-f]{1,16})\s*:\s*0x([0-9a-f]{1,16})/i);
+  if(m && m[2] && m[2] !== "0") return fidParaPlaceId(m[1], m[2]);
+  /* 3. código isolado de outro formato */
+  if(/^[A-Za-z0-9_\-]{20,}$/.test(txt) && !/^https?:/i.test(txt)) return txt;
+  return "";
+}
+/* tenta desencurtar um share.google / maps.app.goo.gl usando um leitor público.
+   Se falhar (sem rede, serviço em baixo), cai no caminho manual. */
+function resolverCurto(url){
+  const vias = [
+    { u: "https://api.allorigins.win/get?url=" + encodeURIComponent(url),
+      le: t => { try{ const j = JSON.parse(t); return ((j.status && j.status.url) || "") + " " + (j.contents || ""); }
+                 catch(e){ return t; } } },
+    { u: "https://r.jina.ai/" + url, le: t => t }
+  ];
+  const tentar = i => {
+    if(i >= vias.length) return Promise.resolve("");
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 9000);
+    return fetch(vias[i].u, { signal: ctl.signal })
+      .then(r => r.text())
+      .then(txt => { clearTimeout(t); const c = extrairPID(vias[i].le(txt)); return c || tentar(i+1); })
+      .catch(() => { clearTimeout(t); return tentar(i+1); });
+  };
+  return tentar(0);
+}
+const linkReview = c => "https://search.google.com/local/writereview?placeid=" + encodeURIComponent(c);
+let pidAtual = "", urlAtual = "", pTipo = "google";
+
+/* ── tipos de placa ──────────────────────────────────────────────
+   O que muda de tipo para tipo: o rótulo, a dica, e o "código" que
+   vai a seguir ao # no endereço da placa. O resto é tudo igual.   */
+const TIPOS_PLACA = {
+  google: {
+    label: "Link do Maps ou código do negócio",
+    ph:    "cola aqui o link do Google Maps",
+    dica:  "Serve o link longo, o link de partilha, ou o código <b>ChIJ…</b>. A app tira o resto sozinha.",
+    testar:"Abrir e ver se é o negócio certo",
+    nota:  "Tem de abrir a caixa das estrelas com o nome <b>e a morada</b> certos. Se abrir outra casa, pára já."
+  },
+  ig: {
+    label: "@ do Instagram ou link do perfil",
+    ph:    "@tascadoze",
+    dica:  "Cola o link do perfil (…instagram.com/tascadoze) ou só o <b>@</b>. A placa vai abrir a <b>app</b> do Instagram, sem a janela do login por cima.",
+    testar:"Abrir e ver se é o perfil certo",
+    nota:  "Tem de abrir o perfil dele. Testa num telemóvel com o Instagram instalado."
+  },
+  tt: {
+    label: "@ do TikTok ou link do perfil",
+    ph:    "@tascadoze",
+    dica:  "Cola o link do perfil (…tiktok.com/@tascadoze) ou só o <b>@</b>.",
+    testar:"Abrir e ver se é o perfil certo",
+    nota:  "Tem de abrir o perfil dele."
+  },
+  u: {
+    label: "Link para onde a placa vai",
+    ph:    "https://…",
+    dica:  "Loja online, site, menu, WhatsApp, o que for. Cola o link tal e qual.",
+    testar:"Abrir e ver se é a página certa",
+    nota:  "Confirma que abre a página certa antes de escrever na placa."
+  }
+};
+
+/* @nome · instagram.com/nome/?igshid=… · https://tiktok.com/@nome → nome */
+function utilizadorDe(v){
+  v = String(v || "").trim();
+  try { v = decodeURIComponent(v); } catch(e){}
+  v = v.replace(/^@+/, "").replace(/[?#].*$/, "").replace(/\/+$/, "");
+  const barra = v.lastIndexOf("/");
+  if(barra >= 0) v = v.slice(barra + 1);
+  return v.replace(/^@+/, "").replace(/[^A-Za-z0-9._]/g, "");
+}
+
+/* o que vai a seguir ao # — devolve "" se não perceber */
+function codigoDe(tipo, bruto){
+  if(tipo === "google") return extrairPID(bruto);
+  if(tipo === "ig"){ const u = utilizadorDe(bruto); return u ? "ig:" + u : ""; }
+  if(tipo === "tt"){ const u = utilizadorDe(bruto); return u ? "tt:" + u : ""; }
+  let a = String(bruto || "").trim();
+  if(!a) return "";
+  if(!/^https?:\/\//i.test(a)) a = "https://" + a;
+  if(!/^https?:\/\/[^\s.]+\.[^\s]{2,}/i.test(a)) return "";
+  return "u:" + encodeURIComponent(a);
+}
+
+/* para onde é que este código aponta de facto (o botão Testar) */
+function destinoDe(codigo){
+  if(/^ig:/i.test(codigo)) return "https://www.instagram.com/" + codigo.slice(3) + "/";
+  if(/^tt:/i.test(codigo)) return "https://www.tiktok.com/@" + codigo.slice(3);
+  if(/^u:/i.test(codigo)){ try { return decodeURIComponent(codigo.slice(2)); } catch(e){ return codigo.slice(2); } }
+  return linkReview(codigo);
+}
+const nomeTipo = c => /^ig:/i.test(c) ? "Instagram" : /^tt:/i.test(c) ? "TikTok" : /^u:/i.test(c) ? "Link" : "Google";
+
+function avisoPlaca(html){
+  const a = $("pAviso");
+  if(!html){ a.classList.add("hide"); a.innerHTML = ""; return; }
+  a.innerHTML = html; a.classList.remove("hide");
+}
+
+/* trocar de tipo */
+function trocarTipo(novo){
+  pTipo = novo;
+  $("pTipo").querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x.dataset.val === novo));
+  const t = TIPOS_PLACA[pTipo];
+  $("pLabel").textContent = t.label;
+  $("pCod").placeholder   = t.ph;
+  $("pDica").innerHTML    = t.dica;
+  $("pTestar").textContent   = t.testar;
+  $("pTestarNota").innerHTML = t.nota;
+  $("pRowGoogle").classList.toggle("hide", pTipo !== "google");
+  $("pOut").classList.add("hide");
+  avisoPlaca("");
+  pidAtual = ""; urlAtual = "";
+}
+$("pTipo").querySelectorAll(".chip").forEach(c => c.onclick = () => trocarTipo(c.dataset.val));
+
+$("pBuscar").onclick = () => {
+  const n = $("pNome").value.trim();
+  if(!n){ toast("Escreve o nome do negócio"); $("pNome").focus(); return; }
+  window.open("https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(n), "_blank");
+};
+$("pFinder").onclick = () => {
+  avisoPlaca(
+    '<b>Como apanhar o link certo:</b><br>' +
+    '1. Carrega em <b>\ud83d\udd0d Procurar no Maps</b> \u2014 abre o Chrome<br>' +
+    '2. Toca no neg\u00f3cio certo (confirma a <b>morada</b>)<br>' +
+    '3. Copia o endere\u00e7o da <b>barra de cima</b> do Chrome<br>' +
+    '4. Cola aqui e carrega em Gerar<br><br>' +
+    'Um link de partilha (<i>share.google</i>) tamb\u00e9m serve \u2014 eu tento abri-lo por ti.'
+  );
+};
+
+function mostrarCodigo(codigo){
+  avisoPlaca("");
+  pidAtual = codigo;
+  urlAtual = BASE_R + "#" + codigo;
+  $("pUrl").textContent = urlAtual;
+  $("pOut").classList.remove("hide");
+  $("pOut").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+const AJUDA_MANUAL =
+  'N\u00e3o consegui abrir esse link encurtado daqui.<br><br>' +
+  '<b>Faz assim:</b> abre o link no Chrome, espera que ele salte para o Google Maps, e <b>copia o endere\u00e7o da barra de cima</b> (o comprido). Cola esse aqui \u2014 eu tiro o c\u00f3digo dele.<br><br>' +
+  'Se abrir na app do Maps em vez do Chrome, usa antes o bot\u00e3o <b>\ud83d\udd0d Procurar no Maps</b> aqui em cima.';
+
+$("pGerar").onclick = () => {
+  const bruto = $("pCod").value.trim();
+  if(!bruto){ avisoPlaca("Cola aqui o link ou o c\u00f3digo."); return; }
+
+  /* colou um link do Instagram/TikTok estando noutro tipo? troca sozinho */
+  if(pTipo !== "ig" && /instagram\.com/i.test(bruto)){ trocarTipo("ig"); }
+  else if(pTipo !== "tt" && /tiktok\.com/i.test(bruto)){ trocarTipo("tt"); }
+
+  if(pTipo !== "google"){
+    const c = codigoDe(pTipo, bruto);
+    if(c){ mostrarCodigo(c); return; }
+    avisoPlaca(pTipo === "u"
+      ? "Isso n\u00e3o me parece um link. Cola o endere\u00e7o completo, a come\u00e7ar por <b>https://</b>."
+      : "N\u00e3o percebi o <b>@</b>. Cola o link do perfil ou escreve s\u00f3 o nome de utilizador.");
+    $("pOut").classList.add("hide");
+    return;
+  }
+
+  const codigo = extrairPID(bruto);
+  if(codigo){ mostrarCodigo(codigo); return; }
+
+  if(ENCURTADO.test(bruto)){
+    $("pOut").classList.add("hide");
+    avisoPlaca("A abrir o link para lhe tirar o c\u00f3digo\u2026");
+    const b = $("pGerar"); b.disabled = true; b.textContent = "A tratar\u2026";
+    resolverCurto(bruto).then(c => {
+      b.disabled = false; b.textContent = "Gerar endere\u00e7o da placa";
+      if(c){ mostrarCodigo(c); toast("C\u00f3digo apanhado \u2713"); }
+      else avisoPlaca(AJUDA_MANUAL);
+    });
+    return;
+  }
+  $("pOut").classList.add("hide");
+  avisoPlaca('N\u00e3o encontrei nenhum c\u00f3digo a\u00ed. Cola o <b>endere\u00e7o completo</b> da p\u00e1gina do neg\u00f3cio no Google Maps, ou o c\u00f3digo <b>ChIJ\u2026</b>.');
+};
+$("pTestar").onclick = () => { if(pidAtual) window.open(destinoDe(pidAtual), "_blank"); };
+$("pCopiar").onclick = () => {
+  const b = $("pCopiar");
+  const ok = () => { b.textContent = "Copiado \u2713"; setTimeout(()=>b.textContent="Copiar endere\u00e7o", 1800); };
+  const fallback = () => {
+    const t = document.createElement("textarea"); t.value = urlAtual; document.body.appendChild(t);
+    t.select(); try{ document.execCommand("copy"); ok(); }catch(e){} document.body.removeChild(t);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(urlAtual).then(ok).catch(fallback);
+  else fallback();
+};
+$("pGuardar").onclick = () => {
+  if(!pidAtual){ toast("Gera o endere\u00e7o primeiro"); return; }
+  const nome = $("pNome").value.trim() || "(sem nome)";
+  state.placas = state.placas || [];
+  const ja = state.placas.find(x => x.pid === pidAtual);
+  if(ja){ ja.nome = nome; ja.dia = hojeISO(); }
+  else state.placas.unshift({ nome, pid: pidAtual, dia: hojeISO(), local: state.aqui.local, rua: state.aqui.rua });
+  saveState(); renderPlacas();
+  toast("Placa guardada \u2713");
+  $("pNome").value = ""; $("pCod").value = "";
+  $("pOut").classList.add("hide"); pidAtual = ""; urlAtual = "";
+};
+function renderPlacas(){
+  const ps = state.placas || [];
+  $("pListaCard").style.display = ps.length ? "block" : "none";
+  $("pLista").innerHTML = ps.map((x,i) =>
+    '<div class="pl"><span class="n"><b>'+esc(x.nome)+'</b><small>'+esc(nomeTipo(x.pid))+' \u00b7 '+esc(x.pid)+'</small></span>'+
+    '<button class="btn ghost mini" data-ptest="'+i+'">Testar</button>'+
+    '<button class="x" data-pdel="'+i+'">\u2715</button></div>').join("");
+  $("pLista").querySelectorAll("[data-ptest]").forEach(b => b.onclick = () =>
+    window.open(destinoDe(ps[b.dataset.ptest].pid), "_blank"));
+  $("pLista").querySelectorAll("[data-pdel]").forEach(b => b.onclick = () => {
+    if(b.classList.contains("confirm")){ state.placas.splice(b.dataset.pdel,1); saveState(); renderPlacas(); }
+    else { b.classList.add("confirm"); b.textContent = "apagar?";
+           setTimeout(()=>{ b.classList.remove("confirm"); b.textContent = "\u2715"; }, 2500); }
   });
 }
 
+/* ───────── guião ───────── */
+function argPorId(id){
+  for(const g of PITCH){ if(!g.args) continue;
+    for(const a of g.args) if(a.id === id) return a; }
+  return null;
+}
+function frase(id){
+  if(state.frases && typeof state.frases[id] === "string") return state.frases[id];
+  const p = PITCH.find(x => x.id === id);
+  return p ? p.txt : "";
+}
+const mudada = id => state.frases && typeof state.frases[id] === "string"
+  && state.frases[id] !== (PITCH.find(x => x.id === id) || {}).txt;
+
+function crescer(t){ t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }
+
+function renderArgs(g){
+  if(!g.args || !g.args.length) return "";
+  const cards = g.args.map(a => {
+    const on = state.args.indexOf(a.id) >= 0;
+    return '<div class="argc'+(on?' on':'')+'" data-arg="'+a.id+'">'+
+      '<div class="argh">'+esc(a.tag)+'<span class="argp">'+(on?'✓ escolhido':'escolher')+'</span></div>'+
+      '<div class="argf">"'+esc(a.fala)+'"</div>'+
+      (a.src ? '<div class="argsrc">'+esc(a.src)+
+        (a.url ? ' <a class="vfonte" href="'+a.url+'" target="_blank" rel="noopener">mostrar a fonte ↗</a>' : '')+'</div>' : '')+
+    '</div>';
+  }).join("");
+  return '<div class="argw"><div class="argt">👉 Escolhe o que encaixa na resposta dele. Um chega.</div>'+cards+'</div>';
+}
+function renderArmas(){
+  const card = $("armasCard");
+  if(!state.args.length){ card.style.display = "none"; return; }
+  card.style.display = "block";
+  $("armasLista").innerHTML = state.args.map(id => {
+    const a = argPorId(id);
+    return a ? '<span class="armas-chip">'+esc(a.tag.split("·")[0].trim())+'</span>' : "";
+  }).join("");
+}
+function renderCompleto(){
+  $("guiaoCompleto").innerHTML = PITCH.map((p,i) =>
+    '<p>"'+esc(frase(p.id))+'"</p>' +
+    (p.id === "p3" || p.id === "p4" || p.id === "p6" ? '<div class="b">↳ e cala-te</div>' : "")
+  ).join("");
+}
+function renderGuiao(){
+  $("listaPitch").innerHTML = PITCH.map((p,i) =>
+    '<div class="pcard'+(state.teste===p.id?' teste':'')+'">'+
+      '<div class="phead"><span class="num">'+(i+1)+'</span><span class="rot">'+esc(p.rot)+'</span>'+
+      (state.teste===p.id?'<span class="tb">EM TESTE</span>':'')+'</div>'+
+      '<textarea class="fbox" data-f="'+p.id+'" rows="1">'+esc(frase(p.id))+'</textarea>'+
+      '<p class="pnota">'+p.nota+'</p>'+
+      renderArgs(p)+
+      '<div class="pfoot">'+
+        '<button class="mini2'+(state.teste===p.id?' on':'')+'" data-teste="'+p.id+'">'+(state.teste===p.id?'Tirar de teste':'Pôr EM TESTE')+'</button>'+
+        '<button class="mini2 rep" data-repor="'+p.id+'" style="display:'+(mudada(p.id)?'inline-block':'none')+'">Repor original</button>'+
+      '</div>'+
+    '</div>').join("");
+
+  $("listaPitch").querySelectorAll("textarea[data-f]").forEach(t => {
+    crescer(t);
+    t.addEventListener("input", () => {
+      crescer(t);
+      state.frases = state.frases || {};
+      state.frases[t.dataset.f] = t.value;
+      saveState(); renderCompleto();
+      const r = t.parentNode.querySelector('[data-repor="'+t.dataset.f+'"]');
+      if(r) r.style.display = mudada(t.dataset.f) ? "inline-block" : "none";
+    });
+  });
+  $("listaPitch").querySelectorAll("[data-teste]").forEach(b => b.onclick = () => {
+    state.teste = state.teste === b.dataset.teste ? null : b.dataset.teste;
+    saveState(); renderGuiao();
+  });
+  $("listaPitch").querySelectorAll("[data-repor]").forEach(b => b.onclick = () => {
+    if(state.frases) delete state.frases[b.dataset.repor];
+    saveState(); renderGuiao(); renderCompleto(); toast("Frase reposta");
+  });
+  $("listaPitch").querySelectorAll("[data-arg]").forEach(c => c.onclick = ev => {
+    if(ev.target.closest("a")) return;
+    const id = c.dataset.arg, k = state.args.indexOf(id);
+    if(k >= 0) state.args.splice(k,1); else state.args.push(id);
+    saveState(); renderGuiao();
+  });
+
+  $("listaExtras").innerHTML = EXTRAS.map((g,i) =>
+    '<details class="g" style="margin:8px 0"><summary><span class="num">'+(i+1)+'</span>'+
+    '<span class="stit"><span class="fase">'+esc(g.fase)+'</span>'+esc(g.t)+'</span></summary>'+
+    '<div class="gbody">'+g.body+'</div></details>').join("");
+
+  renderCompleto(); renderArmas();
+}
+$("btLimparArgs").onclick = () => { state.args = []; saveState(); renderGuiao(); };
+$("btCopiarGuiao").onclick = () => {
+  const txt = PITCH.map(p => frase(p.id)).join("\n\n");
+  const b = $("btCopiarGuiao");
+  const ok = () => { b.textContent = "Copiado ✓"; setTimeout(()=>b.textContent="Copiar", 1800); };
+  const fb = () => { const t=document.createElement("textarea"); t.value=txt; document.body.appendChild(t);
+    t.select(); try{document.execCommand("copy"); ok();}catch(e){} document.body.removeChild(t); };
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok).catch(fb);
+  else fb();
+};
+
 /* ───────── dados ───────── */
+/* ───────── domingo ─────────
+   Por semana e não por mês: um mês dá um ponto só, e um ponto não ensina nada.
+   A taxa de demo sobe muito antes das vendas — é aí que se vê o guião a melhorar. */
+function porSemana(n){
+  const m = {};
+  state.registos.forEach(r => { const s = semanaDe(r.dia); (m[s] = m[s] || []).push(r); });
+  return Object.keys(m).sort().slice(-n).map(s => Object.assign({ semana: s }, contas(m[s])));
+}
+function renderDomingo(){
+  const sems = porSemana(6).filter(s => s.abordadas > 0);
+  const g = $("graficoSemanas"), lido = $("lidoSemanas");
+  if(sems.length < 1){
+    g.innerHTML = '<p class="note">Ainda não há semanas com registos. Volta cá no domingo.</p>';
+    lido.textContent = ""; $("tbodyRende").innerHTML = "";
+    $("decisaoSemana").textContent = "Regista uma semana inteira e eu digo-te o que mudar.";
+    return;
+  }
+  const alto = Math.max(10, ...sems.map(s => s.taxaDemo || 0));
+  g.innerHTML = '<div class="sem">' + sems.map(s => {
+    const hD = Math.round(100 * (s.taxaDemo||0) / alto), hC = Math.round(100 * (s.conv||0) / alto);
+    return '<div class="col">' +
+      '<div class="pc">' + (s.conv===null?"—":s.conv+"%") + '</div>' +
+      '<div class="bar demo" style="height:' + Math.max(hD,2) + '%">' +
+        '<div class="bar" style="height:' + (hD ? Math.round(100*hC/hD) : 0) + '%;width:100%"></div>' +
+      '</div>' +
+      '<small>' + ddmm(s.semana) + '<br>' + s.abordadas + 'p</small></div>';
+  }).join("") + '</div>' +
+  '<div class="semleg"><span><i style="background:var(--accent)"></i>vendeu</span>' +
+  '<span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>viu a demo</span></div>';
+
+  const u = sems[sems.length-1], p = sems.length > 1 ? sems[sems.length-2] : null;
+  if(!p){
+    lido.innerHTML = "Primeira semana com registos: <b>"+u.conv+"%</b> de conversão, <b>"+u.taxaDemo+"%</b> deixaram-te fazer a demo. É a tua base. Para a semana já tens com que comparar.";
+  } else {
+    const dC = u.conv - p.conv, dD = u.taxaDemo - p.taxaDemo;
+    const sinal = n => (n > 0 ? "subiu " + n : n < 0 ? "desceu " + Math.abs(n) : "ficou igual");
+    lido.innerHTML = "Esta semana a conversão <b>"+sinal(dC)+(dC?" pontos":"")+"</b> ("+p.conv+"% → "+u.conv+"%) e a taxa de demo <b>"+sinal(dD)+(dD?" pontos":"")+"</b> ("+p.taxaDemo+"% → "+u.taxaDemo+"%)." +
+      (dD > 0 && dC <= 0 ? " <b>Boa notícia:</b> estás a entrar mais, e as vendas costumam vir a seguir." : "") +
+      (u.abordadas < 15 ? " Atenção: só "+u.abordadas+" abordagens, é pouco para tirar conclusões." : "");
+  }
+
+  /* onde rende mais — só onde há tempo medido */
+  const sitios = {};
+  state.sessoes.forEach(s => {
+    const k = s.chave || (s.modo === "feira" ? "feira|"+slug(s.feira) : "rua|"+slug(s.local)+"|"+slug(s.rua));
+    if(!sitios[k]) sitios[k] = { nome: s.nome || "—", minutos: 0, rs: [] };
+    sitios[k].minutos += (s.minutos||0);
+  });
+  state.registos.forEach(r => {
+    const k = chaveSitio(r);
+    if(sitios[k]) sitios[k].rs.push(r);
+  });
+  const linhas = Object.keys(sitios).map(k => Object.assign({ nome: sitios[k].nome, minutos: sitios[k].minutos }, contas(sitios[k].rs)))
+    .filter(x => x.minutos > 0)
+    .map(x => Object.assign(x, { eh: x.minutos ? x.euros/(x.minutos/60) : 0 }))
+    .sort((a,b) => b.eh - a.eh);
+  $("tbodyRende").innerHTML = linhas.length
+    ? linhas.map(x => "<tr><td>"+esc(x.nome)+"</td><td>"+x.portas+"</td><td>"+x.vendas+"</td><td><b>"+eur(Math.round(x.eh))+"</b></td></tr>").join("")
+    : '<tr><td colspan="4" class="note">Carrega em <b>Comecei</b> e <b>Acabei</b> num sítio e ele aparece aqui.</td></tr>';
+
+  /* uma decisão, não cinco */
+  const pend = state.registos.filter(r => r.res === "voltar" && !r.resolvido).length;
+  const partes = [];
+  if(linhas.length) partes.push("O sítio que mais te rende é <b>"+esc(linhas[0].nome)+"</b> ("+eur(Math.round(linhas[0].eh))+"/hora). É aí que voltas.");
+  else partes.push("Ainda não tens tempos medidos. Usa o <b>Comecei/Acabei</b> esta semana e no próximo domingo já sabes onde rendes mais.");
+  if(u.taxaDemo !== null && u.taxaDemo < 50) partes.push("Menos de metade deixa-te fazer a demo. O trabalho está na <b>entrada</b>, não no preço.");
+  else if(u.conv !== null && u.taxaDemo !== null && u.taxaDemo >= 50 && u.conv < 15) partes.push("Entras bem e não fechas. Olha para o <b>fecho e para o preço</b>.");
+  if(pend) partes.push("Tens <b>"+pend+"</b> retorno"+(pend>1?"s":"")+" por fazer. São as vendas mais fáceis que tens à mão.");
+  $("decisaoSemana").innerHTML = partes.join(" ");
+}
+
 function renderDados(){
   const rs = state.registos;
   const vendas = rs.filter(r => r.res === "venda");
   $("dPortas").textContent = rs.length;
   $("dVendas").textContent = vendas.length;
   $("dEuros").textContent = eur(vendas.reduce((s,r)=>s+r.preco,0));
-  const abordadas = rs.filter(r => r.res !== "fech").length;
+  const abordadas = rs.filter(ABORDADAS).length;
   $("dConv").textContent = abordadas ? Math.round(100*vendas.length/abordadas)+"%" : "—";
+  renderDomingo();
 
   const pend = rs.filter(r => r.res === "voltar" && !r.resolvido).sort((a,b)=>a.ts.localeCompare(b.ts));
   $("listaVoltar").innerHTML = pend.length ? pend.map(r =>
-    '<div class="reg"><span class="n"><b>'+esc(r.nome)+'</b><small>'+esc(zCurta(r.zona))+(r.quando?' · '+esc(r.quando):'')+'</small></span>'+
+    '<div class="reg"><span class="n"><b>'+esc(r.nome)+'</b><small>'+esc(zCurta(r))+(r.quando?' · '+esc(r.quando):'')+'</small></span>'+
     '<button class="btn ghost mini" data-ret="'+r.id+'">Retorno →</button></div>').join("")
     : '<p class="note">Nenhum pendente. 👌</p>';
   $("listaVoltar").querySelectorAll("[data-ret]").forEach(b => b.onclick = () => {
     const r = state.registos.find(x => x.id === b.dataset.ret);
     if(!r) return;
     r.resolvido = true;
-    state.zonaAtiva = r.zona; saveState();
+    if(!state.sessao){
+      state.aqui.modo = r.modo === "feira" ? "feira" : "rua";
+      if(r.modo === "feira") state.aqui.feira = r.feira || "";
+      else if(r.local){ state.aqui.local = r.local; state.aqui.rua = r.rua || ""; }
+    }
+    saveState();
     showTab("registar");
     $("fNome").value = r.nome;
     document.querySelectorAll("#fTipo .chip").forEach(c => c.classList.toggle("on", c.dataset.val === r.tipo));
@@ -824,10 +1710,11 @@ function renderDados(){
     toast("Retorno: regista o resultado");
   });
 
-  $("tbodyZonas").innerHTML = ZONAS.map(z => {
-    const st = statsZona(z.id);
-    if(!st.portas && !state.feitas[z.id]) return "";
-    return "<tr><td>"+(state.feitas[z.id]?"✓ ":"")+esc(z.nome)+"</td><td>"+st.portas+"</td><td>"+st.vendas+"</td><td>"+st.euros+"</td></tr>";
+  const cs = Object.keys(state.sitios).sort((a,b) => statsLocal(b).portas - statsLocal(a).portas);
+  $("tbodyZonas").innerHTML = cs.map(lk => {
+    const st = statsLocal(lk);
+    if(!st.portas) return "";
+    return "<tr><td>"+esc(state.sitios[lk].nome)+"</td><td>"+st.portas+"</td><td>"+st.vendas+"</td><td>"+st.euros+"</td></tr>";
   }).join("") || '<tr><td colspan="4" class="note">Sem registos ainda.</td></tr>';
 }
 
@@ -849,7 +1736,10 @@ $("fileImport").onchange = e => {
       const d = JSON.parse(rd.result);
       if(!d || !Array.isArray(d.registos)) throw 0;
       state = Object.assign({}, DEFAULTS, d);
-      if(!state.zonaAtiva) state.zonaAtiva = zonaDefault();
+      if(!state.sitios || typeof state.sitios !== "object") state.sitios = {};
+      if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"" };
+      if(!Array.isArray(state.args)) state.args = [];
+      if(!Array.isArray(state.placas)) state.placas = [];
       saveState(); renderTudo(); pintarMapa(); toast("Dados importados ✓");
     }catch(_){ toast("Ficheiro inválido"); }
     e.target.value = "";
@@ -860,8 +1750,7 @@ let apagarArm = false;
 $("btApagar").onclick = () => {
   if(!apagarArm){ apagarArm = true; $("btApagar").textContent = "Tens a certeza? Toca outra vez";
     setTimeout(()=>{ apagarArm = false; $("btApagar").textContent = "Apagar tudo"; }, 3000); return; }
-  state = Object.assign({}, DEFAULTS, { zonaAtiva: null });
-  state.zonaAtiva = zonaDefault();
+  state = Object.assign({}, DEFAULTS, { args: [], sitios: {}, aqui: { local:"", rua:"" } });
   saveState(); apagarArm = false; $("btApagar").textContent = "Apagar tudo";
   renderTudo(); pintarMapa(); toast("Dados apagados");
 };
@@ -870,14 +1759,26 @@ $("btApagar").onclick = () => {
 function showTab(name){
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", t.id === "tab-"+name));
   document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.tab === name));
+  if(name === "placa" && !$("pNome").value && state.registos.length){
+    const u = state.registos[state.registos.length-1];
+    if(u && u.res === "venda") $("pNome").value = u.nome;
+  }
   if(name === "zonas"){ tentarMapa(); if(map) setTimeout(()=>{ map.invalidateSize(); }, 60); }
   window.scrollTo(0,0);
 }
 document.querySelectorAll("nav button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
 
 /* ───────── boot ───────── */
-function renderTudo(){ renderSelZona(); renderHoje(); renderZonas(); renderDados(); pintarMapa(); }
+function renderTudo(){ renderAqui(); renderHoje(); renderSitios(); renderFeiras(); renderPlacas(); renderDados(); pintarMapa(); }
 renderGuiao(); renderTudo(); saveState();
+
+/* ───────── funciona sem rede (quando aberta a partir do link) ───────── */
+if("serviceWorker" in navigator && location.protocol.indexOf("http") === 0){
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  });
+}
+
 </script>
 </body>
 </html>
