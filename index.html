@@ -542,7 +542,7 @@ const RES = [
   {id:"porta", txt:"🚫 Nem me ouviu", cls:"bad"},
   {id:"fech", txt:"🚪 Fechado/Férias", cls:"off"}
 ];
-const PRECOS = [49,45,40,79];
+const PRECOS = [45,80];
 const PAGS = ["MB Way","Dinheiro"];
 
 /* Feiras já mapeadas — só para sugerir enquanto escreve. Pode escrever qualquer outra. */
@@ -592,8 +592,8 @@ const PITCH = [
   {id:"p6", rot:"O interesse", txt:"Está interessado?",
    nota:`E cala-te outra vez. Se disser que sim, o preço sai a seguir sem pausa nenhuma.`},
 
-  {id:"p7", rot:"O preço", txt:"São 49 euros, uma vez. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada.",
-   nota:`Hesita? <b>«€45 se fecharmos já»</b>. Chão: <b>€40</b>, nunca abaixo. Combo Instagram (€79) só depois do sim.`}
+  {id:"p7", rot:"O preço", txt:"São 45 euros, uma vez. Se levar duas, ficam em 80. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada.",
+   nota:`Hesita? <b>Não baixes o preço.</b> Baixar à primeira resistência ensina-o a empurrar. A segunda placa (as duas por €80) só depois do sim à primeira, e com um sítio concreto na cabeça: «uma no balcão e outra na mesa do fundo».`}
 ];
 
 const EXTRAS = [
@@ -602,10 +602,10 @@ const EXTRAS = [
     <div class="obj"><b>"É caro."</b><span class="perg">"Caro em relação a quê?"</span>"Isto é uma vez na vida, não é mensalidade. Se lhe trouxer uma mesa a mais, já se pagou."</div>
     <div class="obj"><b>"Já tenho avaliações."</b><span class="perg">"E estão a entrar esta semana?"</span>"É que o que conta é serem recentes. Muita gente nem olha para as antigas."</div>
     <div class="obj"><b>"Um QR code é grátis."</b><span class="perg">"E o seu está a dar quantas por mês?"</span>"O código obriga a abrir a câmara, apontar, esperar. E aquele papelinho plastificado ao pé da caixa ninguém vê. Isto é encostar e já está."</div>
-    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia, passo cá antes de ir embora. Fica nos 45."</div>
+    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia, passo cá antes de ir embora."</div>
     <div class="obj"><b>"Tenho de falar com o meu sócio / a minha mulher."</b><span class="perg">"Faz todo o sentido. O que é que ele ia querer saber?"</span>Responde a isso já, ali. "Olhe, volto quinta às três e meia e mostro aos dois.". Hora exata, e cumpre.</div>
-    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em qualquer telemóvel dos últimos anos. E basta um em cada dez usar. São avaliações que hoje não tem."</div>
-    <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"Quem sai zangado escreve à mesma, esse encontra o caminho sozinho. Isto é para os contentes, que são a maioria e são os que se esquecem. Com mais avaliações, a média sobe e uma má dilui-se."</div>
+    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em telemóveis de 2018 para cá; nos mais antigos ativa-se no Centro de Controlo. E basta um em cada dez usar. São avaliações que hoje não tem."</div>
+    <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"A placa não escolhe quem avalia, nem podia: o Google proíbe filtrar. O que ela faz é dar voz aos contentes, que são a maioria e são os que se esquecem. Um 4,6 com 120 avaliações recentes vale mais do que um 5,0 com 11 antigas."</div>
     <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos. A placa está lá para toda a gente, igual."</div>
     <div class="obj"><b>"Agora não tenho tempo."</b><span class="perg">"Dois minutos, cronometrados. Ou diga-me a que horas e eu volto."</span>E voltas à hora que ele disser.</div>
     <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente, para testar antes de pagar."</div>`},
@@ -634,7 +634,7 @@ const EXTRAS = [
       <li>NIF do cliente (o nome aparece sozinho)</li>
       <li>Importância recebida: <b>"Pagamento dos bens ou serviços"</b></li>
       <li>Descrição: <b>Placa NFC para avaliações Google, 1 un.</b></li>
-      <li>Valor: 49 / 45 / 40 / 79</li>
+      <li>Valor: <b>45</b> (uma placa) ou <b>80</b> (duas)</li>
       <li>IVA: <b>Isento, Art. 53.º do CIVA</b></li>
       <li>Retenção: <b>sem retenção</b>, que vendas de bens não têm</li>
       <li>Emitir → PDF → <b>enviar por WhatsApp à frente dele</b></li>
@@ -794,7 +794,7 @@ function makeChips(elId, items){
         $("grpVenda").classList.toggle("hide", c.dataset.val !== "venda");
         $("grpVoltar").classList.toggle("hide", c.dataset.val !== "voltar");
         if(c.dataset.val === "venda" && !sel("fPreco")){
-          const first = $("fPreco").querySelector('[data-val="49"]'); if(first) first.classList.add("on");
+          const first = $("fPreco").querySelector('[data-val="45"]'); if(first) first.classList.add("on");
         }
       }
     };
@@ -1008,7 +1008,7 @@ $("btGuardar").onclick = () => {
     local: state.aqui.local, rua: state.aqui.modo === "feira" ? "" : state.aqui.rua, zona: "",
     modo: state.aqui.modo, feira: state.aqui.modo === "feira" ? state.aqui.feira : "",
     nome, tipo: tipo || "📦 Outro", res,
-    preco: res === "venda" ? Number(sel("fPreco") || 49) : 0,
+    preco: res === "venda" ? Number(sel("fPreco") || 45) : 0,
     pag: res === "venda" ? (sel("fPag") || "") : "",
     quando: res === "voltar" ? $("fQuando").value.trim() : "",
     nota: $("fNota").value.trim(),
