@@ -691,7 +691,7 @@ const RES_CHAMADA = [
   {id:"fech",   txt:"📵 Não atendeu", cls:"off"}
 ];
 const VIDEO = [{id:"sim", txt:"📹 Viu", cls:"ok"}, {id:"nao", txt:"Não chegou a ver"}];
-const PRECOS = [49,45,40,79];
+const PRECOS = [45,80];
 const PAGS = ["MB Way","Dinheiro"];
 
 /* Feiras já mapeadas — só para sugerir enquanto escreve. Pode escrever qualquer outra. */
@@ -709,8 +709,8 @@ const PITCH = [
   {id:"p2", rot:"Direto ao assunto", txt:"Vou ser direto, que não lhe quero tirar muito tempo. Queria mostrar-lhe estas placas que facilitam os clientes deixarem a avaliação no Google. Vai ver, não dá trabalho nenhum.",
    nota:`Nunca digas <b>«venho vender»</b>. E não expliques mais nada. Vai já à placa.`},
 
-  {id:"p3", rot:"A demo", txt:"Toque aqui com o telemóvel… está a ver? Abriu logo a avaliação.",
-   nota:`A placa na <b>mão dele</b>, com o telemóvel <b>dele</b>. Dois segundos calado. É aqui que ele compra.`},
+  {id:"p3", rot:"A demo", txt:"Toque aqui com o topo do telemóvel… está a ver? Abriu logo a avaliação.",
+   nota:`A placa na <b>mão dele</b>, com o telemóvel <b>dele</b>. Dois segundos calado. É aqui que ele compra.<br><br><b>Não peças a placa de volta.</b> Deixa-a na mão dele o resto da conversa. Se a pousar, empurra-a devagar na direção dele outra vez. Quanto mais tempo a segura, mais ela vale aos olhos dele.<br><br><b>O topo do telemóvel, não o meio.</b> A antena está no topo. A maior parte das primeiras tentativas falha por a pessoa pousar o meio do telemóvel em cima da placa, e uma falha logo à partida estraga a demo.<br><br><b>Se houver um cliente na loja, pede a ele e não ao dono:</b> «Desculpe, importa-se de tocar aqui com o telemóvel? É um segundo.» O dono acredita mais no que vê acontecer a um cliente do que em tudo o que tu lhe disseres.`},
 
   {id:"p4", rot:"A pergunta", txt:"Diga-me uma coisa: quantas avaliações é que lhe deixam por semana?",
    nota:`<b>Cala-te e deixa-o responder.</b> Quem diz o problema em voz alta passa a ser ele. E a resposta diz-te que número usar a seguir.`},
@@ -741,8 +741,8 @@ const PITCH = [
   {id:"p6", rot:"O interesse", txt:"Está interessado?",
    nota:`E cala-te outra vez. Se disser que sim, o preço sai a seguir sem pausa nenhuma.`},
 
-  {id:"p7", rot:"O preço", txt:"São 49 euros, uma vez. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada.",
-   nota:`Hesita? <b>«€45 se fecharmos já»</b>. Chão: <b>€40</b>, nunca abaixo. Combo Instagram (€79) só depois do sim.`}
+  {id:"p7", rot:"O preço", txt:"São 45 euros, uma vez. Se levar duas, ficam em 80. Não há mensalidade, a placa fica sua. Programo já com o nome da casa e deixo montada.",
+   nota:`Hesita? <b>Não baixes o preço.</b> Baixar à primeira resistência ensina-o a empurrar. A segunda placa (as duas por €80) só depois do sim à primeira, e com um sítio concreto na cabeça: «uma no balcão e outra na mesa do fundo».`}
 ];
 
 const EXTRAS = [
@@ -751,10 +751,10 @@ const EXTRAS = [
     <div class="obj"><b>"É caro."</b><span class="perg">"Caro em relação a quê?"</span>"Isto é uma vez na vida, não é mensalidade. Se lhe trouxer uma mesa a mais, já se pagou."</div>
     <div class="obj"><b>"Já tenho avaliações."</b><span class="perg">"E estão a entrar esta semana?"</span>"É que o que conta é serem recentes. Muita gente nem olha para as antigas."</div>
     <div class="obj"><b>"Um QR code é grátis."</b><span class="perg">"E o seu está a dar quantas por mês?"</span>"O código obriga a abrir a câmara, apontar, esperar. E aquele papelinho plastificado ao pé da caixa ninguém vê. Isto é encostar e já está."</div>
-    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia, passo cá antes de ir embora. Fica nos 45."</div>
+    <div class="obj"><b>"Vou pensar."</b><span class="perg">"Com certeza. Só para eu perceber: é o preço, ou é a dúvida se aquilo funciona?"</span>Responde ao que ele disser. "Estou aqui na zona até às seis e meia, passo cá antes de ir embora."</div>
     <div class="obj"><b>"Tenho de falar com o meu sócio / a minha mulher."</b><span class="perg">"Faz todo o sentido. O que é que ele ia querer saber?"</span>Responde a isso já, ali. "Olhe, volto quinta às três e meia e mostro aos dois.". Hora exata, e cumpre.</div>
-    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em qualquer telemóvel dos últimos anos. E basta um em cada dez usar. São avaliações que hoje não tem."</div>
-    <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"Quem sai zangado escreve à mesma, esse encontra o caminho sozinho. Isto é para os contentes, que são a maioria e são os que se esquecem. Com mais avaliações, a média sobe e uma má dilui-se."</div>
+    <div class="obj"><b>"Os meus clientes são pessoas de idade, não mexem nisso."</b><span class="perg">"Faça-me um favor: experimente o senhor."</span>A demo responde por ti. "Funciona em telemóveis de 2018 para cá; nos mais antigos ativa-se no Centro de Controlo. E basta um em cada dez usar. São avaliações que hoje não tem."</div>
+    <div class="obj"><b>"E se me deixarem uma má avaliação?"</b><span class="perg">"Já lhe deixaram alguma?"</span>"A placa não escolhe quem avalia, nem podia: o Google proíbe filtrar. O que ela faz é dar voz aos contentes, que são a maioria e são os que se esquecem. Um 4,6 com 120 avaliações recentes vale mais do que um 5,0 com 11 antigas."</div>
     <div class="obj"><b>"Isso é permitido? O Google não deixa?"</b><span class="perg">—</span>"Pedir é permitido, sim. O que não pode é pagar por avaliações, ou pedir só aos clientes contentes. Isso nós não fazemos. A placa está lá para toda a gente, igual."</div>
     <div class="obj"><b>"Agora não tenho tempo."</b><span class="perg">"Dois minutos, cronometrados. Ou diga-me a que horas e eu volto."</span>E voltas à hora que ele disser.</div>
     <div class="obj"><b>"Já cá veio gente vender disso."</b><span class="perg">"E porque é que não avançou?"</span>Responde à razão real que ele te der. "A diferença é que aqui não há mensalidade, a placa fica sua, e programo aqui à sua frente, para testar antes de pagar."</div>`},
@@ -783,7 +783,7 @@ const EXTRAS = [
       <li>NIF do cliente (o nome aparece sozinho)</li>
       <li>Importância recebida: <b>"Pagamento dos bens ou serviços"</b></li>
       <li>Descrição: <b>Placa NFC para avaliações Google, 1 un.</b></li>
-      <li>Valor: 49 / 45 / 40 / 79</li>
+      <li>Valor: <b>45</b> (uma placa) ou <b>80</b> (duas)</li>
       <li>IVA: <b>Isento, Art. 53.º do CIVA</b></li>
       <li>Retenção: <b>sem retenção</b>, que vendas de bens não têm</li>
       <li>Emitir → PDF → <b>enviar por WhatsApp à frente dele</b></li>
@@ -945,7 +945,7 @@ function makeChips(elId, items){
         $("grpVenda").classList.toggle("hide", c.dataset.val !== "venda");
         $("grpVoltar").classList.toggle("hide", c.dataset.val !== "voltar");
         if(c.dataset.val === "venda" && !sel("fPreco")){
-          const first = $("fPreco").querySelector('[data-val="49"]'); if(first) first.classList.add("on");
+          const first = $("fPreco").querySelector('[data-val="45"]'); if(first) first.classList.add("on");
         }
       }
     };
@@ -1181,7 +1181,7 @@ $("btGuardar").onclick = () => {
     tel: state.aqui.modo === "chamada" ? $("fTel").value.trim() : "",
     video: state.aqui.modo === "chamada" ? (sel("fVideo") === "sim") : null,
     nome, tipo: tipo || "📦 Outro", res,
-    preco: res === "venda" ? Number(sel("fPreco") || 49) : 0,
+    preco: res === "venda" ? Number(sel("fPreco") || 45) : 0,
     pag: res === "venda" ? (sel("fPag") || "") : "",
     quando: res === "voltar" ? $("fQuando").value.trim() : "",
     nota: $("fNota").value.trim(),
