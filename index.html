@@ -273,7 +273,6 @@
 
       <div class="chips" id="fModo" style="margin-bottom:10px">
         <button class="chip on" data-val="rua">🚶 Rua</button>
-        <button class="chip" data-val="feira">🎪 Feira</button>
         <button class="chip" data-val="chamada">📞 Chamada</button>
       </div>
 
@@ -559,7 +558,7 @@
       <button class="btn ghost mini" id="btLimparArgs" style="margin-top:10px">Limpar</button>
     </div>
 
-    <p class="note">Cada frase é tua. Toca no texto e escreve por cima. Marca <b>EM TESTE</b> a que estiveres a experimentar e ao fim de uns dias vê nos Dados se subiu.</p>
+    <p class="note">A ordem da conversa, e por baixo de cada passo o porquê. As objeções e o resto estão mais abaixo.</p>
 
     <div id="listaPitch"></div>
 
@@ -649,6 +648,7 @@
         <button class="btn ghost mini" id="btExport">⬇ Exportar dados</button>
         <button class="btn ghost mini" id="btImport">⬆ Importar</button>
         <input type="file" id="fileImport" accept=".json" class="hide">
+        <button class="btn ghost mini" id="btReset">Reiniciar estatísticas</button>
         <button class="btn danger mini" id="btApagar">Apagar tudo</button>
       </div>
     </div>
@@ -836,7 +836,7 @@ if(!persist) document.getElementById("aviso").style.display = "block";
 if(!state.sitios || typeof state.sitios !== "object") state.sitios = {};
 if(!state.aqui || typeof state.aqui !== "object") state.aqui = { local:"", rua:"", feira:"", modo:"rua" };
 if(typeof state.aqui.feira !== "string") state.aqui.feira = "";
-if(state.aqui.modo !== "feira" && state.aqui.modo !== "chamada") state.aqui.modo = "rua";
+if(state.aqui.modo !== "chamada") state.aqui.modo = "rua";   /* a feira saiu */
 if(!Array.isArray(state.args)) state.args = [];
 if(!Array.isArray(state.placas)) state.placas = [];
 if(!Array.isArray(state.sessoes)) state.sessoes = [];
@@ -849,6 +849,20 @@ state.registos.forEach(r => {
   if(r.modo !== "feira" && r.modo !== "chamada") r.modo = "rua";
   if(typeof r.tel !== "string") r.tel = "";
 });
+
+/* ─── reinício das estatísticas, uma vez só (pedido a 11 ago 2026) ───
+   Guarda uma cópia de tudo antes de limpar, para nada se perder. */
+if(!state.resetEstatisticas){
+  const tinha = (state.registos || []).length;
+  if(tinha || (state.sessoes || []).length){
+    try{ localStorage.setItem("placas-rua-antes-do-reset",
+      JSON.stringify({ quando: new Date().toISOString(), state: state })); }catch(e){}
+  }
+  state.registos = []; state.sessoes = []; state.sessao = null;
+  state.resetEstatisticas = true;
+  saveState();
+  if(tinha) setTimeout(() => toast("Estatísticas reiniciadas · " + tinha + " registos guardados em cópia"), 1200);
+}
 
 /* ───────── helpers ───────── */
 const $ = id => document.getElementById(id);
@@ -1310,6 +1324,8 @@ function feirasResumo(){
   }).sort((a,b) => (diasDesde(b.ult)||0) - (diasDesde(a.ult)||0));
 }
 function renderFeiras(){
+  $("feirasCard").style.display = "none";   /* a feira saiu da app */
+  if(true) return;
   const fs = feirasResumo();
   $("feirasCard").style.display = fs.length ? "block" : "none";
   if(!fs.length) return;
@@ -1713,6 +1729,7 @@ function renderArgs(g){
 }
 function renderArmas(){
   const card = $("armasCard");
+  if(true){ card.style.display = "none"; return; }   /* argumentos escolhíveis saíram */
   if(!state.args.length){ card.style.display = "none"; return; }
   card.style.display = "block";
   $("armasLista").innerHTML = state.args.map(id => {
@@ -1727,44 +1744,13 @@ function renderCompleto(){
   ).join("");
 }
 function renderGuiao(){
+  /* guião da rua em leitura, como o da chamada: a fala e a nota, mais nada */
   $("listaPitch").innerHTML = PITCH.map((p,i) =>
-    '<div class="pcard'+(state.teste===p.id?' teste':'')+'">'+
-      '<div class="phead"><span class="num">'+(i+1)+'</span><span class="rot">'+esc(p.rot)+'</span>'+
-      (state.teste===p.id?'<span class="tb">EM TESTE</span>':'')+'</div>'+
-      '<textarea class="fbox" data-f="'+p.id+'" rows="1">'+esc(frase(p.id))+'</textarea>'+
+    '<div class="pcard">'+
+      '<div class="phead"><span class="num">'+(i+1)+'</span><span class="rot">'+esc(p.rot)+'</span></div>'+
+      '<p class="pnota" style="font-size:1rem;color:var(--ink);margin:6px 0 2px">'+esc(frase(p.id))+'</p>'+
       '<p class="pnota">'+p.nota+'</p>'+
-      renderArgs(p)+
-      '<div class="pfoot">'+
-        '<button class="mini2'+(state.teste===p.id?' on':'')+'" data-teste="'+p.id+'">'+(state.teste===p.id?'Tirar de teste':'Pôr EM TESTE')+'</button>'+
-        '<button class="mini2 rep" data-repor="'+p.id+'" style="display:'+(mudada(p.id)?'inline-block':'none')+'">Repor original</button>'+
-      '</div>'+
     '</div>').join("");
-
-  $("listaPitch").querySelectorAll("textarea[data-f]").forEach(t => {
-    crescer(t);
-    t.addEventListener("input", () => {
-      crescer(t);
-      state.frases = state.frases || {};
-      state.frases[t.dataset.f] = t.value;
-      saveState(); renderCompleto();
-      const r = t.parentNode.querySelector('[data-repor="'+t.dataset.f+'"]');
-      if(r) r.style.display = mudada(t.dataset.f) ? "inline-block" : "none";
-    });
-  });
-  $("listaPitch").querySelectorAll("[data-teste]").forEach(b => b.onclick = () => {
-    state.teste = state.teste === b.dataset.teste ? null : b.dataset.teste;
-    saveState(); renderGuiao();
-  });
-  $("listaPitch").querySelectorAll("[data-repor]").forEach(b => b.onclick = () => {
-    if(state.frases) delete state.frases[b.dataset.repor];
-    saveState(); renderGuiao(); renderCompleto(); toast("Frase reposta");
-  });
-  $("listaPitch").querySelectorAll("[data-arg]").forEach(c => c.onclick = ev => {
-    if(ev.target.closest("a")) return;
-    const id = c.dataset.arg, k = state.args.indexOf(id);
-    if(k >= 0) state.args.splice(k,1); else state.args.push(id);
-    saveState(); renderGuiao();
-  });
 
   $("listaExtras").innerHTML = EXTRAS.map((g,i) =>
     '<details class="g" style="margin:8px 0"><summary><span class="num">'+(i+1)+'</span>'+
@@ -1899,7 +1885,7 @@ function renderDados(){
 
   /* rua vs telefone */
   const canais = [
-    {nome:"🚶 Rua e feira", rs: rs.filter(r => r.modo !== "chamada")},
+    {nome:"🚶 Rua", rs: rs.filter(r => r.modo !== "chamada")},
     {nome:"📞 Chamadas",    rs: rs.filter(r => r.modo === "chamada")}
   ].filter(c => c.rs.length);
   $("tbodyCanal").innerHTML = canais.map(c => {
@@ -1931,6 +1917,13 @@ function renderDados(){
 }
 
 /* ───────── export / import / apagar ───────── */
+$("btReset").onclick = () => {
+  if(!confirm("Apagar os registos e as sessões?\n\nAs ruas, as placas e o guião ficam como estão, e fica uma cópia guardada.")) return;
+  try{ localStorage.setItem("placas-rua-antes-do-reset",
+    JSON.stringify({ quando: new Date().toISOString(), state: state })); }catch(e){}
+  state.registos = []; state.sessoes = []; state.sessao = null;
+  saveState(); renderTudo(); toast("Estatísticas reiniciadas");
+};
 $("btExport").onclick = () => {
   const blob = new Blob([JSON.stringify(state, null, 1)], {type:"application/json"});
   const a = document.createElement("a");
