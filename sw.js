@@ -2,7 +2,7 @@
    Objetivo: a app abrir sempre, mesmo sem rede (a rua não tem sempre 4G).
    Os dados ficam no localStorage do telemóvel, não passam por aqui. */
 
-const CACHE = "placas-v28";
+const CACHE = "placas-v29";
 const ESSENCIAIS = [
   "./",
   "./index.html",
